@@ -1,3 +1,4 @@
+#pragma once
 #include <chrono>
 #include <cstdint>
 #include <memory>
@@ -148,30 +149,21 @@ public:
     std::shared_ptr<Order> get_best_order() {
         if (levels_.empty()) return nullptr;
         
-        if (is_bid_side_) {
-            auto best_it = levels_.rbegin();
-            return best_it->second->get_front_order();
-        } else {
-            auto best_it = levels_.begin();
-            return best_it->second->get_front_order();
-        }
+        auto best_it = is_bid_side_ ? levels_.rbegin() : levels_.begin();
+        return best_it->second->get_front_order();
     }
     
     void remove_best_order() {
         if (levels_.empty()) return;
         
-        if (is_bid_side_) {
-            auto best_it = levels_.rbegin();
-            best_it->second->remove_front_order();
-            
-            if (best_it->second->is_empty()) {
+        auto best_it = is_bid_side_ ? levels_.rbegin() : levels_.begin();
+        best_it->second->remove_front_order();
+        
+        if (best_it->second->is_empty()) {
+            // Convert reverse iterator to forward iterator for erase
+            if (is_bid_side_) {
                 levels_.erase(std::next(best_it).base());
-            }
-        } else {
-            auto best_it = levels_.begin();
-            best_it->second->remove_front_order();
-            
-            if (best_it->second->is_empty()) {
+            } else {
                 levels_.erase(best_it);
             }
         }
@@ -192,13 +184,8 @@ public:
     Price get_best_price() const {
         if (levels_.empty()) return 0;
         
-        if (is_bid_side_) {
-            auto best_it = levels_.rbegin();
-            return best_it->second->get_price();
-        } else {
-            auto best_it = levels_.begin();
-            return best_it->second->get_price();
-        }
+        auto best_it = is_bid_side_ ? levels_.rbegin() : levels_.begin();
+        return best_it->second->get_price();
     }
     
     bool is_empty() const { return levels_.empty(); }
@@ -214,7 +201,7 @@ private:
     OrderBookSide ask_side_;
     std::unordered_map<OrderId, std::pair<Price, OrderSide>> order_lookup_;
     std::vector<TradeEvent> trade_events_;
-    mutable std::mutex engine_mutex_;
+    std::mutex engine_mutex_;
     std::atomic<uint64_t> processed_orders_{0};
     std::atomic<uint64_t> matched_trades_{0};
     
@@ -458,60 +445,1010 @@ void order_feeder_thread(MatchingEngine& engine, OrderGenerator& generator,
 }
 
 // ============================================================================
-// Main Demo Function
+// Market Data Structures (Step 2)
+// ============================================================================
+
+struct MarketDataUpdate {
+    enum class Type : uint8_t {
+        TRADE = 0,
+        QUOTE = 1,
+        BOOK_UPDATE = 2
+    };
+    
+    Type type;
+    std::string symbol;
+    Price price;
+    Quantity quantity;
+    OrderSide side;  // For quotes and book updates
+    Timestamp timestamp;
+    uint64_t sequence_number;
+    
+    MarketDataUpdate(Type t, const std::string& sym, Price p, Quantity q, OrderSide s = OrderSide::BUY)
+        : type(t), symbol(sym), price(p), quantity(q), side(s), 
+          timestamp(std::chrono::steady_clock::now()), sequence_number(0) {}
+};
+
+struct MarketSnapshot {
+    std::string symbol;
+    Price best_bid;
+    Price best_ask;
+    Quantity bid_quantity;
+    Quantity ask_quantity;
+    Price last_trade_price;
+    Quantity last_trade_quantity;
+    Timestamp timestamp;
+    
+    MarketSnapshot(const std::string& sym) : symbol(sym), best_bid(0), best_ask(0),
+                                            bid_quantity(0), ask_quantity(0),
+                                            last_trade_price(0), last_trade_quantity(0),
+                                            timestamp(std::chrono::steady_clock::now()) {}
+};
+
+// ============================================================================
+// Market Data Feed Generator (Step 2)
+// ============================================================================
+
+class MarketDataFeed {
+private:
+    std::string symbol_;
+    mutable std::mt19937 rng_;
+    std::normal_distribution<double> price_walk_;
+    std::exponential_distribution<double> time_dist_;
+    mutable std::uniform_int_distribution<Quantity> quantity_dist_;
+    std::uniform_int_distribution<int> update_type_dist_;
+    
+    Price current_mid_price_;
+    uint64_t sequence_number_;
+    std::atomic<bool> running_{false};
+    
+    // Market microstructure parameters
+    const double TICK_SIZE = 0.01;  // $0.01 minimum price increment
+    const double SPREAD_BASIS_POINTS = 5.0;  // 5 basis points typical spread
+    const double VOLATILITY_ANNUALIZED = 0.20;  // 20% annual volatility
+    
+    // Feed statistics
+    std::atomic<uint64_t> updates_generated_{0};
+    std::atomic<uint64_t> trades_generated_{0};
+    std::atomic<uint64_t> quotes_generated_{0};
+    
+public:
+    MarketDataFeed(const std::string& symbol, Price initial_price = 105000)  // $10.50
+        : symbol_(symbol), rng_(std::random_device{}()), 
+          price_walk_(0.0, 0.0001), time_dist_(1000000.0), // 1M updates/sec average
+          quantity_dist_(1, 500), update_type_dist_(0, 99),
+          current_mid_price_(initial_price), sequence_number_(0) {
+        
+        // Scale volatility to nanosecond intervals
+        double vol_per_ns = VOLATILITY_ANNUALIZED / std::sqrt(365.25 * 24 * 3600 * 1e9);
+        price_walk_ = std::normal_distribution<double>(0.0, vol_per_ns);
+    }
+    
+    void start() {
+        running_ = true;
+        std::cout << "Market data feed started for " << symbol_ << "\n";
+    }
+    
+    void stop() {
+        running_ = false;
+    }
+    
+    bool is_running() const {
+        return running_.load();
+    }
+    
+    // Generate next market data update
+    MarketDataUpdate generate_update() {
+        if (!running_) {
+            return MarketDataUpdate(MarketDataUpdate::Type::QUOTE, symbol_, 0, 0);
+        }
+        
+        sequence_number_++;
+        
+        // Evolve the mid price using geometric Brownian motion
+        double price_change = price_walk_(rng_);
+        current_mid_price_ = static_cast<Price>(current_mid_price_ * (1.0 + price_change));
+        
+        // Ensure price stays within reasonable bounds
+        current_mid_price_ = std::max(static_cast<Price>(50000), 
+                                     std::min(static_cast<Price>(200000), current_mid_price_));
+        
+        // Generate different types of updates
+        int update_type = update_type_dist_(rng_);
+        
+        if (update_type < 60) {  // 60% quotes
+            return generate_quote_update();
+        } else if (update_type < 85) {  // 25% book updates
+            return generate_book_update();
+        } else {  // 15% trade updates
+            return generate_trade_update();
+        }
+    }
+    
+    // Get current market snapshot
+    MarketSnapshot get_snapshot() const {
+        MarketSnapshot snapshot(symbol_);
+        
+        Price half_spread = static_cast<Price>(current_mid_price_ * SPREAD_BASIS_POINTS / 20000);
+        snapshot.best_bid = current_mid_price_ - half_spread;
+        snapshot.best_ask = current_mid_price_ + half_spread;
+        snapshot.bid_quantity = quantity_dist_(rng_);
+        snapshot.ask_quantity = quantity_dist_(rng_);
+        snapshot.last_trade_price = current_mid_price_;
+        snapshot.last_trade_quantity = quantity_dist_(rng_);
+        
+        return snapshot;
+    }
+    
+    // Get feed statistics
+    uint64_t get_updates_generated() const { return updates_generated_.load(); }
+    uint64_t get_trades_generated() const { return trades_generated_.load(); }
+    uint64_t get_quotes_generated() const { return quotes_generated_.load(); }
+    Price get_current_price() const { return current_mid_price_; }
+    
+private:
+    MarketDataUpdate generate_quote_update() {
+        Price half_spread = static_cast<Price>(current_mid_price_ * SPREAD_BASIS_POINTS / 20000);
+        OrderSide side = (update_type_dist_(rng_) < 50) ? OrderSide::BUY : OrderSide::SELL;
+        
+        Price quote_price = (side == OrderSide::BUY) ? 
+                           current_mid_price_ - half_spread : 
+                           current_mid_price_ + half_spread;
+        
+        Quantity quote_quantity = quantity_dist_(rng_);
+        
+        auto update = MarketDataUpdate(MarketDataUpdate::Type::QUOTE, symbol_, 
+                                      quote_price, quote_quantity, side);
+        update.sequence_number = sequence_number_;
+        
+        updates_generated_++;
+        quotes_generated_++;
+        
+        return update;
+    }
+    
+    MarketDataUpdate generate_book_update() {
+        OrderSide side = (update_type_dist_(rng_) < 50) ? OrderSide::BUY : OrderSide::SELL;
+        
+        // Price slightly away from mid
+        Price level_offset = static_cast<Price>(current_mid_price_ * 0.001 * (1 + update_type_dist_(rng_) % 5));
+        Price book_price = (side == OrderSide::BUY) ? 
+                          current_mid_price_ - level_offset : 
+                          current_mid_price_ + level_offset;
+        
+        Quantity book_quantity = quantity_dist_(rng_);
+        
+        auto update = MarketDataUpdate(MarketDataUpdate::Type::BOOK_UPDATE, symbol_, 
+                                      book_price, book_quantity, side);
+        update.sequence_number = sequence_number_;
+        
+        updates_generated_++;
+        
+        return update;
+    }
+    
+    MarketDataUpdate generate_trade_update() {
+        // Trades happen at or near mid price
+        Price trade_price = current_mid_price_ + static_cast<Price>(price_walk_(rng_) * 100);
+        Quantity trade_quantity = quantity_dist_(rng_);
+        
+        auto update = MarketDataUpdate(MarketDataUpdate::Type::TRADE, symbol_, 
+                                      trade_price, trade_quantity);
+        update.sequence_number = sequence_number_;
+        
+        updates_generated_++;
+        trades_generated_++;
+        
+        return update;
+    }
+};
+
+// ============================================================================
+// Market Data Consumer Interface
+// ============================================================================
+
+class MarketDataConsumer {
+public:
+    virtual ~MarketDataConsumer() = default;
+    virtual void on_market_update(const MarketDataUpdate& update) = 0;
+    virtual void on_trade(const MarketDataUpdate& trade) = 0;
+    virtual void on_quote(const MarketDataUpdate& quote) = 0;
+};
+
+// ============================================================================
+// Market Data Publisher (Step 2)
+// ============================================================================
+
+class MarketDataPublisher {
+private:
+    std::vector<MarketDataFeed> feeds_;
+    std::vector<std::unique_ptr<MarketDataConsumer>> consumers_;
+    std::atomic<bool> running_{false};
+    std::thread publisher_thread_;
+    
+    // Performance metrics
+    std::atomic<uint64_t> total_updates_published_{0};
+    std::atomic<uint64_t> total_latency_ns_{0};
+    std::chrono::steady_clock::time_point start_time_;
+    
+public:
+    MarketDataPublisher() {}
+    
+    ~MarketDataPublisher() {
+        stop();
+    }
+    
+    void add_feed(const std::string& symbol, Price initial_price = 105000) {
+        feeds_.emplace_back(symbol, initial_price);
+    }
+    
+    void subscribe(std::unique_ptr<MarketDataConsumer> consumer) {
+        consumers_.push_back(std::move(consumer));
+    }
+    
+    void start(int target_updates_per_second = 1000000) {  // 1M updates/sec
+        if (running_) return;
+        
+        running_ = true;
+        start_time_ = std::chrono::steady_clock::now();
+        
+        // Start all feeds
+        for (auto& feed : feeds_) {
+            feed.start();
+        }
+        
+        // Start publisher thread
+        publisher_thread_ = std::thread([this, target_updates_per_second]() {
+            publish_loop(target_updates_per_second);
+        });
+        
+        std::cout << "Market data publisher started with " << feeds_.size() << " feeds\n";
+    }
+    
+    void stop() {
+        if (!running_) return;
+        
+        running_ = false;
+        
+        // Stop all feeds
+        for (auto& feed : feeds_) {
+            feed.stop();
+        }
+        
+        if (publisher_thread_.joinable()) {
+            publisher_thread_.join();
+        }
+        
+        std::cout << "Market data publisher stopped\n";
+    }
+    
+    void print_stats() const {
+        auto current_time = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - start_time_);
+        
+        uint64_t total_updates = total_updates_published_.load();
+        double updates_per_sec = total_updates * 1000.0 / std::max(elapsed.count(), 1L);
+        double avg_latency_ns = total_updates > 0 ? 
+                               static_cast<double>(total_latency_ns_.load()) / total_updates : 0.0;
+        
+        std::cout << "\n=== Market Data Feed Stats ===\n";
+        std::cout << "Runtime: " << elapsed.count() << " ms\n";
+        std::cout << "Total updates: " << total_updates << "\n";
+        std::cout << "Updates/sec: " << std::fixed << std::setprecision(0) << updates_per_sec << "\n";
+        std::cout << "Avg publish latency: " << std::fixed << std::setprecision(2) << avg_latency_ns << " ns\n";
+        
+        for (size_t i = 0; i < feeds_.size(); ++i) {
+            const auto& feed = feeds_[i];
+            std::cout << "Feed " << i << " - Updates: " << feed.get_updates_generated()
+                      << ", Trades: " << feed.get_trades_generated()
+                      << ", Quotes: " << feed.get_quotes_generated()
+                      << ", Price: $" << std::fixed << std::setprecision(4) 
+                      << (feed.get_current_price() / 10000.0) << "\n";
+        }
+        std::cout << "===============================\n";
+    }
+    
+private:
+    void publish_loop(int target_updates_per_second) {
+        auto sleep_duration = std::chrono::nanoseconds(1000000000 / target_updates_per_second);
+        
+        while (running_) {
+            auto loop_start = std::chrono::steady_clock::now();
+            
+            // Generate and publish updates from all feeds
+            for (auto& feed : feeds_) {
+                if (!feed.is_running()) continue;
+                
+                auto update = feed.generate_update();
+                publish_update(update);
+            }
+            
+            auto loop_end = std::chrono::steady_clock::now();
+            auto loop_duration = loop_end - loop_start;
+            
+            // Sleep to maintain target rate
+            if (loop_duration < sleep_duration) {
+                std::this_thread::sleep_for(sleep_duration - loop_duration);
+            }
+        }
+    }
+    
+    void publish_update(const MarketDataUpdate& update) {
+        auto publish_start = std::chrono::steady_clock::now();
+        
+        // Dispatch to all consumers
+        for (auto& consumer : consumers_) {
+            consumer->on_market_update(update);
+            
+            // Dispatch to specific handlers
+            switch (update.type) {
+                case MarketDataUpdate::Type::TRADE:
+                    consumer->on_trade(update);
+                    break;
+                case MarketDataUpdate::Type::QUOTE:
+                    consumer->on_quote(update);
+                    break;
+                case MarketDataUpdate::Type::BOOK_UPDATE:
+                    // Book updates go through generic handler
+                    break;
+            }
+        }
+        
+        auto publish_end = std::chrono::steady_clock::now();
+        auto latency = std::chrono::duration_cast<std::chrono::nanoseconds>(publish_end - publish_start);
+        
+        total_updates_published_++;
+        total_latency_ns_ += latency.count();
+    }
+};
+
+// ============================================================================
+// Strategy Engine Infrastructure (Step 3)
+// ============================================================================
+
+enum class SignalType : uint8_t {
+    NONE = 0,
+    BUY = 1,
+    SELL = 2,
+    HOLD = 3
+};
+
+struct TradingSignal {
+    std::string symbol;
+    SignalType signal;
+    Price target_price;
+    Quantity suggested_quantity;
+    double confidence;  // 0.0 to 1.0
+    std::string reason;
+    Timestamp timestamp;
+    
+    TradingSignal(const std::string& sym, SignalType sig, Price price, Quantity qty, 
+                  double conf, const std::string& r)
+        : symbol(sym), signal(sig), target_price(price), suggested_quantity(qty),
+          confidence(conf), reason(r), timestamp(std::chrono::steady_clock::now()) {}
+};
+
+struct Position {
+    std::string symbol;
+    int64_t quantity;  // Signed: positive = long, negative = short
+    Price average_price;
+    double unrealized_pnl;
+    double realized_pnl;
+    Timestamp last_update;
+    
+    Position(const std::string& sym) : symbol(sym), quantity(0), average_price(0),
+                                       unrealized_pnl(0.0), realized_pnl(0.0),
+                                       last_update(std::chrono::steady_clock::now()) {}
+};
+
+// ============================================================================
+// Risk Management System
+// ============================================================================
+
+class RiskManager {
+private:
+    double max_position_size_;
+    double max_daily_loss_;
+    double max_order_size_;
+    double current_daily_pnl_;
+    std::unordered_map<std::string, Position> positions_;
+    mutable std::mutex risk_mutex_;
+    
+public:
+    RiskManager(double max_pos_size = 10000.0, double max_daily_loss = 5000.0, 
+                double max_order_size = 1000.0)
+        : max_position_size_(max_pos_size), max_daily_loss_(max_daily_loss),
+          max_order_size_(max_order_size), current_daily_pnl_(0.0) {}
+    
+    bool validate_order(const std::string& symbol, OrderSide side, Quantity quantity, Price price) {
+        std::lock_guard<std::mutex> lock(risk_mutex_);
+        
+        // Check order size limit
+        if (quantity > max_order_size_) {
+            return false;
+        }
+        
+        // Check daily loss limit
+        if (current_daily_pnl_ < -max_daily_loss_) {
+            return false;
+        }
+        
+        // Check position size limit
+        auto it = positions_.find(symbol);
+        if (it != positions_.end()) {
+            int64_t new_position = it->second.quantity;
+            new_position += (side == OrderSide::BUY) ? static_cast<int64_t>(quantity) : -static_cast<int64_t>(quantity);
+            
+            if (std::abs(new_position) > max_position_size_) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    void update_position(const std::string& symbol, OrderSide side, Quantity quantity, Price price) {
+        std::lock_guard<std::mutex> lock(risk_mutex_);
+        
+        auto& position = positions_[symbol];
+        if (position.symbol.empty()) {
+            position.symbol = symbol;
+        }
+        
+        int64_t trade_quantity = (side == OrderSide::BUY) ? static_cast<int64_t>(quantity) : -static_cast<int64_t>(quantity);
+        
+        // Update position
+        if (position.quantity == 0) {
+            position.quantity = trade_quantity;
+            position.average_price = price;
+        } else {
+            // Calculate new average price
+            int64_t new_quantity = position.quantity + trade_quantity;
+            if (new_quantity != 0) {
+                position.average_price = static_cast<Price>(
+                    (position.average_price * std::abs(position.quantity) + price * quantity) / 
+                    std::abs(new_quantity)
+                );
+            }
+            position.quantity = new_quantity;
+        }
+        
+        position.last_update = std::chrono::steady_clock::now();
+    }
+    
+    double get_current_pnl() const {
+        std::lock_guard<std::mutex> lock(risk_mutex_);
+        return current_daily_pnl_;
+    }
+    
+    const std::unordered_map<std::string, Position>& get_positions() const {
+        return positions_;
+    }
+};
+
+// ============================================================================
+// Technical Analysis Indicators
+// ============================================================================
+
+class TechnicalIndicators {
+private:
+    struct PriceHistory {
+        std::vector<Price> prices;
+        std::vector<Timestamp> timestamps;
+        static constexpr size_t MAX_HISTORY = 1000;
+        
+        void add_price(Price price) {
+            prices.push_back(price);
+            timestamps.push_back(std::chrono::steady_clock::now());
+            
+            if (prices.size() > MAX_HISTORY) {
+                prices.erase(prices.begin());
+                timestamps.erase(timestamps.begin());
+            }
+        }
+    };
+    
+    std::unordered_map<std::string, PriceHistory> price_histories_;
+    mutable std::mutex indicators_mutex_;
+    
+public:
+    void update_price(const std::string& symbol, Price price) {
+        std::lock_guard<std::mutex> lock(indicators_mutex_);
+        price_histories_[symbol].add_price(price);
+    }
+    
+    // Simple Moving Average
+    double calculate_sma(const std::string& symbol, int period) const {
+        std::lock_guard<std::mutex> lock(indicators_mutex_);
+        
+        auto it = price_histories_.find(symbol);
+        if (it == price_histories_.end() || it->second.prices.size() < period) {
+            return 0.0;
+        }
+        
+        const auto& prices = it->second.prices;
+        double sum = 0.0;
+        for (int i = prices.size() - period; i < prices.size(); ++i) {
+            sum += prices[i];
+        }
+        
+        return sum / period;
+    }
+    
+    // Exponential Moving Average
+    double calculate_ema(const std::string& symbol, int period) const {
+        std::lock_guard<std::mutex> lock(indicators_mutex_);
+        
+        auto it = price_histories_.find(symbol);
+        if (it == price_histories_.end() || it->second.prices.empty()) {
+            return 0.0;
+        }
+        
+        const auto& prices = it->second.prices;
+        double multiplier = 2.0 / (period + 1);
+        double ema = prices[0];
+        
+        for (size_t i = 1; i < prices.size(); ++i) {
+            ema = (prices[i] * multiplier) + (ema * (1 - multiplier));
+        }
+        
+        return ema;
+    }
+    
+    // Relative Strength Index
+    double calculate_rsi(const std::string& symbol, int period = 14) const {
+        std::lock_guard<std::mutex> lock(indicators_mutex_);
+        
+        auto it = price_histories_.find(symbol);
+        if (it == price_histories_.end() || it->second.prices.size() < period + 1) {
+            return 50.0;  // Neutral RSI
+        }
+        
+        const auto& prices = it->second.prices;
+        double gains = 0.0, losses = 0.0;
+        
+        for (size_t i = prices.size() - period; i < prices.size(); ++i) {
+            double change = prices[i] - prices[i-1];
+            if (change > 0) {
+                gains += change;
+            } else {
+                losses += std::abs(change);
+            }
+        }
+        
+        if (losses == 0) return 100.0;
+        
+        double avg_gain = gains / period;
+        double avg_loss = losses / period;
+        double rs = avg_gain / avg_loss;
+        
+        return 100.0 - (100.0 / (1.0 + rs));
+    }
+    
+    // Price momentum
+    double calculate_momentum(const std::string& symbol, int period = 10) const {
+        std::lock_guard<std::mutex> lock(indicators_mutex_);
+        
+        auto it = price_histories_.find(symbol);
+        if (it == price_histories_.end() || it->second.prices.size() < period + 1) {
+            return 0.0;
+        }
+        
+        const auto& prices = it->second.prices;
+        return (prices.back() - prices[prices.size() - 1 - period]) / static_cast<double>(prices[prices.size() - 1 - period]);
+    }
+};
+
+// ============================================================================
+// Strategy Engine Base Class
+// ============================================================================
+
+class StrategyEngine : public MarketDataConsumer {
+protected:
+    std::string strategy_name_;
+    MatchingEngine* matching_engine_;
+    RiskManager risk_manager_;
+    TechnicalIndicators indicators_;
+    
+    // Strategy state
+    std::atomic<bool> is_active_{true};
+    std::atomic<uint64_t> signals_generated_{0};
+    std::atomic<uint64_t> orders_sent_{0};
+    std::atomic<uint64_t> orders_rejected_{0};
+    
+    // Performance tracking
+    std::atomic<uint64_t> updates_processed_{0};
+    std::atomic<uint64_t> total_processing_time_ns_{0};
+    
+public:
+    StrategyEngine(const std::string& name, MatchingEngine* engine)
+        : strategy_name_(name), matching_engine_(engine) {}
+    
+    virtual ~StrategyEngine() = default;
+    
+    // Pure virtual strategy logic
+    virtual TradingSignal generate_signal(const MarketDataUpdate& update) = 0;
+    
+    // MarketDataConsumer interface
+    void on_market_update(const MarketDataUpdate& update) override {
+        if (!is_active_) return;
+        
+        auto start_time = std::chrono::steady_clock::now();
+        
+        // Update technical indicators
+        indicators_.update_price(update.symbol, update.price);
+        
+        // Generate trading signal
+        auto signal = generate_signal(update);
+        
+        // Execute signal if actionable
+        if (signal.signal != SignalType::NONE && signal.signal != SignalType::HOLD) {
+            execute_signal(signal);
+        }
+        
+        auto end_time = std::chrono::steady_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time);
+        
+        updates_processed_++;
+        total_processing_time_ns_ += duration.count();
+    }
+    
+    void on_trade(const MarketDataUpdate& trade) override {
+        // Default implementation - can be overridden
+        on_market_update(trade);
+    }
+    
+    void on_quote(const MarketDataUpdate& quote) override {
+        // Default implementation - can be overridden
+        on_market_update(quote);
+    }
+    
+    // Strategy controls
+    void activate() { is_active_ = true; }
+    void deactivate() { is_active_ = false; }
+    bool is_active() const { return is_active_; }
+    
+    // Performance metrics
+    uint64_t get_signals_generated() const { return signals_generated_.load(); }
+    uint64_t get_orders_sent() const { return orders_sent_.load(); }
+    uint64_t get_orders_rejected() const { return orders_rejected_.load(); }
+    uint64_t get_updates_processed() const { return updates_processed_.load(); }
+    double get_average_processing_time_ns() const {
+        uint64_t updates = updates_processed_.load();
+        return updates > 0 ? static_cast<double>(total_processing_time_ns_.load()) / updates : 0.0;
+    }
+    
+    void print_stats() const {
+        std::cout << "Strategy '" << strategy_name_ << "':\n";
+        std::cout << "  Updates processed: " << get_updates_processed() << "\n";
+        std::cout << "  Signals generated: " << get_signals_generated() << "\n";
+        std::cout << "  Orders sent: " << get_orders_sent() << "\n";
+        std::cout << "  Orders rejected: " << get_orders_rejected() << "\n";
+        std::cout << "  Avg processing time: " << std::fixed << std::setprecision(2) 
+                  << get_average_processing_time_ns() << " ns\n";
+        std::cout << "  Current PnL: $" << std::fixed << std::setprecision(2) 
+                  << (risk_manager_.get_current_pnl() / 10000.0) << "\n";
+    }
+
+protected:
+    void execute_signal(const TradingSignal& signal) {
+        signals_generated_++;
+        
+        // Convert signal to order parameters
+        OrderSide side = (signal.signal == SignalType::BUY) ? OrderSide::BUY : OrderSide::SELL;
+        
+        // Risk check
+        if (!risk_manager_.validate_order(signal.symbol, side, signal.suggested_quantity, signal.target_price)) {
+            orders_rejected_++;
+            return;
+        }
+        
+        // Create and submit order
+        static std::atomic<OrderId> next_strategy_order_id{1000000};  // Start strategy orders at 1M
+        OrderId order_id = next_strategy_order_id++;
+        
+        auto order = std::make_shared<Order>(order_id, side, signal.target_price, 
+                                           signal.suggested_quantity, OrderType::LIMIT);
+        
+        matching_engine_->add_order(order);
+        orders_sent_++;
+        
+        // Update risk manager (simulate fill for demo)
+        risk_manager_.update_position(signal.symbol, side, signal.suggested_quantity, signal.target_price);
+    }
+};
+
+// ============================================================================
+// Mean Reversion Strategy
+// ============================================================================
+
+class MeanReversionStrategy : public StrategyEngine {
+private:
+    double mean_reversion_threshold_;
+    int lookback_period_;
+    
+public:
+    MeanReversionStrategy(const std::string& name, MatchingEngine* engine, 
+                         double threshold = 0.02, int lookback = 20)
+        : StrategyEngine(name, engine), mean_reversion_threshold_(threshold), 
+          lookback_period_(lookback) {}
+    
+    TradingSignal generate_signal(const MarketDataUpdate& update) override {
+        // Skip non-trade updates for this strategy
+        if (update.type != MarketDataUpdate::Type::TRADE) {
+            return TradingSignal(update.symbol, SignalType::NONE, 0, 0, 0.0, "Not a trade");
+        }
+        
+        double sma = indicators_.calculate_sma(update.symbol, lookback_period_);
+        if (sma == 0.0) {
+            return TradingSignal(update.symbol, SignalType::NONE, 0, 0, 0.0, "Insufficient data");
+        }
+        
+        double price_deviation = (update.price - sma) / sma;
+        
+        // Mean reversion logic
+        if (price_deviation > mean_reversion_threshold_) {
+            // Price is above mean - sell signal
+            Quantity quantity = std::min(static_cast<Quantity>(100), static_cast<Quantity>(std::abs(price_deviation) * 500));
+            double confidence = std::min(0.9, std::abs(price_deviation) / mean_reversion_threshold_);
+            
+            return TradingSignal(update.symbol, SignalType::SELL, update.price, quantity, 
+                               confidence, "Price above mean");
+        } else if (price_deviation < -mean_reversion_threshold_) {
+            // Price is below mean - buy signal
+            Quantity quantity = std::min(static_cast<Quantity>(100), static_cast<Quantity>(std::abs(price_deviation) * 500));
+            double confidence = std::min(0.9, std::abs(price_deviation) / mean_reversion_threshold_);
+            
+            return TradingSignal(update.symbol, SignalType::BUY, update.price, quantity, 
+                               confidence, "Price below mean");
+        }
+        
+        return TradingSignal(update.symbol, SignalType::HOLD, update.price, 0, 0.0, "Within mean range");
+    }
+};
+
+// ============================================================================
+// Momentum Strategy
+// ============================================================================
+
+class MomentumStrategy : public StrategyEngine {
+private:
+    double momentum_threshold_;
+    int momentum_period_;
+    double rsi_oversold_;
+    double rsi_overbought_;
+    
+public:
+    MomentumStrategy(const std::string& name, MatchingEngine* engine, 
+                    double threshold = 0.01, int period = 10, 
+                    double oversold = 30.0, double overbought = 70.0)
+        : StrategyEngine(name, engine), momentum_threshold_(threshold), 
+          momentum_period_(period), rsi_oversold_(oversold), rsi_overbought_(overbought) {}
+    
+    TradingSignal generate_signal(const MarketDataUpdate& update) override {
+        // Focus on quote updates for momentum
+        if (update.type != MarketDataUpdate::Type::QUOTE) {
+            return TradingSignal(update.symbol, SignalType::NONE, 0, 0, 0.0, "Not a quote");
+        }
+        
+        double momentum = indicators_.calculate_momentum(update.symbol, momentum_period_);
+        double rsi = indicators_.calculate_rsi(update.symbol);
+        
+        // Momentum + RSI combined strategy
+        if (momentum > momentum_threshold_ && rsi < rsi_oversold_) {
+            // Strong upward momentum + oversold RSI = buy signal
+            Quantity quantity = static_cast<Quantity>(std::min(200.0, momentum * 5000));
+            double confidence = std::min(0.95, (momentum / momentum_threshold_) * 0.5 + 0.3);
+            
+            return TradingSignal(update.symbol, SignalType::BUY, update.price, quantity, 
+                               confidence, "Momentum up + RSI oversold");
+        } else if (momentum < -momentum_threshold_ && rsi > rsi_overbought_) {
+            // Strong downward momentum + overbought RSI = sell signal
+            Quantity quantity = static_cast<Quantity>(std::min(200.0, std::abs(momentum) * 5000));
+            double confidence = std::min(0.95, (std::abs(momentum) / momentum_threshold_) * 0.5 + 0.3);
+            
+            return TradingSignal(update.symbol, SignalType::SELL, update.price, quantity, 
+                               confidence, "Momentum down + RSI overbought");
+        }
+        
+        return TradingSignal(update.symbol, SignalType::HOLD, update.price, 0, 0.0, "No momentum signal");
+    }
+};
+
+// ============================================================================
+// Sample Market Data Consumer (for testing)
+// ============================================================================
+
+class SampleMarketDataConsumer : public MarketDataConsumer {
+private:
+    std::string name_;
+    std::atomic<uint64_t> updates_received_{0};
+    std::atomic<uint64_t> trades_received_{0};
+    std::atomic<uint64_t> quotes_received_{0};
+    
+public:
+    SampleMarketDataConsumer(const std::string& name) : name_(name) {}
+    
+    void on_market_update(const MarketDataUpdate& update) override {
+        updates_received_++;
+        
+        // Simulate some processing work
+        auto processing_start = std::chrono::steady_clock::now();
+        volatile int dummy = 0;
+        for (int i = 0; i < 100; ++i) { dummy += i; }  // Simulate work
+        auto processing_end = std::chrono::steady_clock::now();
+    }
+    
+    void on_trade(const MarketDataUpdate& trade) override {
+        trades_received_++;
+    }
+    
+    void on_quote(const MarketDataUpdate& quote) override {
+        quotes_received_++;
+    }
+    
+    uint64_t get_updates_received() const { return updates_received_.load(); }
+    uint64_t get_trades_received() const { return trades_received_.load(); }
+    uint64_t get_quotes_received() const { return quotes_received_.load(); }
+    
+    void print_stats() const {
+        std::cout << "Consumer '" << name_ << "' - Updates: " << get_updates_received()
+                  << ", Trades: " << get_trades_received()
+                  << ", Quotes: " << get_quotes_received() << "\n";
+    }
+};
+
+// ============================================================================
+// Main Demo Function (Step 3)
 // ============================================================================
 
 int main() {
     std::cout << "=== NanoEX High-Frequency Trading Engine ===\n";
-    std::cout << "Step 1: Core Matching Engine Demo\n\n";
+    std::cout << "Step 3: Strategy Engine Integration\n\n";
     
     // Initialize components
     MatchingEngine engine;
     OrderGenerator generator;
     PerformanceMonitor monitor;
+    MarketDataPublisher md_publisher;
+    
+    // Add market data feeds for multiple symbols
+    md_publisher.add_feed("AAPL", 150000);  // $15.00
+    md_publisher.add_feed("GOOGL", 280000); // $28.00
+    md_publisher.add_feed("MSFT", 330000);  // $33.00
+    
+    // Create strategy engines
+    auto mean_reversion_strategy = std::make_unique<MeanReversionStrategy>("MeanRev-1", &engine, 0.015, 25);
+    auto momentum_strategy = std::make_unique<MomentumStrategy>("Momentum-1", &engine, 0.008, 15, 25.0, 75.0);
+    auto momentum_strategy2 = std::make_unique<MomentumStrategy>("Momentum-2", &engine, 0.012, 20, 20.0, 80.0);
+    
+    // Keep references for stats
+    auto* mean_rev_ptr = mean_reversion_strategy.get();
+    auto* momentum_ptr = momentum_strategy.get();
+    auto* momentum2_ptr = momentum_strategy2.get();
+    
+    // Create one basic market data consumer for comparison
+    auto basic_consumer = std::make_unique<SampleMarketDataConsumer>("Basic-Consumer");
+    auto* basic_consumer_ptr = basic_consumer.get();
+    
+    // Subscribe all consumers to market data
+    md_publisher.subscribe(std::move(mean_reversion_strategy));
+    md_publisher.subscribe(std::move(momentum_strategy));
+    md_publisher.subscribe(std::move(momentum_strategy2));
+    md_publisher.subscribe(std::move(basic_consumer));
     
     // Threading controls
     std::atomic<bool> should_stop{false};
-    const int ORDERS_PER_SECOND = 100000;  // 100k orders/sec
-    const int SIMULATION_SECONDS = 5;
+    const int ORDERS_PER_SECOND = 25000;   // Reduced to allow strategy orders
+    const int MD_UPDATES_PER_SECOND = 300000;  // 300k market data updates/sec
+    const int SIMULATION_SECONDS = 10;  // Longer simulation for strategy development
     
-    // Start performance monitoring
+    // Start components
     monitor.start();
+    md_publisher.start(MD_UPDATES_PER_SECOND);
     
-    // Launch order feeder thread
+    // Launch order feeder thread (background noise)
     std::thread feeder_thread(order_feeder_thread, std::ref(engine), 
                              std::ref(generator), std::ref(should_stop), 
                              ORDERS_PER_SECOND);
     
     // Run simulation
-    std::cout << "Running simulation for " << SIMULATION_SECONDS << " seconds...\n";
-    std::cout << "Target: " << ORDERS_PER_SECOND << " orders/second\n\n";
+    std::cout << "Running strategy simulation for " << SIMULATION_SECONDS << " seconds...\n";
+    std::cout << "Background Orders: " << ORDERS_PER_SECOND << " orders/second\n";
+    std::cout << "Market Data Feed: " << MD_UPDATES_PER_SECOND << " updates/second\n";
+    std::cout << "Strategy Count: 3 active strategies\n\n";
     
     for (int i = 0; i < SIMULATION_SECONDS; ++i) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
+        
+        std::cout << "=== Second " << (i + 1) << " ===\n";
+        
+        // Print matching engine stats
         monitor.print_stats(engine);
+        
+        // Print market data stats
+        md_publisher.print_stats();
+        
+        // Print strategy performance
+        std::cout << "\n--- Strategy Performance ---\n";
+        mean_rev_ptr->print_stats();
+        momentum_ptr->print_stats();
+        momentum2_ptr->print_stats();
+        
+        // Print basic consumer for comparison
+        std::cout << "\n--- Basic Consumer ---\n";
+        basic_consumer_ptr->print_stats();
+        
+        std::cout << "\n" << std::string(60, '=') << "\n";
     }
     
     // Stop simulation
     should_stop = true;
     feeder_thread.join();
+    md_publisher.stop();
     monitor.stop();
     
-    // Final stats
-    std::cout << "\n=== Final Results ===\n";
+    // Final comprehensive stats
+    std::cout << "\n" << std::string(60, '=') << "\n";
+    std::cout << "=== FINAL STRATEGY INTEGRATION RESULTS ===\n";
+    std::cout << std::string(60, '=') << "\n";
+    
+    std::cout << "\n--- Matching Engine Performance ---\n";
     monitor.print_stats(engine);
     
-    // Show some recent trades
-    auto trades = engine.get_trade_events();
-    std::cout << "\nRecent Trades (last 10):\n";
-    int count = 0;
-    for (auto it = trades.rbegin(); it != trades.rend() && count < 10; ++it, ++count) {
-        std::cout << "Trade: Buy#" << it->buy_order_id << " Sell#" << it->sell_order_id
-                  << " Price: $" << std::fixed << std::setprecision(4) << (it->price / 10000.0)
-                  << " Qty: " << it->quantity << "\n";
+    std::cout << "\n--- Market Data Performance ---\n";
+    md_publisher.print_stats();
+    
+    std::cout << "\n--- Strategy Performance Summary ---\n";
+    mean_rev_ptr->print_stats();
+    std::cout << "\n";
+    momentum_ptr->print_stats();
+    std::cout << "\n";
+    momentum2_ptr->print_stats();
+    
+    std::cout << "\n--- Performance Comparison ---\n";
+    basic_consumer_ptr->print_stats();
+    
+    // Calculate aggregate strategy metrics
+    uint64_t total_strategy_orders = mean_rev_ptr->get_orders_sent() + 
+                                    momentum_ptr->get_orders_sent() + 
+                                    momentum2_ptr->get_orders_sent();
+    
+    uint64_t total_strategy_signals = mean_rev_ptr->get_signals_generated() + 
+                                     momentum_ptr->get_signals_generated() + 
+                                     momentum2_ptr->get_signals_generated();
+    
+    double avg_strategy_latency = (mean_rev_ptr->get_average_processing_time_ns() + 
+                                  momentum_ptr->get_average_processing_time_ns() + 
+                                  momentum2_ptr->get_average_processing_time_ns()) / 3.0;
+    
+    std::cout << "\n--- Aggregate Strategy Metrics ---\n";
+    std::cout << "Total strategy orders sent: " << total_strategy_orders << "\n";
+    std::cout << "Total trading signals generated: " << total_strategy_signals << "\n";
+    std::cout << "Average strategy processing latency: " << std::fixed << std::setprecision(2) 
+              << avg_strategy_latency << " ns\n";
+    
+    if (total_strategy_signals > 0) {
+        double signal_to_order_ratio = static_cast<double>(total_strategy_orders) / total_strategy_signals;
+        std::cout << "Signal-to-order conversion rate: " << std::fixed << std::setprecision(2) 
+                  << (signal_to_order_ratio * 100.0) << "%\n";
     }
     
-    std::cout << "\nStep 1 Complete! Ready for Step 2: Market Data Feed\n";
+    std::cout << "\n--- System Integration Summary ---\n";
+    uint64_t total_orders = engine.get_processed_orders();
+    uint64_t background_orders = total_orders - total_strategy_orders;
+    
+    std::cout << "Total orders processed: " << total_orders << "\n";
+    std::cout << "Background orders: " << background_orders << " (" 
+              << std::fixed << std::setprecision(1) 
+              << (100.0 * background_orders / total_orders) << "%)\n";
+    std::cout << "Strategy orders: " << total_strategy_orders << " (" 
+              << std::fixed << std::setprecision(1) 
+              << (100.0 * total_strategy_orders / total_orders) << "%)\n";
+    
+    std::cout << "\n" << std::string(60, '=') << "\n";
+    std::cout << "Step 3 Complete! Strategy engines integrated successfully.\n";
+    std::cout << "Ready for Step 4: Advanced Multi-threading with Race Conditions\n";
+    std::cout << std::string(60, '=') << "\n";
     
     return 0;
 }
