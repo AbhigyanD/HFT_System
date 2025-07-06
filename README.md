@@ -69,35 +69,133 @@ A high-performance, multi-threaded C++ trading engine designed for low-latency o
 - **Barrier Synchronization**: Coordinated multi-threaded execution
 - **Stress Testing**: Race condition simulation and validation
 
+### GUI Application
+- **Real-time System Control**: Start/stop HFT system with single click
+- **Live Performance Monitoring**: Real-time display of orders/sec, latency, trades, spread
+- **Strategy Performance Table**: Live updates of strategy metrics with sortable columns
+- **System Output Display**: Real-time console output with auto-scrolling
+- **Log Management**: Save and view system logs
+- **Professional Interface**: Clean, modern Qt-based GUI with menu system
+- **Settings Persistence**: Remembers window position and preferences
+- **Cross-platform Support**: Works on macOS, Linux, and Windows
+
 ## 📋 Prerequisites
 
+### Command-Line Version
 - **Compiler**: GCC 7+ or Clang 5+ with C++17 support
 - **Platform**: Linux/macOS (tested on macOS 14.4 with Apple Clang 15.0.0)
 - **Libraries**: Standard C++17 libraries only (no external dependencies)
 
+### GUI Version
+- **Qt Framework**: Qt5 or Qt6 (for GUI functionality)
+- **CMake**: Version 3.16+ (optional, for easier building)
+- **Platform**: macOS, Linux, Windows (cross-platform support)
+
 ## 🔧 Compilation
 
-### Basic Compilation
+### Command-Line Version
+
+#### Basic Compilation
 ```bash
 g++ -std=c++17 -O2 -pthread nanoex.cpp -o nanoex
 ```
 
-### Optimized Compilation (Recommended)
+#### Optimized Compilation (Recommended)
 ```bash
 g++ -std=c++17 -O3 -march=native -pthread -DNDEBUG nanoex.cpp -o nanoex
 ```
 
-### Debug Compilation
+#### Debug Compilation
 ```bash
 g++ -std=c++17 -g -O0 -pthread -Wall -Wextra nanoex.cpp -o nanoex
+```
+
+### GUI Version
+
+#### Prerequisites
+- **Qt Framework**: Qt5 or Qt6 (for GUI functionality)
+- **CMake**: Version 3.16+ (optional, for easier building)
+
+#### Installation of Dependencies
+
+**macOS (using Homebrew):**
+```bash
+brew install qt6 cmake
+```
+
+**Ubuntu/Debian:**
+```bash
+sudo apt update
+sudo apt install qt6-base-dev qt6-base-dev-tools cmake build-essential
+```
+
+#### Building the GUI
+
+**Method 1: Using the Build Script (Recommended)**
+```bash
+# Make the build script executable
+chmod +x build_gui.sh
+
+# Run the build script (builds both CLI and GUI)
+./build_gui.sh
+```
+
+**Method 2: Using CMake**
+```bash
+# Create build directory
+mkdir build
+cd build
+
+# Configure and build
+cmake ..
+make -j$(nproc)
+
+# The GUI executable will be: build/nanoex_gui
+```
+
+**Method 3: Manual Compilation**
+```bash
+# For Qt6 on macOS
+g++ -std=c++17 -O2 -pthread \
+    -I/opt/homebrew/include/qt6 \
+    -I/opt/homebrew/include/qt6/QtCore \
+    -I/opt/homebrew/include/qt6/QtWidgets \
+    -I/opt/homebrew/include/qt6/QtGui \
+    -fPIC \
+    nanoex_gui.cpp \
+    -o nanoex_gui \
+    -L/opt/homebrew/lib \
+    -lQt6Core -lQt6Widgets -lQt6Gui
 ```
 
 ## 🎯 Usage
 
 ### Running the System
+
+#### Command-Line Interface
 ```bash
 ./nanoex
 ```
+
+#### Graphical User Interface (GUI)
+```bash
+# Build the GUI (if not already built)
+./build_gui.sh
+
+# Run the GUI application
+open "build/NanoEX HFT System.app"  # macOS
+# OR
+./build/nanoex_gui  # Linux
+```
+
+### GUI Features
+The GUI provides a professional interface with:
+- **🟢 Real-time Control**: Start/stop HFT system with one click
+- **📊 Live Performance Monitoring**: Orders/sec, latency, trades, spread
+- **📈 Strategy Performance Table**: Live updates of all strategies
+- **📝 System Output Display**: Real-time console output with auto-scroll
+- **💾 Log Management**: Save and view system logs
+- **🎨 Professional Interface**: Clean, modern Qt-based GUI
 
 ### Expected Output
 The system will run a comprehensive demonstration including:
@@ -214,6 +312,7 @@ double max_order_size = 1000.0;                   // Max order size
 
 ### Common Issues
 
+#### Command-Line Version
 1. **C++17 Extension Warnings**
    ```bash
    # Solution: Use -std=c++17 flag
@@ -232,13 +331,70 @@ double max_order_size = 1000.0;                   // Max order size
    g++ -std=c++17 -O3 -march=native -pthread nanoex.cpp -o nanoex
    ```
 
+#### GUI Version
+1. **"Qt not found" Error**
+   ```bash
+   # Install Qt using Homebrew (macOS)
+   brew install qt6
+   
+   # Or install Qt5
+   brew install qt5
+   ```
+
+2. **"CMake not found" Error**
+   ```bash
+   # Install CMake
+   brew install cmake  # macOS
+   sudo apt install cmake  # Ubuntu
+   ```
+
+3. **Compilation Errors**
+   ```bash
+   # Ensure C++17 support
+   g++ --version
+   # Should show version 7+ or Clang 5+
+   
+   # Try building command-line version first
+   g++ -std=c++17 -O2 -pthread nanoex.cpp -o nanoex
+   ```
+
+4. **Runtime Errors**
+   ```bash
+   # Check if nanoex executable exists
+   ls -la nanoex
+   
+   # Ensure it's executable
+   chmod +x nanoex
+   
+   # Run from the same directory as nanoex
+   cd /path/to/HFT_System
+   ./nanoex_gui
+   ```
+
 ### Debug Mode
+
+#### Command-Line Version
 ```bash
 # Compile with debug information
 g++ -std=c++17 -g -O0 -pthread -Wall -Wextra nanoex.cpp -o nanoex
 
 # Run with debugger
 gdb ./nanoex
+```
+
+#### GUI Version
+```bash
+# Build with debug information
+g++ -std=c++17 -g -O0 -pthread -Wall -Wextra nanoex_gui.cpp -o nanoex_gui_debug \
+    -I/opt/homebrew/include/qt6 \
+    -I/opt/homebrew/include/qt6/QtCore \
+    -I/opt/homebrew/include/qt6/QtWidgets \
+    -I/opt/homebrew/include/qt6/QtGui \
+    -L/opt/homebrew/lib \
+    -lQt6Core -lQt6Widgets -lQt6Gui
+
+# Run debug version
+./nanoex_gui_debug
 ```
 
 ## 📈 Performance Monitoring
@@ -252,11 +408,21 @@ gdb ./nanoex
 - **Race Conditions**: Detected concurrent access issues
 
 ### Real-time Monitoring
+
+#### Command-Line Version
 The system provides real-time performance statistics every second during execution, including:
 - Matching engine performance
 - Market data feed statistics
 - Strategy performance metrics
 - Multi-threading statistics
+
+#### GUI Version
+The GUI provides enhanced real-time monitoring with:
+- **Live Performance Widget**: Real-time display of key metrics
+- **Strategy Performance Table**: Live updates with sortable columns
+- **System Output Display**: Real-time console output with auto-scrolling
+- **Visual Indicators**: Color-coded performance status
+- **Historical Tracking**: Performance trends over time
 
 ## 🔮 Future Enhancements
 
@@ -266,12 +432,17 @@ The system provides real-time performance statistics every second during executi
 3. **Web Interface**: Real-time monitoring dashboard
 4. **Machine Learning**: AI-powered trading strategies
 5. **Distributed Architecture**: Multi-node deployment
+6. **Advanced GUI Features**: Charts, graphs, and advanced visualizations
+7. **Configuration Management**: GUI-based system configuration
+8. **Plugin Architecture**: Extensible strategy and indicator system
 
 ### Optimization Opportunities
 1. **SIMD Instructions**: Vectorized order processing
 2. **NUMA Awareness**: Multi-socket optimization
 3. **GPU Acceleration**: CUDA/OpenCL integration
 4. **Custom Allocators**: Memory pool optimization
+5. **GUI Performance**: Hardware acceleration for real-time displays
+6. **Memory Management**: Optimized GUI memory usage for high-frequency updates
 
 ## 📚 Technical Details
 
@@ -280,17 +451,26 @@ The system provides real-time performance statistics every second during executi
 - **Market Data**: Lock-free queues for high-frequency updates
 - **Strategy State**: Hash maps for position tracking
 - **Thread Pool**: Work-stealing deque for load balancing
+- **GUI Components**: Qt widgets for real-time display
 
 ### Synchronization Primitives
 - **Mutex**: Standard library mutex for coarse-grained locking
 - **Read-Write Locks**: Custom implementation for concurrent access
 - **Atomic Operations**: Lock-free counters and flags
 - **Barriers**: Synchronization points for multi-threaded coordination
+- **Qt Threading**: QThread and QTimer for GUI responsiveness
 
 ### Memory Management
 - **Smart Pointers**: RAII for automatic resource management
 - **Move Semantics**: Efficient object transfer
 - **Memory Pools**: Custom allocators for high-frequency objects
+- **Qt Memory Management**: Automatic Qt object lifecycle management
+
+### GUI Architecture
+- **Qt Framework**: Cross-platform GUI framework
+- **MVC Pattern**: Model-View-Controller for GUI organization
+- **Event-Driven**: Signal-slot mechanism for real-time updates
+- **Thread Safety**: Safe communication between HFT system and GUI
 
 ## 📄 License
 
@@ -299,6 +479,30 @@ This project is provided as educational software for demonstrating high-frequenc
 ## 🤝 Contributing
 
 This is a demonstration project showcasing advanced C++ programming concepts in the context of high-frequency trading systems. The code is designed to be educational and illustrative of real-world HFT system architecture.
+
+## 📁 Project Structure
+
+```
+HFT_System/
+├── nanoex.cpp              # Main HFT system (command-line)
+├── nanoex_gui.cpp          # GUI application source
+├── CMakeLists.txt          # CMake build configuration
+├── build_gui.sh            # Automated build script
+├── Info.plist.in           # macOS bundle configuration
+├── GUI_INSTALL.md          # GUI installation guide
+├── README.md               # This file
+├── LICENSE                 # License file
+└── build/                  # Build output directory
+    ├── nanoex              # Command-line executable
+    ├── nanoex_gui          # GUI executable
+    └── NanoEX HFT System.app/  # macOS application bundle
+```
+
+## 🎯 Quick Start
+
+1. **Build the system**: `./build_gui.sh`
+2. **Run command-line**: `./nanoex`
+3. **Run GUI**: `open "build/NanoEX HFT System.app"` (macOS) or `./build/nanoex_gui` (Linux)
 
 ---
 

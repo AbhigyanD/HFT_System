@@ -28,6 +28,7 @@
 #include <QAction>
 #include <QFileDialog>
 #include <QInputDialog>
+#include <QRegularExpression>
 
 // ============================================================================
 // HFT System Runner Thread
@@ -180,27 +181,31 @@ private:
         // In a real implementation, you'd use regex or structured parsing
         
         // Extract orders per second
-        QRegExp ordersRegex("Orders/sec:\\s*([0-9.]+)");
-        if (ordersRegex.indexIn(stats) != -1) {
-            ordersPerSecLabel_->setText(ordersRegex.cap(1));
+        QRegularExpression ordersRegex("Orders/sec:\\s*([0-9.]+)");
+        QRegularExpressionMatch ordersMatch = ordersRegex.match(stats);
+        if (ordersMatch.hasMatch()) {
+            ordersPerSecLabel_->setText(ordersMatch.captured(1));
         }
         
         // Extract latency
-        QRegExp latencyRegex("Avg latency:\\s*([0-9.]+)\\s*ns");
-        if (latencyRegex.indexIn(stats) != -1) {
-            latencyLabel_->setText(latencyRegex.cap(1) + " ns");
+        QRegularExpression latencyRegex("Avg latency:\\s*([0-9.]+)\\s*ns");
+        QRegularExpressionMatch latencyMatch = latencyRegex.match(stats);
+        if (latencyMatch.hasMatch()) {
+            latencyLabel_->setText(latencyMatch.captured(1) + " ns");
         }
         
         // Extract trades
-        QRegExp tradesRegex("Trades matched:\\s*([0-9]+)");
-        if (tradesRegex.indexIn(stats) != -1) {
-            tradesLabel_->setText(tradesRegex.cap(1));
+        QRegularExpression tradesRegex("Trades matched:\\s*([0-9]+)");
+        QRegularExpressionMatch tradesMatch = tradesRegex.match(stats);
+        if (tradesMatch.hasMatch()) {
+            tradesLabel_->setText(tradesMatch.captured(1));
         }
         
         // Extract spread
-        QRegExp spreadRegex("Spread:\\s*\\$([0-9.]+)");
-        if (spreadRegex.indexIn(stats) != -1) {
-            spreadLabel_->setText("$" + spreadRegex.cap(1));
+        QRegularExpression spreadRegex("Spread:\\s*\\$([0-9.]+)");
+        QRegularExpressionMatch spreadMatch = spreadRegex.match(stats);
+        if (spreadMatch.hasMatch()) {
+            spreadLabel_->setText("$" + spreadMatch.captured(1));
         }
     }
 
@@ -262,26 +267,35 @@ private:
     
     void updateStrategyRow(int row, const QString& stats) {
         // Parse strategy statistics (simplified parsing)
-        QRegExp signalsRegex("Signals generated:\\s*([0-9]+)");
-        QRegExp ordersRegex("Orders sent:\\s*([0-9]+)");
-        QRegExp rejectedRegex("Orders rejected:\\s*([0-9]+)");
-        QRegExp latencyRegex("Avg processing time:\\s*([0-9.]+)\\s*ns");
-        QRegExp pnlRegex("Current PnL:\\s*\\$([0-9.-]+)");
+        QRegularExpression signalsRegex("Signals generated:\\s*([0-9]+)");
+        QRegularExpression ordersRegex("Orders sent:\\s*([0-9]+)");
+        QRegularExpression rejectedRegex("Orders rejected:\\s*([0-9]+)");
+        QRegularExpression latencyRegex("Avg processing time:\\s*([0-9.]+)\\s*ns");
+        QRegularExpression pnlRegex("Current PnL:\\s*\\$([0-9.-]+)");
         
-        if (signalsRegex.indexIn(stats) != -1) {
-            setItem(row, 1, new QTableWidgetItem(signalsRegex.cap(1)));
+        QRegularExpressionMatch signalsMatch = signalsRegex.match(stats);
+        if (signalsMatch.hasMatch()) {
+            setItem(row, 1, new QTableWidgetItem(signalsMatch.captured(1)));
         }
-        if (ordersRegex.indexIn(stats) != -1) {
-            setItem(row, 2, new QTableWidgetItem(ordersRegex.cap(1)));
+        
+        QRegularExpressionMatch ordersMatch = ordersRegex.match(stats);
+        if (ordersMatch.hasMatch()) {
+            setItem(row, 2, new QTableWidgetItem(ordersMatch.captured(1)));
         }
-        if (rejectedRegex.indexIn(stats) != -1) {
-            setItem(row, 3, new QTableWidgetItem(rejectedRegex.cap(1)));
+        
+        QRegularExpressionMatch rejectedMatch = rejectedRegex.match(stats);
+        if (rejectedMatch.hasMatch()) {
+            setItem(row, 3, new QTableWidgetItem(rejectedMatch.captured(1)));
         }
-        if (latencyRegex.indexIn(stats) != -1) {
-            setItem(row, 4, new QTableWidgetItem(latencyRegex.cap(1)));
+        
+        QRegularExpressionMatch latencyMatch = latencyRegex.match(stats);
+        if (latencyMatch.hasMatch()) {
+            setItem(row, 4, new QTableWidgetItem(latencyMatch.captured(1)));
         }
-        if (pnlRegex.indexIn(stats) != -1) {
-            setItem(row, 5, new QTableWidgetItem("$" + pnlRegex.cap(1)));
+        
+        QRegularExpressionMatch pnlMatch = pnlRegex.match(stats);
+        if (pnlMatch.hasMatch()) {
+            setItem(row, 5, new QTableWidgetItem("$" + pnlMatch.captured(1)));
         }
     }
 };
@@ -572,9 +586,10 @@ private:
         // Simple parsing of strategy updates
         // In a real implementation, you'd use more sophisticated parsing
         
-        QRegExp strategyRegex("Strategy '([^']+)':");
-        if (strategyRegex.indexIn(text) != -1) {
-            QString strategyName = strategyRegex.cap(1);
+        QRegularExpression strategyRegex("Strategy '([^']+)':");
+        QRegularExpressionMatch strategyMatch = strategyRegex.match(text);
+        if (strategyMatch.hasMatch()) {
+            QString strategyName = strategyMatch.captured(1);
             strategyTable_->updateStrategyData(strategyName, text);
         }
     }
