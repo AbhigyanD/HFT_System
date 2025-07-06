@@ -1,4 +1,3 @@
-#pragma once
 #include <chrono>
 #include <cstdint>
 #include <memory>
@@ -15,6 +14,10 @@
 #include <sstream>
 #include <random>
 #include <algorithm>
+#include <functional>
+#include <deque>
+#include <condition_variable>
+#include <future>
 
 // ============================================================================
 // Core Types and Enums
@@ -148,22 +151,28 @@ public:
     
     std::shared_ptr<Order> get_best_order() {
         if (levels_.empty()) return nullptr;
-        
-        auto best_it = is_bid_side_ ? levels_.rbegin() : levels_.begin();
-        return best_it->second->get_front_order();
+        if (is_bid_side_) {
+            auto rit = levels_.rbegin();
+            return rit->second->get_front_order();
+        } else {
+            auto it  = levels_.begin();
+            return it->second->get_front_order();
+        }
     }
     
     void remove_best_order() {
         if (levels_.empty()) return;
         
-        auto best_it = is_bid_side_ ? levels_.rbegin() : levels_.begin();
-        best_it->second->remove_front_order();
-        
-        if (best_it->second->is_empty()) {
-            // Convert reverse iterator to forward iterator for erase
-            if (is_bid_side_) {
+        if (is_bid_side_) {
+            auto best_it = levels_.rbegin();
+            best_it->second->remove_front_order();
+            if (best_it->second->is_empty()) {
                 levels_.erase(std::next(best_it).base());
-            } else {
+            }
+        } else {
+            auto best_it = levels_.begin();
+            best_it->second->remove_front_order();
+            if (best_it->second->is_empty()) {
                 levels_.erase(best_it);
             }
         }
@@ -184,8 +193,13 @@ public:
     Price get_best_price() const {
         if (levels_.empty()) return 0;
         
-        auto best_it = is_bid_side_ ? levels_.rbegin() : levels_.begin();
-        return best_it->second->get_price();
+        if (is_bid_side_) {
+            auto best_it = levels_.rbegin();
+            return best_it->second->get_price();
+        } else {
+            auto best_it = levels_.begin();
+            return best_it->second->get_price();
+        }
     }
     
     bool is_empty() const { return levels_.empty(); }
@@ -201,7 +215,7 @@ private:
     OrderBookSide ask_side_;
     std::unordered_map<OrderId, std::pair<Price, OrderSide>> order_lookup_;
     std::vector<TradeEvent> trade_events_;
-    std::mutex engine_mutex_;
+    mutable std::mutex engine_mutex_;
     std::atomic<uint64_t> processed_orders_{0};
     std::atomic<uint64_t> matched_trades_{0};
     
@@ -523,6 +537,25 @@ public:
         price_walk_ = std::normal_distribution<double>(0.0, vol_per_ns);
     }
     
+    // Copy constructor and assignment operator for vector storage
+    MarketDataFeed(const MarketDataFeed& other)
+        : symbol_(other.symbol_), rng_(std::random_device{}()), 
+          price_walk_(other.price_walk_), time_dist_(other.time_dist_),
+          quantity_dist_(other.quantity_dist_), update_type_dist_(other.update_type_dist_),
+          current_mid_price_(other.current_mid_price_), sequence_number_(other.sequence_number_),
+          running_(false) {}
+    
+    MarketDataFeed& operator=(const MarketDataFeed& other) {
+        if (this != &other) {
+            symbol_ = other.symbol_;
+            current_mid_price_ = other.current_mid_price_;
+            sequence_number_ = other.sequence_number_;
+            running_ = false;
+            // Note: rng_ and distributions are not copied as they should be independent
+        }
+        return *this;
+    }
+    
     void start() {
         running_ = true;
         std::cout << "Market data feed started for " << symbol_ << "\n";
@@ -726,7 +759,7 @@ public:
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - start_time_);
         
         uint64_t total_updates = total_updates_published_.load();
-        double updates_per_sec = total_updates * 1000.0 / std::max(elapsed.count(), 1L);
+        double updates_per_sec = total_updates * 1000.0 / std::max(elapsed.count(), 1LL);
         double avg_latency_ns = total_updates > 0 ? 
                                static_cast<double>(total_latency_ns_.load()) / total_updates : 0.0;
         
@@ -834,6 +867,11 @@ struct Position {
     double unrealized_pnl;
     double realized_pnl;
     Timestamp last_update;
+    
+    // Default constructor for unordered_map
+    Position() : symbol(""), quantity(0), average_price(0),
+                 unrealized_pnl(0.0), realized_pnl(0.0),
+                 last_update(std::chrono::steady_clock::now()) {}
     
     Position(const std::string& sym) : symbol(sym), quantity(0), average_price(0),
                                        unrealized_pnl(0.0), realized_pnl(0.0),
@@ -1298,15 +1336,725 @@ public:
 };
 
 // ============================================================================
+// Step 4: Advanced Multi-threading with Race Conditions
+// ============================================================================
+
+// ============================================================================
+// Race Condition Detection and Monitoring
+// ============================================================================
+
+class RaceConditionDetector {
+private:
+    struct ThreadAccess {
+        std::thread::id thread_id;
+        std::string resource_name;
+        std::chrono::steady_clock::time_point timestamp;
+        std::string operation_type;  // "read", "write", "lock", "unlock"
+    };
+    
+    std::unordered_map<std::string, std::vector<ThreadAccess>> resource_access_log_;
+    std::unordered_map<std::string, std::thread::id> resource_locks_;
+    mutable std::mutex detector_mutex_;
+    
+    // Race condition statistics
+    std::atomic<uint64_t> potential_races_detected_{0};
+    std::atomic<uint64_t> actual_races_confirmed_{0};
+    std::atomic<uint64_t> deadlock_situations_{0};
+    
+public:
+    void log_access(const std::string& resource, const std::string& operation) {
+        std::lock_guard<std::mutex> lock(detector_mutex_);
+        
+        ThreadAccess access{
+            std::this_thread::get_id(),
+            resource,
+            std::chrono::steady_clock::now(),
+            operation
+        };
+        
+        resource_access_log_[resource].push_back(access);
+        
+        // Check for potential race conditions
+        if (operation == "write" && resource_access_log_[resource].size() > 1) {
+            auto& accesses = resource_access_log_[resource];
+            auto current_thread = std::this_thread::get_id();
+            
+            // Check if another thread recently accessed this resource
+            for (auto it = accesses.rbegin() + 1; it != accesses.rend(); ++it) {
+                if (it->thread_id != current_thread && 
+                    std::chrono::duration_cast<std::chrono::microseconds>(
+                        access.timestamp - it->timestamp).count() < 1000) {
+                    potential_races_detected_++;
+                    break;
+                }
+            }
+        }
+    }
+    
+    void log_lock_attempt(const std::string& resource) {
+        std::lock_guard<std::mutex> lock(detector_mutex_);
+        
+        auto current_thread = std::this_thread::get_id();
+        auto it = resource_locks_.find(resource);
+        
+        if (it != resource_locks_.end() && it->second == current_thread) {
+            // Potential deadlock: same thread trying to lock same resource
+            deadlock_situations_++;
+        }
+        
+        resource_locks_[resource] = current_thread;
+        log_access(resource, "lock");
+    }
+    
+    void log_unlock(const std::string& resource) {
+        std::lock_guard<std::mutex> lock(detector_mutex_);
+        resource_locks_.erase(resource);
+        log_access(resource, "unlock");
+    }
+    
+    uint64_t get_potential_races() const { return potential_races_detected_.load(); }
+    uint64_t get_confirmed_races() const { return actual_races_confirmed_.load(); }
+    uint64_t get_deadlock_situations() const { return deadlock_situations_.load(); }
+    
+    void print_race_report() const {
+        std::cout << "\n=== Race Condition Detection Report ===\n";
+        std::cout << "Potential race conditions detected: " << get_potential_races() << "\n";
+        std::cout << "Confirmed race conditions: " << get_confirmed_races() << "\n";
+        std::cout << "Deadlock situations: " << get_deadlock_situations() << "\n";
+        std::cout << "========================================\n";
+    }
+};
+
+// Global race condition detector
+static RaceConditionDetector g_race_detector;
+
+// ============================================================================
+// Lock-Free Data Structures
+// ============================================================================
+
+template<typename T>
+class LockFreeQueue {
+private:
+    struct Node {
+        T data;
+        std::atomic<Node*> next{nullptr};
+        
+        Node(const T& item) : data(item) {}
+    };
+    
+    std::atomic<Node*> head_{nullptr};
+    std::atomic<Node*> tail_{nullptr};
+    std::atomic<size_t> size_{0};
+    
+public:
+    LockFreeQueue() {
+        Node* dummy = new Node(T{});
+        head_.store(dummy);
+        tail_.store(dummy);
+    }
+    
+    ~LockFreeQueue() {
+        Node* current = head_.load();
+        while (current) {
+            Node* next = current->next.load();
+            delete current;
+            current = next;
+        }
+    }
+    
+    void push(const T& item) {
+        Node* new_node = new Node(item);
+        Node* expected_tail;
+        
+        while (true) {
+            expected_tail = tail_.load();
+            Node* expected_next = expected_tail->next.load();
+            
+            if (expected_tail == tail_.load()) {
+                if (expected_next == nullptr) {
+                    if (expected_tail->next.compare_exchange_weak(expected_next, new_node)) {
+                        break;
+                    }
+                } else {
+                    tail_.compare_exchange_weak(expected_tail, expected_next);
+                }
+            }
+        }
+        
+        tail_.compare_exchange_weak(expected_tail, new_node);
+        size_.fetch_add(1);
+    }
+    
+    bool pop(T& item) {
+        Node* expected_head;
+        Node* expected_tail;
+        Node* expected_next;
+        
+        while (true) {
+            expected_head = head_.load();
+            expected_tail = tail_.load();
+            expected_next = expected_head->next.load();
+            
+            if (expected_head == head_.load()) {
+                if (expected_head == expected_tail) {
+                    if (expected_next == nullptr) {
+                        return false;  // Queue is empty
+                    }
+                    tail_.compare_exchange_weak(expected_tail, expected_next);
+                } else {
+                    if (expected_next == nullptr) {
+                        continue;
+                    }
+                    item = expected_next->data;
+                    if (head_.compare_exchange_weak(expected_head, expected_next)) {
+                        delete expected_head;
+                        size_.fetch_sub(1);
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    
+    size_t size() const { return size_.load(); }
+    bool empty() const { return size() == 0; }
+};
+
+// ============================================================================
+// Advanced Thread Pool with Work Stealing
+// ============================================================================
+
+class WorkStealingThreadPool {
+private:
+    struct Task {
+        std::function<void()> func;
+        std::chrono::steady_clock::time_point created_time;
+        
+        Task(std::function<void()> f) : func(std::move(f)), 
+                                       created_time(std::chrono::steady_clock::now()) {}
+    };
+    
+    struct WorkerThread {
+        std::thread thread;
+        std::deque<Task> local_queue;
+        std::mutex queue_mutex;
+        std::atomic<bool> running{true};
+        std::atomic<uint64_t> tasks_processed{0};
+        std::atomic<uint64_t> total_processing_time_ns{0};
+        
+        WorkerThread() = default;
+    };
+    
+    std::vector<std::unique_ptr<WorkerThread>> workers_;
+    std::deque<Task> global_queue_;
+    std::mutex global_queue_mutex_;
+    std::atomic<bool> shutdown_{false};
+    std::atomic<uint64_t> total_tasks_submitted_{0};
+    std::atomic<uint64_t> total_tasks_completed_{0};
+    
+    static thread_local WorkerThread* current_worker_;
+    
+public:
+    WorkStealingThreadPool(size_t num_threads = std::thread::hardware_concurrency()) {
+        workers_.reserve(num_threads);
+        
+        for (size_t i = 0; i < num_threads; ++i) {
+            workers_.emplace_back(std::make_unique<WorkerThread>());
+            workers_[i]->thread = std::thread([this, i]() { worker_loop(i); });
+        }
+    }
+    
+    ~WorkStealingThreadPool() {
+        shutdown_ = true;
+        for (auto& worker : workers_) {
+            if (worker->thread.joinable()) {
+                worker->thread.join();
+            }
+        }
+    }
+    
+    template<typename F>
+    auto submit(F&& func) -> std::future<decltype(func())> {
+        using ReturnType = decltype(func());
+        
+        auto task = std::make_shared<std::packaged_task<ReturnType()>>(std::forward<F>(func));
+        auto future = task->get_future();
+        
+        Task wrapped_task([task]() { (*task)(); });
+        
+        if (current_worker_ && current_worker_->running) {
+            // Submit to local queue if we're in a worker thread
+            std::lock_guard<std::mutex> lock(current_worker_->queue_mutex);
+            current_worker_->local_queue.push_back(std::move(wrapped_task));
+        } else {
+            // Submit to global queue
+            std::lock_guard<std::mutex> lock(global_queue_mutex_);
+            global_queue_.push_back(std::move(wrapped_task));
+        }
+        
+        total_tasks_submitted_++;
+        return future;
+    }
+    
+    void print_stats() const {
+        std::cout << "\n=== Work Stealing Thread Pool Stats ===\n";
+        std::cout << "Total tasks submitted: " << total_tasks_submitted_.load() << "\n";
+        std::cout << "Total tasks completed: " << total_tasks_completed_.load() << "\n";
+        
+        for (size_t i = 0; i < workers_.size(); ++i) {
+            const auto& worker = workers_[i];
+            std::cout << "Worker " << i << ": " << worker->tasks_processed.load() 
+                      << " tasks, " << std::fixed << std::setprecision(2)
+                      << (worker->total_processing_time_ns.load() / 1000000.0) << " ms total time\n";
+        }
+        std::cout << "========================================\n";
+    }
+    
+private:
+    void worker_loop(size_t worker_id) {
+        current_worker_ = workers_[worker_id].get();
+        
+        while (workers_[worker_id]->running && !shutdown_) {
+            Task task(nullptr);
+            bool found_task = false;
+            
+            // Try to get task from local queue first
+            {
+                std::lock_guard<std::mutex> lock(workers_[worker_id]->queue_mutex);
+                if (!workers_[worker_id]->local_queue.empty()) {
+                    task = std::move(workers_[worker_id]->local_queue.front());
+                    workers_[worker_id]->local_queue.pop_front();
+                    found_task = true;
+                }
+            }
+            
+            // Try to steal from other workers
+            if (!found_task) {
+                for (size_t i = 0; i < workers_.size(); ++i) {
+                    if (i == worker_id) continue;
+                    
+                    std::lock_guard<std::mutex> lock(workers_[i]->queue_mutex);
+                    if (!workers_[i]->local_queue.empty()) {
+                        task = std::move(workers_[i]->local_queue.back());
+                        workers_[i]->local_queue.pop_back();
+                        found_task = true;
+                        break;
+                    }
+                }
+            }
+            
+            // Try global queue
+            if (!found_task) {
+                std::lock_guard<std::mutex> lock(global_queue_mutex_);
+                if (!global_queue_.empty()) {
+                    task = std::move(global_queue_.front());
+                    global_queue_.pop_front();
+                    found_task = true;
+                }
+            }
+            
+            // Execute task if found
+            if (found_task) {
+                auto start_time = std::chrono::steady_clock::now();
+                task.func();
+                auto end_time = std::chrono::steady_clock::now();
+                
+                auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    end_time - start_time);
+                
+                workers_[worker_id]->tasks_processed++;
+                workers_[worker_id]->total_processing_time_ns += duration.count();
+                total_tasks_completed_++;
+            } else {
+                // No work available, yield
+                std::this_thread::yield();
+            }
+        }
+    }
+};
+
+thread_local WorkStealingThreadPool::WorkerThread* WorkStealingThreadPool::current_worker_ = nullptr;
+
+// ============================================================================
+// Advanced Synchronization Primitives
+// ============================================================================
+
+class ReadWriteLock {
+private:
+    std::atomic<int> readers_{0};
+    std::atomic<bool> writer_{false};
+    std::mutex writer_mutex_;
+    std::condition_variable writer_cv_;
+    
+public:
+    void read_lock() {
+        while (true) {
+            while (writer_.load()) {
+                std::this_thread::yield();
+            }
+            
+            readers_.fetch_add(1);
+            
+            if (!writer_.load()) {
+                break;  // Successfully acquired read lock
+            }
+            
+            readers_.fetch_sub(1);
+        }
+    }
+    
+    void read_unlock() {
+        readers_.fetch_sub(1);
+    }
+    
+    void write_lock() {
+        std::unique_lock<std::mutex> lock(writer_mutex_);
+        
+        // Wait for writer flag to be false
+        writer_cv_.wait(lock, [this]() { return !writer_.load(); });
+        
+        // Set writer flag
+        writer_.store(true);
+        
+        // Wait for all readers to finish
+        while (readers_.load() > 0) {
+            std::this_thread::yield();
+        }
+    }
+    
+    void write_unlock() {
+        writer_.store(false);
+        writer_cv_.notify_one();
+    }
+};
+
+class Barrier {
+private:
+    std::mutex mutex_;
+    std::condition_variable cv_;
+    size_t count_;
+    size_t initial_count_;
+    
+public:
+    explicit Barrier(size_t count) : count_(count), initial_count_(count) {}
+    
+    void wait() {
+        std::unique_lock<std::mutex> lock(mutex_);
+        
+        if (--count_ == 0) {
+            count_ = initial_count_;
+            cv_.notify_all();
+        } else {
+            cv_.wait(lock, [this]() { return count_ == initial_count_; });
+        }
+    }
+};
+
+// ============================================================================
+// Advanced Order Processing with Race Condition Protection
+// ============================================================================
+
+class AdvancedMatchingEngine {
+private:
+    OrderBookSide bid_side_;
+    OrderBookSide ask_side_;
+    std::unordered_map<OrderId, std::pair<Price, OrderSide>> order_lookup_;
+    std::vector<TradeEvent> trade_events_;
+    
+    // Advanced synchronization
+    ReadWriteLock order_book_lock_;
+    std::mutex trade_events_mutex_;
+    std::mutex order_lookup_mutex_;  // Using regular mutex instead of shared_mutex
+    
+    // Performance metrics with race condition protection
+    std::atomic<uint64_t> processed_orders_{0};
+    std::atomic<uint64_t> matched_trades_{0};
+    std::atomic<uint64_t> total_processing_time_ns_{0};
+    
+    // Lock-free order queue for high-frequency processing
+    LockFreeQueue<std::shared_ptr<Order>> order_queue_;
+    
+    // Thread pool for order processing
+    std::unique_ptr<WorkStealingThreadPool> thread_pool_;
+    
+    // Race condition monitoring
+    std::atomic<uint64_t> concurrent_access_count_{0};
+    std::atomic<uint64_t> max_concurrent_access_{0};
+    
+public:
+    AdvancedMatchingEngine(size_t num_threads = 4) 
+        : bid_side_(true), ask_side_(false),  // Initialize OrderBookSide members
+          thread_pool_(std::make_unique<WorkStealingThreadPool>(num_threads)) {}
+    
+    void add_order(std::shared_ptr<Order> order) {
+        // Log access for race condition detection
+        g_race_detector.log_access("order_book", "write");
+        
+        // Track concurrent access
+        auto current_concurrent = concurrent_access_count_.fetch_add(1) + 1;
+        auto max_concurrent = max_concurrent_access_.load();
+        while (current_concurrent > max_concurrent && 
+               !max_concurrent_access_.compare_exchange_weak(max_concurrent, current_concurrent)) {}
+        
+        auto start_time = std::chrono::steady_clock::now();
+        
+        // Use read-write lock for better concurrency
+        order_book_lock_.write_lock();
+        
+        if (order->type == OrderType::MARKET) {
+            process_market_order(order);
+        } else {
+            process_limit_order(order);
+        }
+        
+        order_book_lock_.write_unlock();
+        
+        auto end_time = std::chrono::steady_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time);
+        
+        total_processing_time_ns_ += duration.count();
+        processed_orders_++;
+        concurrent_access_count_.fetch_sub(1);
+    }
+    
+    bool cancel_order(OrderId order_id) {
+        g_race_detector.log_access("order_lookup", "read");
+        
+        std::lock_guard<std::mutex> lock(order_lookup_mutex_);
+        
+        auto it = order_lookup_.find(order_id);
+        if (it == order_lookup_.end()) {
+            return false;
+        }
+        
+        Price price = it->second.first;
+        OrderSide side = it->second.second;
+        
+        // Need write access to order book
+        order_book_lock_.write_lock();
+        
+        bool removed = false;
+        if (side == OrderSide::BUY) {
+            removed = bid_side_.remove_order(order_id, price);
+        } else {
+            removed = ask_side_.remove_order(order_id, price);
+        }
+        
+        if (removed) {
+            order_lookup_.erase(order_id);
+        }
+        
+        order_book_lock_.write_unlock();
+        
+        return removed;
+    }
+    
+    std::pair<Price, Price> get_best_bid_ask() const {
+        g_race_detector.log_access("order_book", "read");
+        
+        const_cast<ReadWriteLock&>(order_book_lock_).read_lock();
+        auto result = std::make_pair(bid_side_.get_best_price(), ask_side_.get_best_price());
+        const_cast<ReadWriteLock&>(order_book_lock_).read_unlock();
+        
+        return result;
+    }
+    
+    // Performance metrics
+    uint64_t get_processed_orders() const { return processed_orders_.load(); }
+    uint64_t get_matched_trades() const { return matched_trades_.load(); }
+    uint64_t get_max_concurrent_access() const { return max_concurrent_access_.load(); }
+    
+    double get_average_processing_time_ns() const {
+        uint64_t orders = processed_orders_.load();
+        return orders > 0 ? static_cast<double>(total_processing_time_ns_.load()) / orders : 0.0;
+    }
+    
+    void print_advanced_stats() const {
+        std::cout << "\n=== Advanced Matching Engine Stats ===\n";
+        std::cout << "Processed orders: " << get_processed_orders() << "\n";
+        std::cout << "Matched trades: " << get_matched_trades() << "\n";
+        std::cout << "Max concurrent access: " << get_max_concurrent_access() << "\n";
+        std::cout << "Avg processing time: " << std::fixed << std::setprecision(2) 
+                  << get_average_processing_time_ns() << " ns\n";
+        std::cout << "========================================\n";
+        
+        thread_pool_->print_stats();
+    }
+    
+private:
+    void process_market_order(std::shared_ptr<Order> order) {
+        if (order->side == OrderSide::BUY) {
+            match_order_against_side(order, ask_side_);
+        } else {
+            match_order_against_side(order, bid_side_);
+        }
+    }
+    
+    void process_limit_order(std::shared_ptr<Order> order) {
+        if (order->side == OrderSide::BUY) {
+            match_order_against_side(order, ask_side_);
+            
+            if (order->quantity > 0) {
+                bid_side_.add_order(order);
+                std::lock_guard<std::mutex> lock(order_lookup_mutex_);
+                order_lookup_[order->order_id] = {order->price, order->side};
+            }
+        } else {
+            match_order_against_side(order, bid_side_);
+            
+            if (order->quantity > 0) {
+                ask_side_.add_order(order);
+                std::lock_guard<std::mutex> lock(order_lookup_mutex_);
+                order_lookup_[order->order_id] = {order->price, order->side};
+            }
+        }
+    }
+    
+    void match_order_against_side(std::shared_ptr<Order> incoming_order, OrderBookSide& opposite_side) {
+        while (incoming_order->quantity > 0 && !opposite_side.is_empty()) {
+            auto resting_order = opposite_side.get_best_order();
+            if (!resting_order) break;
+            
+            bool can_match = false;
+            if (incoming_order->type == OrderType::MARKET) {
+                can_match = true;
+            } else {
+                if (incoming_order->side == OrderSide::BUY) {
+                    can_match = (incoming_order->price >= resting_order->price);
+                } else {
+                    can_match = (incoming_order->price <= resting_order->price);
+                }
+            }
+            
+            if (!can_match) break;
+            
+            Price trade_price = resting_order->price;
+            Quantity trade_quantity = std::min(incoming_order->quantity, resting_order->quantity);
+            
+            OrderId buy_id = (incoming_order->side == OrderSide::BUY) ? 
+                           incoming_order->order_id : resting_order->order_id;
+            OrderId sell_id = (incoming_order->side == OrderSide::SELL) ? 
+                            incoming_order->order_id : resting_order->order_id;
+            
+            // Thread-safe trade event creation
+            {
+                std::lock_guard<std::mutex> lock(trade_events_mutex_);
+                trade_events_.emplace_back(buy_id, sell_id, trade_price, trade_quantity);
+            }
+            
+            matched_trades_++;
+            
+            incoming_order->quantity -= trade_quantity;
+            resting_order->quantity -= trade_quantity;
+            
+            if (resting_order->quantity == 0) {
+                opposite_side.remove_best_order();
+                std::lock_guard<std::mutex> lock(order_lookup_mutex_);
+                order_lookup_.erase(resting_order->order_id);
+            }
+        }
+    }
+};
+
+// ============================================================================
+// Stress Testing with Race Condition Simulation
+// ============================================================================
+
+class RaceConditionStressTest {
+private:
+    std::atomic<uint64_t> shared_counter_{0};
+    std::atomic<uint64_t> race_condition_count_{0};
+    std::atomic<bool> test_running_{false};
+    
+    std::vector<std::thread> stress_threads_;
+    std::vector<std::thread> monitoring_threads_;
+    
+public:
+    void start_stress_test(size_t num_threads = 8, size_t duration_seconds = 10) {
+        std::cout << "\n=== Starting Race Condition Stress Test ===\n";
+        std::cout << "Threads: " << num_threads << ", Duration: " << duration_seconds << " seconds\n";
+        
+        test_running_ = true;
+        
+        // Start stress threads
+        for (size_t i = 0; i < num_threads; ++i) {
+            stress_threads_.emplace_back([this, i]() { stress_worker(i); });
+        }
+        
+        // Start monitoring threads
+        for (size_t i = 0; i < 2; ++i) {
+            monitoring_threads_.emplace_back([this, i]() { monitoring_worker(i); });
+        }
+        
+        // Run for specified duration
+        std::this_thread::sleep_for(std::chrono::seconds(duration_seconds));
+        
+        test_running_ = false;
+        
+        // Wait for all threads to finish
+        for (auto& thread : stress_threads_) {
+            if (thread.joinable()) thread.join();
+        }
+        for (auto& thread : monitoring_threads_) {
+            if (thread.joinable()) thread.join();
+        }
+        
+        print_stress_test_results();
+    }
+    
+private:
+    void stress_worker(size_t thread_id) {
+        std::mt19937 rng(thread_id);
+        std::uniform_int_distribution<int> delay_dist(1, 100);
+        
+        while (test_running_) {
+            // Simulate race condition by reading and writing without proper synchronization
+            uint64_t current_value = shared_counter_.load();
+            
+            // Simulate some processing time
+            std::this_thread::sleep_for(std::chrono::microseconds(delay_dist(rng)));
+            
+            // This creates a race condition - multiple threads might read the same value
+            shared_counter_.store(current_value + 1);
+            
+            // Check if we lost updates due to race conditions
+            if (current_value + 1 != shared_counter_.load()) {
+                race_condition_count_++;
+            }
+        }
+    }
+    
+    void monitoring_worker(size_t worker_id) {
+        while (test_running_) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            
+            // Monitor system state
+            g_race_detector.log_access("stress_test_monitor", "read");
+        }
+    }
+    
+    void print_stress_test_results() {
+        std::cout << "\n=== Race Condition Stress Test Results ===\n";
+        std::cout << "Final counter value: " << shared_counter_.load() << "\n";
+        std::cout << "Race conditions detected: " << race_condition_count_.load() << "\n";
+        std::cout << "Expected counter value: ~" << (stress_threads_.size() * 10) << "\n";
+        std::cout << "Data integrity: " << std::fixed << std::setprecision(2)
+                  << (100.0 * shared_counter_.load() / (stress_threads_.size() * 10)) << "%\n";
+        std::cout << "==========================================\n";
+    }
+};
+
+// ============================================================================
 // Main Demo Function (Step 3)
 // ============================================================================
 
 int main() {
     std::cout << "=== NanoEX High-Frequency Trading Engine ===\n";
-    std::cout << "Step 3: Strategy Engine Integration\n\n";
+    std::cout << "Step 4: Advanced Multi-threading with Race Conditions\n\n";
     
     // Initialize components
     MatchingEngine engine;
+    AdvancedMatchingEngine advanced_engine(4);  // 4 threads
     OrderGenerator generator;
     PerformanceMonitor monitor;
     MarketDataPublisher md_publisher;
@@ -1340,7 +2088,7 @@ int main() {
     std::atomic<bool> should_stop{false};
     const int ORDERS_PER_SECOND = 25000;   // Reduced to allow strategy orders
     const int MD_UPDATES_PER_SECOND = 300000;  // 300k market data updates/sec
-    const int SIMULATION_SECONDS = 10;  // Longer simulation for strategy development
+    const int SIMULATION_SECONDS = 5;  // Shorter simulation to focus on Step 4
     
     // Start components
     monitor.start();
@@ -1387,16 +2135,166 @@ int main() {
     md_publisher.stop();
     monitor.stop();
     
-    // Final comprehensive stats
+    // ============================================================================
+    // Step 4: Advanced Multi-threading Demonstrations
+    // ============================================================================
+    
     std::cout << "\n" << std::string(60, '=') << "\n";
-    std::cout << "=== FINAL STRATEGY INTEGRATION RESULTS ===\n";
+    std::cout << "=== STEP 4: ADVANCED MULTI-THREADING DEMONSTRATIONS ===\n";
     std::cout << std::string(60, '=') << "\n";
     
-    std::cout << "\n--- Matching Engine Performance ---\n";
+    // 1. Race Condition Stress Test
+    std::cout << "\n1. Running Race Condition Stress Test...\n";
+    RaceConditionStressTest stress_test;
+    stress_test.start_stress_test(8, 5);  // 8 threads, 5 seconds
+    
+    // 2. Advanced Matching Engine Performance Test
+    std::cout << "\n2. Testing Advanced Matching Engine with Race Condition Protection...\n";
+    
+    std::vector<std::thread> advanced_engine_threads;
+    std::atomic<uint64_t> advanced_orders_processed{0};
+    
+    // Start multiple threads adding orders to advanced engine
+    for (int i = 0; i < 4; ++i) {
+        advanced_engine_threads.emplace_back([&advanced_engine, &generator, &advanced_orders_processed, i]() {
+            for (int j = 0; j < 1000; ++j) {
+                auto order = generator.generate_order();
+                advanced_engine.add_order(order);
+                advanced_orders_processed++;
+                
+                // Simulate some processing time
+                std::this_thread::sleep_for(std::chrono::microseconds(10));
+            }
+        });
+    }
+    
+    // Wait for all threads to complete
+    for (auto& thread : advanced_engine_threads) {
+        if (thread.joinable()) thread.join();
+    }
+    
+    // Print advanced engine stats
+    advanced_engine.print_advanced_stats();
+    
+    // 3. Lock-Free Queue Performance Test
+    std::cout << "\n3. Testing Lock-Free Queue Performance...\n";
+    
+    LockFreeQueue<int> lock_free_queue;
+    std::vector<std::thread> queue_threads;
+    std::atomic<uint64_t> queue_operations{0};
+    
+    // Producer threads
+    for (int i = 0; i < 2; ++i) {
+        queue_threads.emplace_back([&lock_free_queue, &queue_operations, i]() {
+            for (int j = 0; j < 10000; ++j) {
+                lock_free_queue.push(i * 10000 + j);
+                queue_operations++;
+            }
+        });
+    }
+    
+    // Consumer threads
+    for (int i = 0; i < 2; ++i) {
+        queue_threads.emplace_back([&lock_free_queue, &queue_operations]() {
+            int value;
+            while (queue_operations.load() < 20000) {
+                if (lock_free_queue.pop(value)) {
+                    // Process value
+                    volatile int dummy = value;  // Prevent optimization
+                }
+            }
+        });
+    }
+    
+    // Wait for all queue operations
+    for (auto& thread : queue_threads) {
+        if (thread.joinable()) thread.join();
+    }
+    
+    std::cout << "Lock-free queue operations completed: " << queue_operations.load() << "\n";
+    std::cout << "Final queue size: " << lock_free_queue.size() << "\n";
+    
+    // 4. Read-Write Lock Performance Test
+    std::cout << "\n4. Testing Read-Write Lock Performance...\n";
+    
+    ReadWriteLock rw_lock;
+    std::atomic<int> shared_data{0};
+    std::vector<std::thread> rw_threads;
+    
+    // Reader threads
+    for (int i = 0; i < 4; ++i) {
+        rw_threads.emplace_back([&rw_lock, &shared_data, i]() {
+            for (int j = 0; j < 1000; ++j) {
+                rw_lock.read_lock();
+                volatile int value = shared_data.load();  // Read operation
+                rw_lock.read_unlock();
+                
+                std::this_thread::sleep_for(std::chrono::microseconds(1));
+            }
+        });
+    }
+    
+    // Writer threads
+    for (int i = 0; i < 2; ++i) {
+        rw_threads.emplace_back([&rw_lock, &shared_data, i]() {
+            for (int j = 0; j < 500; ++j) {
+                rw_lock.write_lock();
+                shared_data.fetch_add(1);  // Write operation
+                rw_lock.write_unlock();
+                
+                std::this_thread::sleep_for(std::chrono::microseconds(10));
+            }
+        });
+    }
+    
+    // Wait for all RW lock operations
+    for (auto& thread : rw_threads) {
+        if (thread.joinable()) thread.join();
+    }
+    
+    std::cout << "Read-Write lock test completed. Final shared data value: " << shared_data.load() << "\n";
+    
+    // 5. Barrier Synchronization Test
+    std::cout << "\n5. Testing Barrier Synchronization...\n";
+    
+    Barrier barrier(4);
+    std::vector<std::thread> barrier_threads;
+    std::atomic<int> phase{0};
+    
+    for (int i = 0; i < 4; ++i) {
+        barrier_threads.emplace_back([&barrier, &phase, i]() {
+            for (int p = 0; p < 3; ++p) {
+                std::cout << "Thread " << i << " starting phase " << p << "\n";
+                std::this_thread::sleep_for(std::chrono::milliseconds(100 + i * 50));
+                
+                barrier.wait();
+                
+                if (i == 0) {
+                    phase++;
+                    std::cout << "All threads completed phase " << p << "\n";
+                }
+            }
+        });
+    }
+    
+    // Wait for barrier test
+    for (auto& thread : barrier_threads) {
+        if (thread.joinable()) thread.join();
+    }
+    
+    // Print race condition detection report
+    g_race_detector.print_race_report();
+    
+    // Final comprehensive stats
+    std::cout << "\n" << std::string(60, '=') << "\n";
+    std::cout << "=== FINAL STEP 4 RESULTS ===\n";
+    std::cout << std::string(60, '=') << "\n";
+    
+    std::cout << "\n--- Original Matching Engine Performance ---\n";
     monitor.print_stats(engine);
     
-    std::cout << "\n--- Market Data Performance ---\n";
-    md_publisher.print_stats();
+    std::cout << "\n--- Advanced Matching Engine Performance ---\n";
+    advanced_engine.print_advanced_stats();
     
     std::cout << "\n--- Strategy Performance Summary ---\n";
     mean_rev_ptr->print_stats();
@@ -1445,10 +2343,20 @@ int main() {
               << std::fixed << std::setprecision(1) 
               << (100.0 * total_strategy_orders / total_orders) << "%)\n";
     
+    std::cout << "\n--- Step 4 Multi-threading Features ---\n";
+    std::cout << "✓ Race condition detection and monitoring\n";
+    std::cout << "✓ Lock-free data structures (queue)\n";
+    std::cout << "✓ Work-stealing thread pool\n";
+    std::cout << "✓ Advanced read-write locks\n";
+    std::cout << "✓ Barrier synchronization\n";
+    std::cout << "✓ Stress testing with race condition simulation\n";
+    std::cout << "✓ Advanced matching engine with race condition protection\n";
+    
     std::cout << "\n" << std::string(60, '=') << "\n";
-    std::cout << "Step 3 Complete! Strategy engines integrated successfully.\n";
-    std::cout << "Ready for Step 4: Advanced Multi-threading with Race Conditions\n";
+    std::cout << "Step 4 Complete! Advanced multi-threading with race condition protection implemented.\n";
+    std::cout << "Ready for Step 5: Network Layer and External Connectivity\n";
     std::cout << std::string(60, '=') << "\n";
     
     return 0;
 }
+
