@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.16)
-project(NanoEX_HFT_System)
+cmake_minimum_required(VERSION 3.10)
+project(HFT_System)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -15,12 +15,15 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# HFT System executable (original)
-add_executable(nanoex nanoex.cpp)
-target_compile_options(nanoex PRIVATE -O2 -pthread)
-target_link_libraries(nanoex PRIVATE pthread)
+file(GLOB SRC_FILES
+    "src/*.cpp"
+)
 
-# GUI Application
+add_executable(nanoex ${SRC_FILES})
+
+target_include_directories(nanoex PRIVATE src)
+
+# HFT System executable (original)
 add_executable(nanoex_gui nanoex_gui.cpp)
 target_link_libraries(nanoex_gui PRIVATE 
     Qt::Core 

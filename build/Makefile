@@ -239,30 +239,6 @@ nanoex_gui_autogen/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex_gui_autogen.dir/build.make CMakeFiles/nanoex_gui_autogen.dir/build
 .PHONY : nanoex_gui_autogen/fast
 
-nanoex.o: nanoex.cpp.o
-.PHONY : nanoex.o
-
-# target to build an object file
-nanoex.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/nanoex.cpp.o
-.PHONY : nanoex.cpp.o
-
-nanoex.i: nanoex.cpp.i
-.PHONY : nanoex.i
-
-# target to preprocess a source file
-nanoex.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/nanoex.cpp.i
-.PHONY : nanoex.cpp.i
-
-nanoex.s: nanoex.cpp.s
-.PHONY : nanoex.s
-
-# target to generate assembly for a file
-nanoex.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/nanoex.cpp.s
-.PHONY : nanoex.cpp.s
-
 nanoex_autogen/mocs_compilation.o: nanoex_autogen/mocs_compilation.cpp.o
 .PHONY : nanoex_autogen/mocs_compilation.o
 
@@ -335,6 +311,222 @@ nanoex_gui_autogen/mocs_compilation.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex_gui.dir/build.make CMakeFiles/nanoex_gui.dir/nanoex_gui_autogen/mocs_compilation.cpp.s
 .PHONY : nanoex_gui_autogen/mocs_compilation.cpp.s
 
+src/indicators.o: src/indicators.cpp.o
+.PHONY : src/indicators.o
+
+# target to build an object file
+src/indicators.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/indicators.cpp.o
+.PHONY : src/indicators.cpp.o
+
+src/indicators.i: src/indicators.cpp.i
+.PHONY : src/indicators.i
+
+# target to preprocess a source file
+src/indicators.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/indicators.cpp.i
+.PHONY : src/indicators.cpp.i
+
+src/indicators.s: src/indicators.cpp.s
+.PHONY : src/indicators.s
+
+# target to generate assembly for a file
+src/indicators.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/indicators.cpp.s
+.PHONY : src/indicators.cpp.s
+
+src/main.o: src/main.cpp.o
+.PHONY : src/main.o
+
+# target to build an object file
+src/main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
+
+src/main.i: src/main.cpp.i
+.PHONY : src/main.i
+
+# target to preprocess a source file
+src/main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
+
+src/main.s: src/main.cpp.s
+.PHONY : src/main.s
+
+# target to generate assembly for a file
+src/main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
+
+src/market_data.o: src/market_data.cpp.o
+.PHONY : src/market_data.o
+
+# target to build an object file
+src/market_data.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/market_data.cpp.o
+.PHONY : src/market_data.cpp.o
+
+src/market_data.i: src/market_data.cpp.i
+.PHONY : src/market_data.i
+
+# target to preprocess a source file
+src/market_data.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/market_data.cpp.i
+.PHONY : src/market_data.cpp.i
+
+src/market_data.s: src/market_data.cpp.s
+.PHONY : src/market_data.s
+
+# target to generate assembly for a file
+src/market_data.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/market_data.cpp.s
+.PHONY : src/market_data.cpp.s
+
+src/matching_engine.o: src/matching_engine.cpp.o
+.PHONY : src/matching_engine.o
+
+# target to build an object file
+src/matching_engine.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/matching_engine.cpp.o
+.PHONY : src/matching_engine.cpp.o
+
+src/matching_engine.i: src/matching_engine.cpp.i
+.PHONY : src/matching_engine.i
+
+# target to preprocess a source file
+src/matching_engine.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/matching_engine.cpp.i
+.PHONY : src/matching_engine.cpp.i
+
+src/matching_engine.s: src/matching_engine.cpp.s
+.PHONY : src/matching_engine.s
+
+# target to generate assembly for a file
+src/matching_engine.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/matching_engine.cpp.s
+.PHONY : src/matching_engine.cpp.s
+
+src/order_book.o: src/order_book.cpp.o
+.PHONY : src/order_book.o
+
+# target to build an object file
+src/order_book.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/order_book.cpp.o
+.PHONY : src/order_book.cpp.o
+
+src/order_book.i: src/order_book.cpp.i
+.PHONY : src/order_book.i
+
+# target to preprocess a source file
+src/order_book.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/order_book.cpp.i
+.PHONY : src/order_book.cpp.i
+
+src/order_book.s: src/order_book.cpp.s
+.PHONY : src/order_book.s
+
+# target to generate assembly for a file
+src/order_book.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/order_book.cpp.s
+.PHONY : src/order_book.cpp.s
+
+src/performance.o: src/performance.cpp.o
+.PHONY : src/performance.o
+
+# target to build an object file
+src/performance.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/performance.cpp.o
+.PHONY : src/performance.cpp.o
+
+src/performance.i: src/performance.cpp.i
+.PHONY : src/performance.i
+
+# target to preprocess a source file
+src/performance.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/performance.cpp.i
+.PHONY : src/performance.cpp.i
+
+src/performance.s: src/performance.cpp.s
+.PHONY : src/performance.s
+
+# target to generate assembly for a file
+src/performance.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/performance.cpp.s
+.PHONY : src/performance.cpp.s
+
+src/risk.o: src/risk.cpp.o
+.PHONY : src/risk.o
+
+# target to build an object file
+src/risk.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/risk.cpp.o
+.PHONY : src/risk.cpp.o
+
+src/risk.i: src/risk.cpp.i
+.PHONY : src/risk.i
+
+# target to preprocess a source file
+src/risk.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/risk.cpp.i
+.PHONY : src/risk.cpp.i
+
+src/risk.s: src/risk.cpp.s
+.PHONY : src/risk.s
+
+# target to generate assembly for a file
+src/risk.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/risk.cpp.s
+.PHONY : src/risk.cpp.s
+
+src/strategy.o: src/strategy.cpp.o
+.PHONY : src/strategy.o
+
+# target to build an object file
+src/strategy.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/strategy.cpp.o
+.PHONY : src/strategy.cpp.o
+
+src/strategy.i: src/strategy.cpp.i
+.PHONY : src/strategy.i
+
+# target to preprocess a source file
+src/strategy.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/strategy.cpp.i
+.PHONY : src/strategy.cpp.i
+
+src/strategy.s: src/strategy.cpp.s
+.PHONY : src/strategy.s
+
+# target to generate assembly for a file
+src/strategy.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/strategy.cpp.s
+.PHONY : src/strategy.cpp.s
+
+src/threading.o: src/threading.cpp.o
+.PHONY : src/threading.o
+
+# target to build an object file
+src/threading.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/threading.cpp.o
+.PHONY : src/threading.cpp.o
+
+src/threading.i: src/threading.cpp.i
+.PHONY : src/threading.i
+
+# target to preprocess a source file
+src/threading.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/threading.cpp.i
+.PHONY : src/threading.cpp.i
+
+src/threading.s: src/threading.cpp.s
+.PHONY : src/threading.s
+
+# target to generate assembly for a file
+src/threading.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/threading.cpp.s
+.PHONY : src/threading.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -353,9 +545,6 @@ help:
 	@echo "... nanoex_gui_autogen_timestamp_deps"
 	@echo "... nanoex"
 	@echo "... nanoex_gui"
-	@echo "... nanoex.o"
-	@echo "... nanoex.i"
-	@echo "... nanoex.s"
 	@echo "... nanoex_autogen/mocs_compilation.o"
 	@echo "... nanoex_autogen/mocs_compilation.i"
 	@echo "... nanoex_autogen/mocs_compilation.s"
@@ -365,6 +554,33 @@ help:
 	@echo "... nanoex_gui_autogen/mocs_compilation.o"
 	@echo "... nanoex_gui_autogen/mocs_compilation.i"
 	@echo "... nanoex_gui_autogen/mocs_compilation.s"
+	@echo "... src/indicators.o"
+	@echo "... src/indicators.i"
+	@echo "... src/indicators.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
+	@echo "... src/market_data.o"
+	@echo "... src/market_data.i"
+	@echo "... src/market_data.s"
+	@echo "... src/matching_engine.o"
+	@echo "... src/matching_engine.i"
+	@echo "... src/matching_engine.s"
+	@echo "... src/order_book.o"
+	@echo "... src/order_book.i"
+	@echo "... src/order_book.s"
+	@echo "... src/performance.o"
+	@echo "... src/performance.i"
+	@echo "... src/performance.s"
+	@echo "... src/risk.o"
+	@echo "... src/risk.i"
+	@echo "... src/risk.s"
+	@echo "... src/strategy.o"
+	@echo "... src/strategy.i"
+	@echo "... src/strategy.s"
+	@echo "... src/threading.o"
+	@echo "... src/threading.i"
+	@echo "... src/threading.s"
 .PHONY : help
 
 

@@ -414,7 +414,57 @@
 	"CROSS_CONFIG" : false,
 	"DEP_FILE" : "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/nanoex_autogen/deps",
 	"DEP_FILE_RULE_NAME" : "nanoex_autogen/timestamp",
-	"HEADERS" : [],
+	"HEADERS" : 
+	[
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/indicators.h",
+			"MU",
+			"UVLADIE3JM/moc_indicators.cpp",
+			null
+		],
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/market_data.h",
+			"MU",
+			"UVLADIE3JM/moc_market_data.cpp",
+			null
+		],
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/matching_engine.h",
+			"MU",
+			"UVLADIE3JM/moc_matching_engine.cpp",
+			null
+		],
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/order_book.h",
+			"MU",
+			"UVLADIE3JM/moc_order_book.cpp",
+			null
+		],
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/performance.h",
+			"MU",
+			"UVLADIE3JM/moc_performance.cpp",
+			null
+		],
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/risk.h",
+			"MU",
+			"UVLADIE3JM/moc_risk.cpp",
+			null
+		],
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/strategy.h",
+			"MU",
+			"UVLADIE3JM/moc_strategy.cpp",
+			null
+		],
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/threading.h",
+			"MU",
+			"UVLADIE3JM/moc_threading.cpp",
+			null
+		]
+	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
 	"INCLUDE_DIR" : "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/nanoex_autogen/include",
 	"MOC_COMPILATION_FILE" : "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/nanoex_autogen/mocs_compilation.cpp",
@@ -428,6 +478,7 @@
 	],
 	"MOC_INCLUDES" : 
 	[
+		"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src",
 		"/usr/local/include",
 		"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1",
 		"/Library/Developer/CommandLineTools/usr/lib/clang/15.0.0/include",
@@ -468,7 +519,47 @@
 	"SOURCES" : 
 	[
 		[
-			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/nanoex.cpp",
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/indicators.cpp",
+			"MU",
+			null
+		],
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/main.cpp",
+			"MU",
+			null
+		],
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/market_data.cpp",
+			"MU",
+			null
+		],
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/matching_engine.cpp",
+			"MU",
+			null
+		],
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/order_book.cpp",
+			"MU",
+			null
+		],
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/performance.cpp",
+			"MU",
+			null
+		],
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/risk.cpp",
+			"MU",
+			null
+		],
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/strategy.cpp",
+			"MU",
+			null
+		],
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/threading.cpp",
 			"MU",
 			null
 		]

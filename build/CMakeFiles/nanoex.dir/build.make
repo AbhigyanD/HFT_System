@@ -93,33 +93,161 @@ CMakeFiles/nanoex.dir/nanoex_autogen/mocs_compilation.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/nanoex.dir/nanoex_autogen/mocs_compilation.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/nanoex_autogen/mocs_compilation.cpp" -o CMakeFiles/nanoex.dir/nanoex_autogen/mocs_compilation.cpp.s
 
-CMakeFiles/nanoex.dir/nanoex.cpp.o: CMakeFiles/nanoex.dir/flags.make
-CMakeFiles/nanoex.dir/nanoex.cpp.o: /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/nanoex.cpp
-CMakeFiles/nanoex.dir/nanoex.cpp.o: CMakeFiles/nanoex.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/nanoex.dir/nanoex.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nanoex.dir/nanoex.cpp.o -MF CMakeFiles/nanoex.dir/nanoex.cpp.o.d -o CMakeFiles/nanoex.dir/nanoex.cpp.o -c "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/nanoex.cpp"
+CMakeFiles/nanoex.dir/src/indicators.cpp.o: CMakeFiles/nanoex.dir/flags.make
+CMakeFiles/nanoex.dir/src/indicators.cpp.o: /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/indicators.cpp
+CMakeFiles/nanoex.dir/src/indicators.cpp.o: CMakeFiles/nanoex.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/nanoex.dir/src/indicators.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nanoex.dir/src/indicators.cpp.o -MF CMakeFiles/nanoex.dir/src/indicators.cpp.o.d -o CMakeFiles/nanoex.dir/src/indicators.cpp.o -c "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/indicators.cpp"
 
-CMakeFiles/nanoex.dir/nanoex.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/nanoex.dir/nanoex.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/nanoex.cpp" > CMakeFiles/nanoex.dir/nanoex.cpp.i
+CMakeFiles/nanoex.dir/src/indicators.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/nanoex.dir/src/indicators.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/indicators.cpp" > CMakeFiles/nanoex.dir/src/indicators.cpp.i
 
-CMakeFiles/nanoex.dir/nanoex.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/nanoex.dir/nanoex.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/nanoex.cpp" -o CMakeFiles/nanoex.dir/nanoex.cpp.s
+CMakeFiles/nanoex.dir/src/indicators.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/nanoex.dir/src/indicators.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/indicators.cpp" -o CMakeFiles/nanoex.dir/src/indicators.cpp.s
+
+CMakeFiles/nanoex.dir/src/main.cpp.o: CMakeFiles/nanoex.dir/flags.make
+CMakeFiles/nanoex.dir/src/main.cpp.o: /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/main.cpp
+CMakeFiles/nanoex.dir/src/main.cpp.o: CMakeFiles/nanoex.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/nanoex.dir/src/main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nanoex.dir/src/main.cpp.o -MF CMakeFiles/nanoex.dir/src/main.cpp.o.d -o CMakeFiles/nanoex.dir/src/main.cpp.o -c "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/main.cpp"
+
+CMakeFiles/nanoex.dir/src/main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/nanoex.dir/src/main.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/main.cpp" > CMakeFiles/nanoex.dir/src/main.cpp.i
+
+CMakeFiles/nanoex.dir/src/main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/nanoex.dir/src/main.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/main.cpp" -o CMakeFiles/nanoex.dir/src/main.cpp.s
+
+CMakeFiles/nanoex.dir/src/market_data.cpp.o: CMakeFiles/nanoex.dir/flags.make
+CMakeFiles/nanoex.dir/src/market_data.cpp.o: /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/market_data.cpp
+CMakeFiles/nanoex.dir/src/market_data.cpp.o: CMakeFiles/nanoex.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/nanoex.dir/src/market_data.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nanoex.dir/src/market_data.cpp.o -MF CMakeFiles/nanoex.dir/src/market_data.cpp.o.d -o CMakeFiles/nanoex.dir/src/market_data.cpp.o -c "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/market_data.cpp"
+
+CMakeFiles/nanoex.dir/src/market_data.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/nanoex.dir/src/market_data.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/market_data.cpp" > CMakeFiles/nanoex.dir/src/market_data.cpp.i
+
+CMakeFiles/nanoex.dir/src/market_data.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/nanoex.dir/src/market_data.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/market_data.cpp" -o CMakeFiles/nanoex.dir/src/market_data.cpp.s
+
+CMakeFiles/nanoex.dir/src/matching_engine.cpp.o: CMakeFiles/nanoex.dir/flags.make
+CMakeFiles/nanoex.dir/src/matching_engine.cpp.o: /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/matching_engine.cpp
+CMakeFiles/nanoex.dir/src/matching_engine.cpp.o: CMakeFiles/nanoex.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/nanoex.dir/src/matching_engine.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nanoex.dir/src/matching_engine.cpp.o -MF CMakeFiles/nanoex.dir/src/matching_engine.cpp.o.d -o CMakeFiles/nanoex.dir/src/matching_engine.cpp.o -c "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/matching_engine.cpp"
+
+CMakeFiles/nanoex.dir/src/matching_engine.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/nanoex.dir/src/matching_engine.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/matching_engine.cpp" > CMakeFiles/nanoex.dir/src/matching_engine.cpp.i
+
+CMakeFiles/nanoex.dir/src/matching_engine.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/nanoex.dir/src/matching_engine.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/matching_engine.cpp" -o CMakeFiles/nanoex.dir/src/matching_engine.cpp.s
+
+CMakeFiles/nanoex.dir/src/order_book.cpp.o: CMakeFiles/nanoex.dir/flags.make
+CMakeFiles/nanoex.dir/src/order_book.cpp.o: /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/order_book.cpp
+CMakeFiles/nanoex.dir/src/order_book.cpp.o: CMakeFiles/nanoex.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/nanoex.dir/src/order_book.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nanoex.dir/src/order_book.cpp.o -MF CMakeFiles/nanoex.dir/src/order_book.cpp.o.d -o CMakeFiles/nanoex.dir/src/order_book.cpp.o -c "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/order_book.cpp"
+
+CMakeFiles/nanoex.dir/src/order_book.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/nanoex.dir/src/order_book.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/order_book.cpp" > CMakeFiles/nanoex.dir/src/order_book.cpp.i
+
+CMakeFiles/nanoex.dir/src/order_book.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/nanoex.dir/src/order_book.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/order_book.cpp" -o CMakeFiles/nanoex.dir/src/order_book.cpp.s
+
+CMakeFiles/nanoex.dir/src/performance.cpp.o: CMakeFiles/nanoex.dir/flags.make
+CMakeFiles/nanoex.dir/src/performance.cpp.o: /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/performance.cpp
+CMakeFiles/nanoex.dir/src/performance.cpp.o: CMakeFiles/nanoex.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/nanoex.dir/src/performance.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nanoex.dir/src/performance.cpp.o -MF CMakeFiles/nanoex.dir/src/performance.cpp.o.d -o CMakeFiles/nanoex.dir/src/performance.cpp.o -c "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/performance.cpp"
+
+CMakeFiles/nanoex.dir/src/performance.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/nanoex.dir/src/performance.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/performance.cpp" > CMakeFiles/nanoex.dir/src/performance.cpp.i
+
+CMakeFiles/nanoex.dir/src/performance.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/nanoex.dir/src/performance.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/performance.cpp" -o CMakeFiles/nanoex.dir/src/performance.cpp.s
+
+CMakeFiles/nanoex.dir/src/risk.cpp.o: CMakeFiles/nanoex.dir/flags.make
+CMakeFiles/nanoex.dir/src/risk.cpp.o: /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/risk.cpp
+CMakeFiles/nanoex.dir/src/risk.cpp.o: CMakeFiles/nanoex.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/nanoex.dir/src/risk.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nanoex.dir/src/risk.cpp.o -MF CMakeFiles/nanoex.dir/src/risk.cpp.o.d -o CMakeFiles/nanoex.dir/src/risk.cpp.o -c "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/risk.cpp"
+
+CMakeFiles/nanoex.dir/src/risk.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/nanoex.dir/src/risk.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/risk.cpp" > CMakeFiles/nanoex.dir/src/risk.cpp.i
+
+CMakeFiles/nanoex.dir/src/risk.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/nanoex.dir/src/risk.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/risk.cpp" -o CMakeFiles/nanoex.dir/src/risk.cpp.s
+
+CMakeFiles/nanoex.dir/src/strategy.cpp.o: CMakeFiles/nanoex.dir/flags.make
+CMakeFiles/nanoex.dir/src/strategy.cpp.o: /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/strategy.cpp
+CMakeFiles/nanoex.dir/src/strategy.cpp.o: CMakeFiles/nanoex.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/nanoex.dir/src/strategy.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nanoex.dir/src/strategy.cpp.o -MF CMakeFiles/nanoex.dir/src/strategy.cpp.o.d -o CMakeFiles/nanoex.dir/src/strategy.cpp.o -c "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/strategy.cpp"
+
+CMakeFiles/nanoex.dir/src/strategy.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/nanoex.dir/src/strategy.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/strategy.cpp" > CMakeFiles/nanoex.dir/src/strategy.cpp.i
+
+CMakeFiles/nanoex.dir/src/strategy.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/nanoex.dir/src/strategy.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/strategy.cpp" -o CMakeFiles/nanoex.dir/src/strategy.cpp.s
+
+CMakeFiles/nanoex.dir/src/threading.cpp.o: CMakeFiles/nanoex.dir/flags.make
+CMakeFiles/nanoex.dir/src/threading.cpp.o: /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/threading.cpp
+CMakeFiles/nanoex.dir/src/threading.cpp.o: CMakeFiles/nanoex.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/nanoex.dir/src/threading.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nanoex.dir/src/threading.cpp.o -MF CMakeFiles/nanoex.dir/src/threading.cpp.o.d -o CMakeFiles/nanoex.dir/src/threading.cpp.o -c "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/threading.cpp"
+
+CMakeFiles/nanoex.dir/src/threading.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/nanoex.dir/src/threading.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/threading.cpp" > CMakeFiles/nanoex.dir/src/threading.cpp.i
+
+CMakeFiles/nanoex.dir/src/threading.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/nanoex.dir/src/threading.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/threading.cpp" -o CMakeFiles/nanoex.dir/src/threading.cpp.s
 
 # Object files for target nanoex
 nanoex_OBJECTS = \
 "CMakeFiles/nanoex.dir/nanoex_autogen/mocs_compilation.cpp.o" \
-"CMakeFiles/nanoex.dir/nanoex.cpp.o"
+"CMakeFiles/nanoex.dir/src/indicators.cpp.o" \
+"CMakeFiles/nanoex.dir/src/main.cpp.o" \
+"CMakeFiles/nanoex.dir/src/market_data.cpp.o" \
+"CMakeFiles/nanoex.dir/src/matching_engine.cpp.o" \
+"CMakeFiles/nanoex.dir/src/order_book.cpp.o" \
+"CMakeFiles/nanoex.dir/src/performance.cpp.o" \
+"CMakeFiles/nanoex.dir/src/risk.cpp.o" \
+"CMakeFiles/nanoex.dir/src/strategy.cpp.o" \
+"CMakeFiles/nanoex.dir/src/threading.cpp.o"
 
 # External object files for target nanoex
 nanoex_EXTERNAL_OBJECTS =
 
 nanoex: CMakeFiles/nanoex.dir/nanoex_autogen/mocs_compilation.cpp.o
-nanoex: CMakeFiles/nanoex.dir/nanoex.cpp.o
+nanoex: CMakeFiles/nanoex.dir/src/indicators.cpp.o
+nanoex: CMakeFiles/nanoex.dir/src/main.cpp.o
+nanoex: CMakeFiles/nanoex.dir/src/market_data.cpp.o
+nanoex: CMakeFiles/nanoex.dir/src/matching_engine.cpp.o
+nanoex: CMakeFiles/nanoex.dir/src/order_book.cpp.o
+nanoex: CMakeFiles/nanoex.dir/src/performance.cpp.o
+nanoex: CMakeFiles/nanoex.dir/src/risk.cpp.o
+nanoex: CMakeFiles/nanoex.dir/src/strategy.cpp.o
+nanoex: CMakeFiles/nanoex.dir/src/threading.cpp.o
 nanoex: CMakeFiles/nanoex.dir/build.make
 nanoex: CMakeFiles/nanoex.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable nanoex"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX executable nanoex"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/nanoex.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
