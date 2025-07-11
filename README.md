@@ -2,12 +2,44 @@
 
 A high-performance, multi-threaded HFT system built in C++17 with advanced features including lock-free data structures, work-stealing thread pools, and comprehensive risk management.
 
+---
+
+## 🖥️ Visual GUI with Real-Time Charts (NEW!)
+
+You can now see your momentum strategy **visually** with a modern GUI that includes:
+
+- **Strategy Chart Tab**: Real-time price line chart, buy/sell signal markers, and color-coded RSI, Momentum, MACD indicators
+- **Mouse Hover Tooltips**: See price and time for any point on the chart
+- **Live Signal Markers**: Green (BUY) and Red (SELL) dots on the price chart
+- **Performance, Config, and Output Tabs**: All system metrics and logs
+
+### 🚀 How to Launch the GUI
+
+From your project root, run:
+```bash
+./run_gui.sh
+```
+Or, from the build directory:
+```bash
+./NanoEX\ HFT\ System.app/Contents/MacOS/NanoEX\ HFT\ System
+```
+
+### 📈 What You'll See
+- **Strategy Chart Tab**: Live price chart, buy/sell signals, and technical indicators
+- **Performance Tab**: Orders processed, trades matched, latency, throughput
+- **Strategy Config Tab**: All current strategy parameters
+- **System Output Tab**: Full log and debug output
+
+**Tip:** Hover your mouse over the chart to see price/time tooltips!
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
 - C++17 compatible compiler (GCC 7+, Clang 5+, MSVC 2017+)
 - CMake 3.10+
-- Qt 5.12+ (for GUI)
+- Qt 5.12+ or Qt 6+ (for GUI)
 
 ### Building
 ```bash
