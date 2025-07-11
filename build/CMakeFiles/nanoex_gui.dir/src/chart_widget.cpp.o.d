@@ -1,7 +1,6 @@
-CMakeFiles/nanoex_gui.dir/nanoex_gui_autogen/mocs_compilation.cpp.o: \
-  /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/build/nanoex_gui_autogen/mocs_compilation.cpp \
-  /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/build/nanoex_gui_autogen/UVLADIE3JM/moc_chart_widget.cpp \
-  /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/build/nanoex_gui_autogen/UVLADIE3JM/../../../src/chart_widget.h \
+CMakeFiles/nanoex_gui.dir/src/chart_widget.cpp.o: \
+  /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/chart_widget.cpp \
+  /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/chart_widget.h \
   /opt/homebrew/lib/QtWidgets.framework/Headers/QWidget \
   /opt/homebrew/lib/QtWidgets.framework/Headers/qwidget.h \
   /opt/homebrew/include/QtWidgets/qtwidgetsglobal.h \
@@ -1121,7 +1120,11 @@ CMakeFiles/nanoex_gui.dir/nanoex_gui_autogen/mocs_compilation.cpp.o: \
   /opt/homebrew/lib/QtWidgets.framework/Headers/QToolTip \
   /opt/homebrew/lib/QtWidgets.framework/Headers/qtooltip.h \
   /opt/homebrew/include/QtWidgets/qwidget.h \
-  /opt/homebrew/include/QtCore/qtmochelpers.h \
-  /opt/homebrew/include/QtCore/qtmocconstants.h \
-  /opt/homebrew/include/QtCore/q20algorithm.h \
-  /opt/homebrew/include/QtCore/q23type_traits.h
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QApplication \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/qapplication.h \
+  /opt/homebrew/lib/QtGui.framework/Headers/QFontMetrics \
+  /opt/homebrew/lib/QtGui.framework/Headers/qfontmetrics.h \
+  /opt/homebrew/lib/QtCore.framework/Headers/QDebug \
+  /opt/homebrew/lib/QtCore.framework/Headers/qdebug.h \
+  /opt/homebrew/lib/QtGui.framework/Headers/QPainterPath \
+  /opt/homebrew/lib/QtGui.framework/Headers/qpainterpath.h

@@ -311,6 +311,30 @@ nanoex_gui_autogen/mocs_compilation.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex_gui.dir/build.make CMakeFiles/nanoex_gui.dir/nanoex_gui_autogen/mocs_compilation.cpp.s
 .PHONY : nanoex_gui_autogen/mocs_compilation.cpp.s
 
+src/chart_widget.o: src/chart_widget.cpp.o
+.PHONY : src/chart_widget.o
+
+# target to build an object file
+src/chart_widget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex_gui.dir/build.make CMakeFiles/nanoex_gui.dir/src/chart_widget.cpp.o
+.PHONY : src/chart_widget.cpp.o
+
+src/chart_widget.i: src/chart_widget.cpp.i
+.PHONY : src/chart_widget.i
+
+# target to preprocess a source file
+src/chart_widget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex_gui.dir/build.make CMakeFiles/nanoex_gui.dir/src/chart_widget.cpp.i
+.PHONY : src/chart_widget.cpp.i
+
+src/chart_widget.s: src/chart_widget.cpp.s
+.PHONY : src/chart_widget.s
+
+# target to generate assembly for a file
+src/chart_widget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex_gui.dir/build.make CMakeFiles/nanoex_gui.dir/src/chart_widget.cpp.s
+.PHONY : src/chart_widget.cpp.s
+
 src/indicators.o: src/indicators.cpp.o
 .PHONY : src/indicators.o
 
@@ -554,6 +578,9 @@ help:
 	@echo "... nanoex_gui_autogen/mocs_compilation.o"
 	@echo "... nanoex_gui_autogen/mocs_compilation.i"
 	@echo "... nanoex_gui_autogen/mocs_compilation.s"
+	@echo "... src/chart_widget.o"
+	@echo "... src/chart_widget.i"
+	@echo "... src/chart_widget.s"
 	@echo "... src/indicators.o"
 	@echo "... src/indicators.i"
 	@echo "... src/indicators.s"

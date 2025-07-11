@@ -19,12 +19,16 @@ file(GLOB SRC_FILES
     "src/*.cpp"
 )
 
+# Remove chart_widget from core system (it's GUI only)
+list(REMOVE_ITEM SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/chart_widget.cpp")
+
 add_executable(nanoex ${SRC_FILES})
 
 target_include_directories(nanoex PRIVATE src)
 
 # HFT System executable (original)
-add_executable(nanoex_gui nanoex_gui.cpp)
+add_executable(nanoex_gui nanoex_gui.cpp src/chart_widget.cpp)
+target_include_directories(nanoex_gui PRIVATE src)
 target_link_libraries(nanoex_gui PRIVATE 
     Qt::Core 
     Qt::Widgets

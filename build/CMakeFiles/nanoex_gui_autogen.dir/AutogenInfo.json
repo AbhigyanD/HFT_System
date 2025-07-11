@@ -414,7 +414,15 @@
 	"CROSS_CONFIG" : false,
 	"DEP_FILE" : "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/nanoex_gui_autogen/deps",
 	"DEP_FILE_RULE_NAME" : "nanoex_gui_autogen/timestamp",
-	"HEADERS" : [],
+	"HEADERS" : 
+	[
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/chart_widget.h",
+			"MU",
+			"UVLADIE3JM/moc_chart_widget.cpp",
+			null
+		]
+	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
 	"INCLUDE_DIR" : "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/nanoex_gui_autogen/include",
 	"MOC_COMPILATION_FILE" : "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/nanoex_gui_autogen/mocs_compilation.cpp",
@@ -428,6 +436,7 @@
 	],
 	"MOC_INCLUDES" : 
 	[
+		"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src",
 		"/opt/homebrew/lib/QtCore.framework/Headers",
 		"/opt/homebrew/lib/QtCore.framework",
 		"/opt/homebrew/share/qt/mkspecs/macx-clang",
@@ -480,6 +489,11 @@
 	[
 		[
 			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/nanoex_gui.cpp",
+			"MU",
+			null
+		],
+		[
+			"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src/chart_widget.cpp",
 			"MU",
 			null
 		]

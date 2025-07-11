@@ -29,6 +29,9 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QRegularExpression>
+#include <QColor>
+#include <QPalette>
+#include "src/chart_widget.h"
 
 // ============================================================================
 // HFT System Runner Thread
@@ -301,6 +304,138 @@ private:
 };
 
 // ============================================================================
+// Strategy Visualization Widget
+// ============================================================================
+
+class StrategyVisualizationWidget : public QWidget {
+    Q_OBJECT
+
+public:
+    StrategyVisualizationWidget(QWidget* parent = nullptr) : QWidget(parent) {
+        setupUI();
+    }
+    
+    void addPricePoint(double price, const QDateTime& timestamp) {
+        chartWidget_->addPricePoint(price, timestamp);
+    }
+    
+    void addSignalPoint(double price, bool isBuy, const QDateTime& timestamp) {
+        chartWidget_->addSignalPoint(price, isBuy, timestamp);
+    }
+    
+    void updateIndicators(double rsi, double momentum, double macd) {
+        chartWidget_->updateIndicators(rsi, momentum, macd);
+    }
+
+private:
+    void setupUI() {
+        QVBoxLayout* layout = new QVBoxLayout(this);
+        
+        // Title
+        QLabel* title = new QLabel("Momentum Strategy - Real-time Price Chart");
+        title->setFont(QFont("Arial", 16, QFont::Bold));
+        title->setAlignment(Qt::AlignCenter);
+        title->setStyleSheet("QLabel { background-color: #e0e0e0; padding: 10px; border: 2px solid #ccc; }");
+        layout->addWidget(title);
+        
+        // Chart widget
+        chartWidget_ = new ChartWidget();
+        chartWidget_->setMinimumSize(800, 500);
+        layout->addWidget(chartWidget_);
+        
+        // Instructions
+        QLabel* instructions = new QLabel("💡 Hover over the chart to see price and time details");
+        instructions->setFont(QFont("Arial", 10));
+        instructions->setAlignment(Qt::AlignCenter);
+        instructions->setStyleSheet("QLabel { color: #666; padding: 5px; }");
+        layout->addWidget(instructions);
+    }
+
+private:
+    ChartWidget* chartWidget_;
+};
+
+// ============================================================================
+// Strategy Configuration Widget
+// ============================================================================
+
+class StrategyConfigWidget : public QWidget {
+    Q_OBJECT
+
+public:
+    StrategyConfigWidget(QWidget* parent = nullptr) : QWidget(parent) {
+        setupUI();
+    }
+    
+    void updateConfig(const QString& configText) {
+        configText_->setPlainText(configText);
+    }
+
+private:
+    void setupUI() {
+        QVBoxLayout* layout = new QVBoxLayout(this);
+        
+        QLabel* title = new QLabel("Strategy Configuration");
+        title->setFont(QFont("Arial", 14, QFont::Bold));
+        layout->addWidget(title);
+        
+        configText_ = new QTextEdit();
+        configText_->setFont(QFont("Courier", 10));
+        configText_->setReadOnly(true);
+        configText_->setMaximumHeight(200);
+        layout->addWidget(configText_);
+    }
+
+private:
+    QTextEdit* configText_;
+};
+
+// ============================================================================
+// Signal Monitor Widget
+// ============================================================================
+
+class SignalMonitorWidget : public QWidget {
+    Q_OBJECT
+
+public:
+    SignalMonitorWidget(QWidget* parent = nullptr) : QWidget(parent) {
+        setupUI();
+    }
+    
+    void addSignal(const QString& signalText) {
+        signalsText_->append(QDateTime::currentDateTime().toString("hh:mm:ss") + " " + signalText);
+        
+        // Keep only last 100 signals
+        QStringList lines = signalsText_->toPlainText().split('\n');
+        if (lines.size() > 100) {
+            lines = lines.mid(lines.size() - 100);
+            signalsText_->setPlainText(lines.join('\n'));
+        }
+        
+        // Auto-scroll to bottom
+        QScrollBar* scrollbar = signalsText_->verticalScrollBar();
+        scrollbar->setValue(scrollbar->maximum());
+    }
+
+private:
+    void setupUI() {
+        QVBoxLayout* layout = new QVBoxLayout(this);
+        
+        QLabel* title = new QLabel("Strategy Signals");
+        title->setFont(QFont("Arial", 14, QFont::Bold));
+        layout->addWidget(title);
+        
+        signalsText_ = new QTextEdit();
+        signalsText_->setFont(QFont("Courier", 9));
+        signalsText_->setReadOnly(true);
+        layout->addWidget(signalsText_);
+    }
+
+private:
+    QTextEdit* signalsText_;
+};
+
+// ============================================================================
 // Main Window
 // ============================================================================
 
@@ -392,6 +527,9 @@ private slots:
         if (text.contains("Strategy '") && text.contains("':")) {
             parseStrategyUpdate(text);
         }
+        
+        // Parse for strategy signals and update visualization
+        parseStrategySignals(text);
     }
     
     void onError(const QString& error) {
@@ -459,8 +597,8 @@ private slots:
 
 private:
     void setupUI() {
-        setWindowTitle("NanoEX High-Frequency Trading System");
-        setMinimumSize(1200, 800);
+        setWindowTitle("NanoEX HFT System - Momentum Strategy Visualization");
+        setMinimumSize(1400, 900);
         
         // Central widget
         QWidget* centralWidget = new QWidget;
@@ -488,45 +626,60 @@ private:
         
         mainLayout->addWidget(controlGroup);
         
-        // Splitter for main content
-        QSplitter* splitter = new QSplitter(Qt::Horizontal);
+        // Create tab widget for different views
+        QTabWidget* tabWidget = new QTabWidget();
         
-        // Left panel - Output and Performance
-        QWidget* leftPanel = new QWidget;
-        QVBoxLayout* leftLayout = new QVBoxLayout(leftPanel);
+        // Strategy Chart tab
+        QWidget* strategyTab = new QWidget();
+        QVBoxLayout* strategyLayout = new QVBoxLayout(strategyTab);
         
-        // Performance widget
-        performanceWidget_ = new PerformanceWidget;
-        leftLayout->addWidget(performanceWidget_);
+        strategyChart_ = new StrategyVisualizationWidget();
+        strategyLayout->addWidget(strategyChart_);
         
-        // Output text
-        QGroupBox* outputGroup = new QGroupBox("System Output");
-        QVBoxLayout* outputLayout = new QVBoxLayout(outputGroup);
+        tabWidget->addTab(strategyTab, "Strategy Chart");
         
-        outputText_ = new QTextEdit;
+        // Signals tab
+        QWidget* signalsTab = new QWidget();
+        QVBoxLayout* signalsLayout = new QVBoxLayout(signalsTab);
+        
+        signalMonitor_ = new SignalMonitorWidget();
+        signalsLayout->addWidget(signalMonitor_);
+        
+        tabWidget->addTab(signalsTab, "Strategy Signals");
+        
+        // Configuration tab
+        QWidget* configTab = new QWidget();
+        QVBoxLayout* configLayout = new QVBoxLayout(configTab);
+        
+        strategyConfig_ = new StrategyConfigWidget();
+        configLayout->addWidget(strategyConfig_);
+        
+        tabWidget->addTab(configTab, "Strategy Config");
+        
+        // Performance tab
+        QWidget* performanceTab = new QWidget();
+        QVBoxLayout* performanceLayout = new QVBoxLayout(performanceTab);
+        
+        performanceWidget_ = new PerformanceWidget();
+        performanceLayout->addWidget(performanceWidget_);
+        
+        strategyTable_ = new StrategyTable();
+        performanceLayout->addWidget(strategyTable_);
+        
+        tabWidget->addTab(performanceTab, "Performance");
+        
+        // Output tab
+        QWidget* outputTab = new QWidget();
+        QVBoxLayout* outputLayout = new QVBoxLayout(outputTab);
+        
+        outputText_ = new QTextEdit();
         outputText_->setFont(QFont("Courier", 9));
         outputText_->setReadOnly(true);
         outputLayout->addWidget(outputText_);
         
-        leftLayout->addWidget(outputGroup);
+        tabWidget->addTab(outputTab, "System Output");
         
-        // Right panel - Strategy Performance
-        QWidget* rightPanel = new QWidget;
-        QVBoxLayout* rightLayout = new QVBoxLayout(rightPanel);
-        
-        QLabel* strategyTitle = new QLabel("Strategy Performance");
-        strategyTitle->setFont(QFont("Arial", 12, QFont::Bold));
-        rightLayout->addWidget(strategyTitle);
-        
-        strategyTable_ = new StrategyTable;
-        rightLayout->addWidget(strategyTable_);
-        
-        // Add panels to splitter
-        splitter->addWidget(leftPanel);
-        splitter->addWidget(rightPanel);
-        splitter->setSizes({600, 400});
-        
-        mainLayout->addWidget(splitter);
+        mainLayout->addWidget(tabWidget);
     }
     
     void setupMenuBar() {
@@ -594,6 +747,85 @@ private:
         }
     }
     
+    void parseStrategySignals(const QString& text) {
+        // Parse BUY signals
+        if (text.contains("🟢 BUY Signal:")) {
+            signalMonitor_->addSignal(text);
+            
+            // Extract price from signal
+            QRegularExpression priceRegex("@ ([0-9.]+)");
+            QRegularExpressionMatch priceMatch = priceRegex.match(text);
+            if (priceMatch.hasMatch()) {
+                double price = priceMatch.captured(1).toDouble();
+                strategyChart_->addSignalPoint(price, true, QDateTime::currentDateTime());
+            }
+        }
+        
+        // Parse SELL signals
+        if (text.contains("🔴 SELL Signal:")) {
+            signalMonitor_->addSignal(text);
+            
+            // Extract price from signal
+            QRegularExpression priceRegex("@ ([0-9.]+)");
+            QRegularExpressionMatch priceMatch = priceRegex.match(text);
+            if (priceMatch.hasMatch()) {
+                double price = priceMatch.captured(1).toDouble();
+                strategyChart_->addSignalPoint(price, false, QDateTime::currentDateTime());
+            }
+        }
+        
+        // Parse strategy configuration
+        if (text.contains("=== Momentum Strategy Configuration ===")) {
+            // Extract configuration text
+            QStringList lines = text.split('\n');
+            QString configText;
+            bool inConfig = false;
+            for (const QString& line : lines) {
+                if (line.contains("=== Momentum Strategy Configuration ===")) {
+                    inConfig = true;
+                    continue;
+                }
+                if (line.contains("=====================================")) {
+                    inConfig = false;
+                    break;
+                }
+                if (inConfig) {
+                    configText += line + "\n";
+                }
+            }
+            strategyConfig_->updateConfig(configText);
+        }
+        
+        // Parse indicators from signal reasons
+        if (text.contains("Momentum:") && text.contains("RSI:") && text.contains("MACD:")) {
+            QRegularExpression momentumRegex("Momentum: ([0-9.-]+)");
+            QRegularExpression rsiRegex("RSI: ([0-9.]+)");
+            QRegularExpression macdRegex("MACD: ([A-Za-z]+)");
+            
+            QRegularExpressionMatch momentumMatch = momentumRegex.match(text);
+            QRegularExpressionMatch rsiMatch = rsiRegex.match(text);
+            QRegularExpressionMatch macdMatch = macdRegex.match(text);
+            
+            if (momentumMatch.hasMatch() && rsiMatch.hasMatch()) {
+                double momentum = momentumMatch.captured(1).toDouble();
+                double rsi = rsiMatch.captured(1).toDouble();
+                double macd = macdMatch.hasMatch() ? (macdMatch.captured(1) == "Bullish" ? 1.0 : -1.0) : 0.0;
+                
+                strategyChart_->updateIndicators(rsi, momentum, macd);
+            }
+        }
+        
+        // Parse price data from orders
+        if (text.contains("📊 Order:") && text.contains("@")) {
+            QRegularExpression priceRegex("@ ([0-9.]+)");
+            QRegularExpressionMatch priceMatch = priceRegex.match(text);
+            if (priceMatch.hasMatch()) {
+                double price = priceMatch.captured(1).toDouble();
+                strategyChart_->addPricePoint(price, QDateTime::currentDateTime());
+            }
+        }
+    }
+    
     void loadSettings() {
         QSettings settings("NanoEX", "HFTSystem");
         restoreGeometry(settings.value("geometry").toByteArray());
@@ -612,6 +844,9 @@ private:
     QTextEdit* outputText_;
     PerformanceWidget* performanceWidget_;
     StrategyTable* strategyTable_;
+    StrategyVisualizationWidget* strategyChart_;
+    SignalMonitorWidget* signalMonitor_;
+    StrategyConfigWidget* strategyConfig_;
     HFTRunner* hftRunner_;
     QTimer* updateTimer_;
 };
