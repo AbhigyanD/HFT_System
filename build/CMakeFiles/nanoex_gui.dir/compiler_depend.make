@@ -923,6 +923,9 @@ nanoex_gui_autogen/timestamp: /Library/Developer/CommandLineTools/SDKs/MacOSX14.
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qcontainerinfo.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qcontainertools_impl.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qcontiguouscache.h \
+  /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qcoreapplication.h \
+  /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qcoreapplication_platform.h \
+  /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qcoreevent.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qdarwinhelpers.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qdatastream.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qdatetime.h \
@@ -965,6 +968,7 @@ nanoex_gui_autogen/timestamp: /Library/Developer/CommandLineTools/SDKs/MacOSX14.
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qmetatype.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qminmax.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qnamespace.h \
+  /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qnativeinterface.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qnumeric.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qobject.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qobject_impl.h \
@@ -1047,8 +1051,11 @@ nanoex_gui_autogen/timestamp: /Library/Developer/CommandLineTools/SDKs/MacOSX14.
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qfontinfo.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qfontmetrics.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qfontvariableaxis.h \
+  /opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qguiapplication.h \
+  /opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qguiapplication_platform.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qicon.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qimage.h \
+  /opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qinputmethod.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qkeysequence.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qpaintdevice.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qpalette.h \
@@ -1070,6 +1077,7 @@ nanoex_gui_autogen/timestamp: /Library/Developer/CommandLineTools/SDKs/MacOSX14.
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qtransform.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qvalidator.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qwindowdefs.h \
+  /opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/QApplication \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/QFileDialog \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/QGridLayout \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/QGroupBox \
@@ -1095,6 +1103,7 @@ nanoex_gui_autogen/timestamp: /Library/Developer/CommandLineTools/SDKs/MacOSX14.
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qabstractscrollarea.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qabstractslider.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qabstractspinbox.h \
+  /opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qapplication.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qboxlayout.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qdialog.h \
   /opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qdialogbuttonbox.h \
@@ -3146,8 +3155,6 @@ nanoex_gui_autogen/include/nanoex_gui.moc:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/remove_all_extents.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/predicate_traits.h:
-
 /opt/homebrew/lib/QtWidgets.framework/Headers/QSplitter:
 
 /opt/homebrew/include/QtCore/qexceptionhandling.h:
@@ -3876,7 +3883,15 @@ nanoex_gui_autogen/mocs_compilation.cpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_max.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_lexicographical_compare.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_iterator_concept.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_is_sorted_until.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_is_sorted.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_is_permutation.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_is_partitioned.h:
 
@@ -4306,12 +4321,6 @@ nanoex_gui_autogen/mocs_compilation.cpp:
 
 /opt/homebrew/lib/cmake/Qt6Gui/Qt6QICNSPluginConfig.cmake:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__algorithm/ranges_includes.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/sys/_pthread/_pthread_mutex_t.h:
-
-/opt/homebrew/lib/cmake/Qt6Gui/Qt6QGifPluginAdditionalTargetInfo.cmake:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_signed.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/partial_sort.h:
@@ -4700,12 +4709,6 @@ nanoex_gui_autogen/mocs_compilation.cpp:
 
 /opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qboxlayout.h:
 
-/opt/homebrew/include/QtCore/qtypes.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/make_projected.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_lower_bound.h:
-
 /opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qpushbutton.h:
 
 /opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qabstractslider.h:
@@ -4822,6 +4825,14 @@ nanoex_gui_autogen/mocs_compilation.cpp:
 
 /opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qicon.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__algorithm/ranges_includes.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/sys/_pthread/_pthread_mutex_t.h:
+
+/opt/homebrew/lib/cmake/Qt6Gui/Qt6QGifPluginAdditionalTargetInfo.cmake:
+
+/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qguiapplication_platform.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__fwd/subrange.h:
 
 /opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qfontvariableaxis.h:
@@ -4867,10 +4878,6 @@ nanoex_gui_autogen/mocs_compilation.cpp:
 /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qurl.h:
 
 /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qtversion.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__chrono/convert_to_timespec.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_make_heap.h:
 
 /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qttypetraits.h:
 
@@ -5023,6 +5030,8 @@ nanoex_gui_autogen/mocs_compilation.cpp:
 /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qlist.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_move_constructible.h:
+
+/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qcoreapplication.h:
 
 /opt/homebrew/lib/cmake/Qt6Widgets/Qt6WidgetsAdditionalTargetInfo.cmake:
 
@@ -5844,6 +5853,12 @@ CMakeFiles/4.0.3/CMakeCXXCompiler.cmake:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__type_traits/is_copy_constructible.h:
 
+/opt/homebrew/include/QtCore/qtypes.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_lower_bound.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/make_projected.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/make_heap.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__fwd/subrange.h:
@@ -5890,6 +5905,10 @@ CMakeFiles/4.0.3/CMakeCXXCompiler.cmake:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__type_traits/is_array.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/predicate_traits.h:
+
+/opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qapplication.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__concepts/class_or_enum.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__type_traits/is_unbounded_array.h:
@@ -5899,6 +5918,8 @@ CMakeFiles/4.0.3/CMakeCXXCompiler.cmake:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/half_positive.h:
 
 /opt/homebrew/lib/cmake/Qt6Gui/Qt6QMngPluginTargets-release.cmake:
+
+/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qnativeinterface.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/reverse.h:
 
@@ -6164,10 +6185,6 @@ CMakeFiles/4.0.3/CMakeCXXCompiler.cmake:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__numeric/pstl_transform_reduce.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__system_error/system_error.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_is_heap_until.h:
-
 /opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qfloat16.h:
 
 /opt/homebrew/share/cmake/Modules/Platform/Apple-AppleClang-CXX.cmake:
@@ -6259,6 +6276,8 @@ CMakeFiles/4.0.3/CMakeCXXCompiler.cmake:
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__functional/weak_result_type.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__type_traits/remove_all_extents.h:
+
+/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qcoreapplication_platform.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__memory/uses_allocator.h:
 
@@ -6486,8 +6505,6 @@ CMakeFiles/4.0.3/CMakeCXXCompiler.cmake:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__iterator/front_insert_iterator.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_is_sorted.h:
-
 /opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qmenu.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_void.h:
@@ -6639,6 +6656,8 @@ CMakeFiles/4.0.3/CMakeCXXCompiler.cmake:
 CMakeFiles/4.0.3/CMakeCCompiler.cmake:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/ranges_operations.h:
+
+/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qguiapplication.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__type_traits/is_default_constructible.h:
 
@@ -6860,6 +6879,8 @@ CMakeFiles/4.0.3/CMakeCCompiler.cmake:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__memory/addressof.h:
 
+/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qcoreevent.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__iterator/segmented_iterator.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__compare/strong_order.h:
@@ -6959,6 +6980,8 @@ CMakeFiles/4.0.3/CMakeCCompiler.cmake:
 /opt/homebrew/lib/cmake/Qt6Gui/Qt6QMinimalIntegrationPluginTargets-release.cmake:
 
 /opt/homebrew/include/QtCore/qnumeric.h:
+
+/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qinputmethod.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__format/width_estimation_table.h:
 
@@ -7250,6 +7273,10 @@ CMakeFiles/4.0.3/CMakeCCompiler.cmake:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__algorithm/set_intersection.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_is_heap_until.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__system_error/system_error.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__numeric/pstl_transform_reduce.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__type_traits/is_swappable.h:
@@ -7506,8 +7533,6 @@ CMakeFiles/4.0.3/CMakeCCompiler.cmake:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__algorithm/ranges_lower_bound.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_is_permutation.h:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_constant_evaluated.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h:
@@ -7553,8 +7578,6 @@ CMakeFiles/4.0.3/CMakeCCompiler.cmake:
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/limits:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__algorithm/ranges_inplace_merge.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_lexicographical_compare.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_pid_t.h:
 
@@ -7668,8 +7691,6 @@ CMakeFiles/4.0.3/CMakeCCompiler.cmake:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__algorithm/shuffle.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_iterator_concept.h:
-
 /opt/homebrew/include/QtGui/qtextformat.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__system_error/errc.h:
@@ -7732,6 +7753,8 @@ CMakeFiles/4.0.3/CMakeCCompiler.cmake:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__bit/byteswap.h:
 
+/opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/QApplication:
+
 /opt/homebrew/include/QtGui/qpaintdevice.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__type_traits/is_constant_evaluated.h:
@@ -7779,6 +7802,10 @@ CMakeFiles/4.0.3/CMakeCCompiler.cmake:
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__algorithm/for_each.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__algorithm/max_element.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_make_heap.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__chrono/convert_to_timespec.h:
 
 /opt/homebrew/share/cmake/Modules/CMakeSystemSpecificInitialize.cmake:
 

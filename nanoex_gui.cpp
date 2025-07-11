@@ -1,3 +1,4 @@
+#include <QApplication>
 #include <QMainWindow>
 #include <QVBoxLayout>
 #include <QHBoxLayout>

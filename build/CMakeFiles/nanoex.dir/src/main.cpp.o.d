@@ -951,9 +951,10 @@ CMakeFiles/nanoex.dir/src/main.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__random/student_t_distribution.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__random/weibull_distribution.h \
   /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/strategy.h \
-  /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/risk.h \
   /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/indicators.h \
+  /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/risk.h \
   /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/performance.h \
   /Users/bu/Desktop/Data\ Science/Quantitatives/HFT_System/src/threading.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/condition_variable \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/iostream
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/iostream \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/iomanip

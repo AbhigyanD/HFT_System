@@ -919,6 +919,9 @@
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qcontainerinfo.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qcontainertools_impl.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qcontiguouscache.h
+ mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qcoreapplication.h
+ mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qcoreapplication_platform.h
+ mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qcoreevent.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qdarwinhelpers.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qdatastream.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qdatetime.h
@@ -961,6 +964,7 @@
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qmetatype.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qminmax.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qnamespace.h
+ mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qnativeinterface.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qnumeric.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qobject.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Versions/A/Headers/qobject_impl.h
@@ -1043,8 +1047,11 @@
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qfontinfo.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qfontmetrics.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qfontvariableaxis.h
+ mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qguiapplication.h
+ mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qguiapplication_platform.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qicon.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qimage.h
+ mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qinputmethod.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qkeysequence.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qpaintdevice.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qpalette.h
@@ -1066,6 +1073,7 @@
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qtransform.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qvalidator.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Versions/A/Headers/qwindowdefs.h
+ mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/QApplication
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/QFileDialog
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/QGridLayout
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/QGroupBox
@@ -1091,6 +1099,7 @@
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qabstractscrollarea.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qabstractslider.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qabstractspinbox.h
+ mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qapplication.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qboxlayout.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qdialog.h
  mdp:/opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Versions/A/Headers/qdialogbuttonbox.h
