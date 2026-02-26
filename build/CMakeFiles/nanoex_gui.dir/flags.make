@@ -6,7 +6,5 @@ CXX_DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB
 
 CXX_INCLUDES = -I"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/nanoex_gui_autogen/include" -I"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src" -isystem /opt/homebrew/lib/QtCore.framework/Headers -iframework /opt/homebrew/lib -isystem /opt/homebrew/share/qt/mkspecs/macx-clang -isystem /opt/homebrew/include -isystem /opt/homebrew/lib/QtWidgets.framework/Headers -isystem /opt/homebrew/lib/QtGui.framework/Headers
 
-CXX_FLAGSarm64 = -std=gnu++17 -arch arm64
-
-CXX_FLAGS = -std=gnu++17 -arch arm64
+CXX_FLAGS = -std=gnu++17
 

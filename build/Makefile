@@ -175,6 +175,19 @@ nanoex/fast:
 .PHONY : nanoex/fast
 
 #=============================================================================
+# Target rules for targets named backtest
+
+# Build rule for target.
+backtest: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 backtest
+.PHONY : backtest
+
+# fast build rule for target.
+backtest/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/build
+.PHONY : backtest/fast
+
+#=============================================================================
 # Target rules for targets named nanoex_gui
 
 # Build rule for target.
@@ -214,6 +227,32 @@ nanoex_autogen/fast:
 .PHONY : nanoex_autogen/fast
 
 #=============================================================================
+# Target rules for targets named backtest_autogen_timestamp_deps
+
+# Build rule for target.
+backtest_autogen_timestamp_deps: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 backtest_autogen_timestamp_deps
+.PHONY : backtest_autogen_timestamp_deps
+
+# fast build rule for target.
+backtest_autogen_timestamp_deps/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest_autogen_timestamp_deps.dir/build.make CMakeFiles/backtest_autogen_timestamp_deps.dir/build
+.PHONY : backtest_autogen_timestamp_deps/fast
+
+#=============================================================================
+# Target rules for targets named backtest_autogen
+
+# Build rule for target.
+backtest_autogen: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 backtest_autogen
+.PHONY : backtest_autogen
+
+# fast build rule for target.
+backtest_autogen/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest_autogen.dir/build.make CMakeFiles/backtest_autogen.dir/build
+.PHONY : backtest_autogen/fast
+
+#=============================================================================
 # Target rules for targets named nanoex_gui_autogen_timestamp_deps
 
 # Build rule for target.
@@ -238,6 +277,30 @@ nanoex_gui_autogen: cmake_check_build_system
 nanoex_gui_autogen/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex_gui_autogen.dir/build.make CMakeFiles/nanoex_gui_autogen.dir/build
 .PHONY : nanoex_gui_autogen/fast
+
+backtest_autogen/mocs_compilation.o: backtest_autogen/mocs_compilation.cpp.o
+.PHONY : backtest_autogen/mocs_compilation.o
+
+# target to build an object file
+backtest_autogen/mocs_compilation.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/backtest_autogen/mocs_compilation.cpp.o
+.PHONY : backtest_autogen/mocs_compilation.cpp.o
+
+backtest_autogen/mocs_compilation.i: backtest_autogen/mocs_compilation.cpp.i
+.PHONY : backtest_autogen/mocs_compilation.i
+
+# target to preprocess a source file
+backtest_autogen/mocs_compilation.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/backtest_autogen/mocs_compilation.cpp.i
+.PHONY : backtest_autogen/mocs_compilation.cpp.i
+
+backtest_autogen/mocs_compilation.s: backtest_autogen/mocs_compilation.cpp.s
+.PHONY : backtest_autogen/mocs_compilation.s
+
+# target to generate assembly for a file
+backtest_autogen/mocs_compilation.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/backtest_autogen/mocs_compilation.cpp.s
+.PHONY : backtest_autogen/mocs_compilation.cpp.s
 
 nanoex_autogen/mocs_compilation.o: nanoex_autogen/mocs_compilation.cpp.o
 .PHONY : nanoex_autogen/mocs_compilation.o
@@ -311,6 +374,54 @@ nanoex_gui_autogen/mocs_compilation.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex_gui.dir/build.make CMakeFiles/nanoex_gui.dir/nanoex_gui_autogen/mocs_compilation.cpp.s
 .PHONY : nanoex_gui_autogen/mocs_compilation.cpp.s
 
+src/backtest_main.o: src/backtest_main.cpp.o
+.PHONY : src/backtest_main.o
+
+# target to build an object file
+src/backtest_main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/backtest_main.cpp.o
+.PHONY : src/backtest_main.cpp.o
+
+src/backtest_main.i: src/backtest_main.cpp.i
+.PHONY : src/backtest_main.i
+
+# target to preprocess a source file
+src/backtest_main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/backtest_main.cpp.i
+.PHONY : src/backtest_main.cpp.i
+
+src/backtest_main.s: src/backtest_main.cpp.s
+.PHONY : src/backtest_main.s
+
+# target to generate assembly for a file
+src/backtest_main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/backtest_main.cpp.s
+.PHONY : src/backtest_main.cpp.s
+
+src/backtester.o: src/backtester.cpp.o
+.PHONY : src/backtester.o
+
+# target to build an object file
+src/backtester.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/backtester.cpp.o
+.PHONY : src/backtester.cpp.o
+
+src/backtester.i: src/backtester.cpp.i
+.PHONY : src/backtester.i
+
+# target to preprocess a source file
+src/backtester.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/backtester.cpp.i
+.PHONY : src/backtester.cpp.i
+
+src/backtester.s: src/backtester.cpp.s
+.PHONY : src/backtester.s
+
+# target to generate assembly for a file
+src/backtester.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/backtester.cpp.s
+.PHONY : src/backtester.cpp.s
+
 src/chart_widget.o: src/chart_widget.cpp.o
 .PHONY : src/chart_widget.o
 
@@ -341,6 +452,7 @@ src/indicators.o: src/indicators.cpp.o
 # target to build an object file
 src/indicators.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/indicators.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/indicators.cpp.o
 .PHONY : src/indicators.cpp.o
 
 src/indicators.i: src/indicators.cpp.i
@@ -349,6 +461,7 @@ src/indicators.i: src/indicators.cpp.i
 # target to preprocess a source file
 src/indicators.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/indicators.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/indicators.cpp.i
 .PHONY : src/indicators.cpp.i
 
 src/indicators.s: src/indicators.cpp.s
@@ -357,6 +470,7 @@ src/indicators.s: src/indicators.cpp.s
 # target to generate assembly for a file
 src/indicators.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/indicators.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/indicators.cpp.s
 .PHONY : src/indicators.cpp.s
 
 src/main.o: src/main.cpp.o
@@ -431,12 +545,37 @@ src/matching_engine.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/matching_engine.cpp.s
 .PHONY : src/matching_engine.cpp.s
 
+src/mean_reversion_strategy.o: src/mean_reversion_strategy.cpp.o
+.PHONY : src/mean_reversion_strategy.o
+
+# target to build an object file
+src/mean_reversion_strategy.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/mean_reversion_strategy.cpp.o
+.PHONY : src/mean_reversion_strategy.cpp.o
+
+src/mean_reversion_strategy.i: src/mean_reversion_strategy.cpp.i
+.PHONY : src/mean_reversion_strategy.i
+
+# target to preprocess a source file
+src/mean_reversion_strategy.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/mean_reversion_strategy.cpp.i
+.PHONY : src/mean_reversion_strategy.cpp.i
+
+src/mean_reversion_strategy.s: src/mean_reversion_strategy.cpp.s
+.PHONY : src/mean_reversion_strategy.s
+
+# target to generate assembly for a file
+src/mean_reversion_strategy.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/mean_reversion_strategy.cpp.s
+.PHONY : src/mean_reversion_strategy.cpp.s
+
 src/order_book.o: src/order_book.cpp.o
 .PHONY : src/order_book.o
 
 # target to build an object file
 src/order_book.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/order_book.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/order_book.cpp.o
 .PHONY : src/order_book.cpp.o
 
 src/order_book.i: src/order_book.cpp.i
@@ -445,6 +584,7 @@ src/order_book.i: src/order_book.cpp.i
 # target to preprocess a source file
 src/order_book.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/order_book.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/order_book.cpp.i
 .PHONY : src/order_book.cpp.i
 
 src/order_book.s: src/order_book.cpp.s
@@ -453,6 +593,7 @@ src/order_book.s: src/order_book.cpp.s
 # target to generate assembly for a file
 src/order_book.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/order_book.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/order_book.cpp.s
 .PHONY : src/order_book.cpp.s
 
 src/performance.o: src/performance.cpp.o
@@ -509,6 +650,7 @@ src/strategy.o: src/strategy.cpp.o
 # target to build an object file
 src/strategy.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/strategy.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/strategy.cpp.o
 .PHONY : src/strategy.cpp.o
 
 src/strategy.i: src/strategy.cpp.i
@@ -517,6 +659,7 @@ src/strategy.i: src/strategy.cpp.i
 # target to preprocess a source file
 src/strategy.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/strategy.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/strategy.cpp.i
 .PHONY : src/strategy.cpp.i
 
 src/strategy.s: src/strategy.cpp.s
@@ -525,6 +668,7 @@ src/strategy.s: src/strategy.cpp.s
 # target to generate assembly for a file
 src/strategy.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nanoex.dir/build.make CMakeFiles/nanoex.dir/src/strategy.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backtest.dir/build.make CMakeFiles/backtest.dir/src/strategy.cpp.s
 .PHONY : src/strategy.cpp.s
 
 src/threading.o: src/threading.cpp.o
@@ -563,12 +707,18 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... backtest_autogen"
+	@echo "... backtest_autogen_timestamp_deps"
 	@echo "... nanoex_autogen"
 	@echo "... nanoex_autogen_timestamp_deps"
 	@echo "... nanoex_gui_autogen"
 	@echo "... nanoex_gui_autogen_timestamp_deps"
+	@echo "... backtest"
 	@echo "... nanoex"
 	@echo "... nanoex_gui"
+	@echo "... backtest_autogen/mocs_compilation.o"
+	@echo "... backtest_autogen/mocs_compilation.i"
+	@echo "... backtest_autogen/mocs_compilation.s"
 	@echo "... nanoex_autogen/mocs_compilation.o"
 	@echo "... nanoex_autogen/mocs_compilation.i"
 	@echo "... nanoex_autogen/mocs_compilation.s"
@@ -578,6 +728,12 @@ help:
 	@echo "... nanoex_gui_autogen/mocs_compilation.o"
 	@echo "... nanoex_gui_autogen/mocs_compilation.i"
 	@echo "... nanoex_gui_autogen/mocs_compilation.s"
+	@echo "... src/backtest_main.o"
+	@echo "... src/backtest_main.i"
+	@echo "... src/backtest_main.s"
+	@echo "... src/backtester.o"
+	@echo "... src/backtester.i"
+	@echo "... src/backtester.s"
 	@echo "... src/chart_widget.o"
 	@echo "... src/chart_widget.i"
 	@echo "... src/chart_widget.s"
@@ -593,6 +749,9 @@ help:
 	@echo "... src/matching_engine.o"
 	@echo "... src/matching_engine.i"
 	@echo "... src/matching_engine.s"
+	@echo "... src/mean_reversion_strategy.o"
+	@echo "... src/mean_reversion_strategy.i"
+	@echo "... src/mean_reversion_strategy.s"
 	@echo "... src/order_book.o"
 	@echo "... src/order_book.i"
 	@echo "... src/order_book.s"

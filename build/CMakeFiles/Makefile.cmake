@@ -324,6 +324,7 @@ set(CMAKE_MAKEFILE_OUTPUTS
 set(CMAKE_MAKEFILE_PRODUCTS
   "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/Info.plist"
   "CMakeFiles/nanoex_autogen.dir/AutogenInfo.json"
+  "CMakeFiles/backtest_autogen.dir/AutogenInfo.json"
   "CMakeFiles/nanoex_gui_autogen.dir/AutogenInfo.json"
   ".qt/QtDeploySupport.cmake"
   ".qt/QtDeployTargets.cmake"
@@ -336,9 +337,12 @@ set(CMAKE_MAKEFILE_PRODUCTS
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/nanoex.dir/DependInfo.cmake"
+  "CMakeFiles/backtest.dir/DependInfo.cmake"
   "CMakeFiles/nanoex_gui.dir/DependInfo.cmake"
   "CMakeFiles/nanoex_autogen_timestamp_deps.dir/DependInfo.cmake"
   "CMakeFiles/nanoex_autogen.dir/DependInfo.cmake"
+  "CMakeFiles/backtest_autogen_timestamp_deps.dir/DependInfo.cmake"
+  "CMakeFiles/backtest_autogen.dir/DependInfo.cmake"
   "CMakeFiles/nanoex_gui_autogen_timestamp_deps.dir/DependInfo.cmake"
   "CMakeFiles/nanoex_gui_autogen.dir/DependInfo.cmake"
   )

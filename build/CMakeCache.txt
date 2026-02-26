@@ -273,15 +273,6 @@ HFT_System_SOURCE_DIR:STATIC=/Users/bu/Desktop/Data Science/Quantitatives/HFT_Sy
 //Path to a program.
 MACDEPLOYQT_EXECUTABLE:FILEPATH=/opt/homebrew/bin/macdeployqt
 
-//Value Computed by CMake
-NanoEX_HFT_System_BINARY_DIR:STATIC=/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build
-
-//Value Computed by CMake
-NanoEX_HFT_System_IS_TOP_LEVEL:STATIC=ON
-
-//Value Computed by CMake
-NanoEX_HFT_System_SOURCE_DIR:STATIC=/Users/bu/Desktop/Data Science/Quantitatives/HFT_System
-
 //Include for the OpenGL GLU library
 OPENGL_GLU_INCLUDE_DIR:PATH=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework
 
@@ -300,12 +291,6 @@ QT_ADDITIONAL_HOST_PACKAGES_PREFIX_PATH:STRING=
 
 //Additional directories where find(Qt6 ...) components are searched
 QT_ADDITIONAL_PACKAGES_PREFIX_PATH:STRING=
-
-//The directory containing a CMake configuration file for Qt6ChartsPrivate.
-Qt6ChartsPrivate_DIR:PATH=/opt/homebrew/lib/cmake/Qt6ChartsPrivate
-
-//The directory containing a CMake configuration file for Qt6Charts.
-Qt6Charts_DIR:PATH=/opt/homebrew/lib/cmake/Qt6Charts
 
 //The directory containing a CMake configuration file for Qt6CorePrivate.
 Qt6CorePrivate_DIR:PATH=/opt/homebrew/lib/cmake/Qt6CorePrivate
@@ -334,18 +319,6 @@ Qt6GuiTools_DIR:PATH=/opt/homebrew/lib/cmake/Qt6GuiTools
 //The directory containing a CMake configuration file for Qt6Gui.
 Qt6Gui_DIR:PATH=/opt/homebrew/lib/cmake/Qt6Gui
 
-//The directory containing a CMake configuration file for Qt6OpenGLPrivate.
-Qt6OpenGLPrivate_DIR:PATH=/opt/homebrew/lib/cmake/Qt6OpenGLPrivate
-
-//The directory containing a CMake configuration file for Qt6OpenGLWidgetsPrivate.
-Qt6OpenGLWidgetsPrivate_DIR:PATH=/opt/homebrew/lib/cmake/Qt6OpenGLWidgetsPrivate
-
-//The directory containing a CMake configuration file for Qt6OpenGLWidgets.
-Qt6OpenGLWidgets_DIR:PATH=/opt/homebrew/lib/cmake/Qt6OpenGLWidgets
-
-//The directory containing a CMake configuration file for Qt6OpenGL.
-Qt6OpenGL_DIR:PATH=/opt/homebrew/lib/cmake/Qt6OpenGL
-
 //The directory containing a CMake configuration file for Qt6WidgetsPrivate.
 Qt6WidgetsPrivate_DIR:PATH=/opt/homebrew/lib/cmake/Qt6WidgetsPrivate
 
@@ -371,7 +344,7 @@ Vulkan_INCLUDE_DIR:PATH=Vulkan_INCLUDE_DIR-NOTFOUND
 Vulkan_LIBRARY:FILEPATH=Vulkan_LIBRARY-NOTFOUND
 
 //Path to a library.
-WrapOpenGL_AGL:FILEPATH=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/AGL.framework
+WrapOpenGL_AGL:FILEPATH=/System/Library/Frameworks/AGL.framework
 
 
 ########################
@@ -631,24 +604,6 @@ QT_FEATURE_calendarwidget:INTERNAL=ON
 QT_FEATURE_cborstreamreader:INTERNAL=ON
 //Qt feature: cborstreamwriter (from target Qt6::Core)
 QT_FEATURE_cborstreamwriter:INTERNAL=ON
-//Qt feature: charts_area_chart (from target Qt6::Charts)
-QT_FEATURE_charts_area_chart:INTERNAL=ON
-//Qt feature: charts_bar_chart (from target Qt6::Charts)
-QT_FEATURE_charts_bar_chart:INTERNAL=ON
-//Qt feature: charts_boxplot_chart (from target Qt6::Charts)
-QT_FEATURE_charts_boxplot_chart:INTERNAL=ON
-//Qt feature: charts_candlestick_chart (from target Qt6::Charts)
-QT_FEATURE_charts_candlestick_chart:INTERNAL=ON
-//Qt feature: charts_datetime_axis (from target Qt6::Charts)
-QT_FEATURE_charts_datetime_axis:INTERNAL=ON
-//Qt feature: charts_line_chart (from target Qt6::Charts)
-QT_FEATURE_charts_line_chart:INTERNAL=ON
-//Qt feature: charts_pie_chart (from target Qt6::Charts)
-QT_FEATURE_charts_pie_chart:INTERNAL=ON
-//Qt feature: charts_scatter_chart (from target Qt6::Charts)
-QT_FEATURE_charts_scatter_chart:INTERNAL=ON
-//Qt feature: charts_spline_chart (from target Qt6::Charts)
-QT_FEATURE_charts_spline_chart:INTERNAL=ON
 //Qt feature: checkbox (from target Qt6::Widgets)
 QT_FEATURE_checkbox:INTERNAL=ON
 //Qt feature: clipboard (from target Qt6::Gui)

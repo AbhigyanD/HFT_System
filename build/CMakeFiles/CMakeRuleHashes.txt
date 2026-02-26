@@ -1,5 +1,7 @@
 # Hashes of file build rules.
+a60e9a6b5606ac8b6cdc6a8620c65fde CMakeFiles/backtest_autogen
 a60e9a6b5606ac8b6cdc6a8620c65fde CMakeFiles/nanoex_autogen
 a60e9a6b5606ac8b6cdc6a8620c65fde CMakeFiles/nanoex_gui_autogen
+003712e259eb930a5b4bc2ab2d1797f7 backtest_autogen/timestamp
 27f703dc68564548a7968af2ae115d24 nanoex_autogen/timestamp
 39564d33d20547cf039c21fbf5fecb74 nanoex_gui_autogen/timestamp

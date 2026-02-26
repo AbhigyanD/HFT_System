@@ -6,7 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/nanoex_autogen/include" -I"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/src"
 
-CXX_FLAGSarm64 = -std=gnu++17 -arch arm64
-
-CXX_FLAGS = -std=gnu++17 -arch arm64
+CXX_FLAGS = -std=gnu++17
 

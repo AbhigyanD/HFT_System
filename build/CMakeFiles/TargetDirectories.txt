@@ -1,4 +1,5 @@
 /Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles/nanoex.dir
+/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles/backtest.dir
 /Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles/nanoex_gui.dir
 /Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles/edit_cache.dir
 /Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles/rebuild_cache.dir
@@ -8,5 +9,7 @@
 /Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles/install/strip.dir
 /Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles/nanoex_autogen_timestamp_deps.dir
 /Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles/nanoex_autogen.dir
+/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles/backtest_autogen_timestamp_deps.dir
+/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles/backtest_autogen.dir
 /Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles/nanoex_gui_autogen_timestamp_deps.dir
 /Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles/nanoex_gui_autogen.dir

@@ -447,7 +447,7 @@
 		"/opt/homebrew/lib/QtGui.framework",
 		"/usr/local/include",
 		"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1",
-		"/Library/Developer/CommandLineTools/usr/lib/clang/15.0.0/include",
+		"/Library/Developer/CommandLineTools/usr/lib/clang/17/include",
 		"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include",
 		"/Library/Developer/CommandLineTools/usr/include"
 	],
@@ -475,10 +475,11 @@
 	"MOC_RELAXED_MODE" : false,
 	"MOC_SKIP" : 
 	[
+		"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/backtest_autogen/mocs_compilation.cpp",
 		"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/nanoex_autogen/mocs_compilation.cpp"
 	],
 	"MULTI_CONFIG" : false,
-	"PARALLEL" : 8,
+	"PARALLEL" : 1,
 	"PARSE_CACHE_FILE" : "/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/CMakeFiles/nanoex_gui_autogen.dir/ParseCache.txt",
 	"QT_MOC_EXECUTABLE" : "/opt/homebrew/share/qt/libexec/moc",
 	"QT_UIC_EXECUTABLE" : "/opt/homebrew/share/qt/libexec/uic",
@@ -502,6 +503,7 @@
 	"UIC_SEARCH_PATHS" : [],
 	"UIC_SKIP" : 
 	[
+		"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/backtest_autogen/mocs_compilation.cpp",
 		"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/build/nanoex_autogen/mocs_compilation.cpp"
 	],
 	"UIC_UI_FILES" : [],
