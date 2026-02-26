@@ -27,8 +27,8 @@ void MarketData::feed_loop(MarketDataCallback callback) {
             auto order = std::make_shared<Order>();
             order->order_id = next_id++;
             order->side = side_dist(rng) == 0 ? OrderSide::BUY : OrderSide::SELL;
-            order->price = price_dist(rng);
-            order->quantity = qty_dist(rng);
+            order->price = static_cast<Price>(price_dist(rng) * 100.0);
+            order->quantity = static_cast<Quantity>(qty_dist(rng));
             order->type = type_dist(rng) == 0 ? OrderType::LIMIT : OrderType::MARKET;
             orders.push_back(order);
         }

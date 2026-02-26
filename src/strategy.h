@@ -40,7 +40,11 @@ private:
     double last_signal_price = 0.0;
     bool in_position = false;
     double entry_price = 0.0;
-    
+    SignalType last_signal_type_ = SignalType::HOLD;
+    std::string last_signal_reason_;
+    double last_signal_confidence_ = 0.0;
+    double last_signal_pnl_pct_ = 0.0;
+
     Signal generate_momentum_signal(double current_price, double current_volume);
     double calculate_signal_confidence(double current_price);
     std::string generate_signal_reason(double current_price);
@@ -62,4 +66,10 @@ public:
     
     // Performance tracking
     void reset_position() { in_position = false; entry_price = 0.0; }
+
+    // Last signal metadata for logging (set by generate_signals when order is produced)
+    SignalType get_last_signal_type() const { return last_signal_type_; }
+    const std::string& get_last_signal_reason() const { return last_signal_reason_; }
+    double get_last_signal_confidence() const { return last_signal_confidence_; }
+    double get_last_signal_pnl_pct() const { return last_signal_pnl_pct_; }
 }; 

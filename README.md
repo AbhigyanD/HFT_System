@@ -4,16 +4,16 @@ A high-performance, multi-threaded HFT system built in C++17 with advanced featu
 
 ---
 
-## 🖥️ Visual GUI with Real-Time Charts (NEW!)
+## Visual GUI with Real-Time Charts
 
-You can now see your momentum strategy **visually** with a modern GUI that includes:
+The GUI provides visual monitoring of the momentum strategy:
 
 - **Strategy Chart Tab**: Real-time price line chart, buy/sell signal markers, and color-coded RSI, Momentum, MACD indicators
 - **Mouse Hover Tooltips**: See price and time for any point on the chart
 - **Live Signal Markers**: Green (BUY) and Red (SELL) dots on the price chart
 - **Performance, Config, and Output Tabs**: All system metrics and logs
 
-### 🚀 How to Launch the GUI
+### Launching the GUI
 
 From your project root, run:
 ```bash
@@ -24,7 +24,7 @@ Or, from the build directory:
 ./NanoEX\ HFT\ System.app/Contents/MacOS/NanoEX\ HFT\ System
 ```
 
-### 📈 What You'll See
+### GUI Tabs
 - **Strategy Chart Tab**: Live price chart, buy/sell signals, and technical indicators
 - **Performance Tab**: Orders processed, trades matched, latency, throughput
 - **Strategy Config Tab**: All current strategy parameters
@@ -34,7 +34,7 @@ Or, from the build directory:
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - C++17 compatible compiler (GCC 7+, Clang 5+, MSVC 2017+)
@@ -57,7 +57,7 @@ make -j4
 open "NanoEX HFT System.app"
 ```
 
-## 📊 Momentum Strategy Example
+## Momentum Strategy
 
 The system includes a **complete momentum strategy** that demonstrates the end-to-end workflow. This is perfect for new users to understand how the system works.
 
@@ -101,14 +101,14 @@ config.take_profit_pct = 3.0;      // Take profit percentage
 
 ### Example Output
 
-When you run the system, you'll see real-time signals like:
+Example output:
 
 ```
-🟢 BUY Signal: Momentum: 0.67, RSI: 57.14, MACD: Bullish, Price vs MA: Above (99.80 vs 99.65) (Confidence: 34.54%)
-📊 Order: BUY @ 100.00 x 50
+BUY Signal: Momentum: 0.67, RSI: 57.14, MACD: Bullish, Price vs MA: Above (99.80 vs 99.65) (Confidence: 34.54%)
+Order: BUY @ 100.00 x 50
 
-🔴 SELL Signal: Momentum: -0.70, RSI: 50.00, MACD: Bearish, Price vs MA: Below (99.40 vs 99.55) (Confidence: 30.28%, P&L: -1.00%)
-📊 Order: SELL @ 99.00 x 50
+SELL Signal: Momentum: -0.70, RSI: 50.00, MACD: Bearish, Price vs MA: Below (99.40 vs 99.55) (Confidence: 30.28%, P&L: -1.00%)
+Order: SELL @ 99.00 x 50
 ```
 
 ### End-to-End Workflow
@@ -139,7 +139,7 @@ To create your own strategy:
 3. **Adjust configuration** in `src/main.cpp`
 4. **Test different parameters** to optimize performance
 
-## 🏗️ Architecture
+## Architecture
 
 ### Core Components
 
@@ -159,14 +159,14 @@ To create your own strategy:
 - **Memory Pool**: Custom allocator for order objects
 - **Real-time Monitoring**: Live performance metrics and system status
 
-## 📈 Performance
+## Performance
 
 - **Order Processing**: < 100 nanoseconds average
 - **Throughput**: 1M+ orders/second on modern hardware
 - **Memory Usage**: < 1MB for typical order book
 - **Thread Scaling**: Linear performance up to CPU core count
 
-## 🔧 Configuration
+## Configuration
 
 ### Build Options
 ```bash
@@ -186,7 +186,7 @@ cmake -DBUILD_GUI=ON ..
 - Risk limits: Adjustable per strategy
 - Performance monitoring: Real-time metrics
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -212,7 +212,7 @@ cmake -DBUILD_GUI=ON ..
 - **Order Book Visualization**: GUI shows live order book state
 - **Signal Analysis**: Detailed strategy decision logging
 
-## 📚 API Reference
+## API Reference
 
 ### Core Classes
 
@@ -230,9 +230,11 @@ class StrategyEngine {
     void set_config(const StrategyConfig& config);
 };
 
-// Risk Management
+// Risk Management (configurable limits: max order size, notional, orders per batch, daily volume)
 class RiskManager {
+    void set_config(const RiskConfig& config);
     std::vector<std::shared_ptr<Order>> filter_orders(const std::vector<std::shared_ptr<Order>>& orders);
+    uint64_t get_orders_rejected() const;
 };
 ```
 
@@ -247,7 +249,7 @@ class Indicators {
 };
 ```
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -255,11 +257,11 @@ class Indicators {
 4. Ensure all tests pass
 5. Submit a pull request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Inspired by modern HFT systems and academic research
 - Built with performance and reliability in mind

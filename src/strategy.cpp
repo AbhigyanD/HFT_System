@@ -1,5 +1,4 @@
 #include "strategy.h"
-#include <iostream>
 #include <cmath>
 #include <sstream>
 #include <iomanip>
@@ -17,13 +16,14 @@ StrategyConfig StrategyEngine::get_config() const {
 }
 
 std::vector<std::shared_ptr<Order>> StrategyEngine::generate_signals(const std::vector<std::shared_ptr<Order>>& market_orders) {
+    last_signal_type_ = SignalType::HOLD;
     std::vector<std::shared_ptr<Order>> strategy_orders;
-    
+
     // Update price history from market orders
     for (const auto& order : market_orders) {
         if (order->type == OrderType::MARKET) {
-            price_history.push_back(order->price);
-            volume_history.push_back(order->quantity);
+            price_history.push_back(static_cast<double>(order->price) / 100.0);
+            volume_history.push_back(static_cast<double>(order->quantity));
             
             // Keep only recent history (last 1000 data points)
             if (price_history.size() > 1000) {
@@ -56,23 +56,21 @@ std::vector<std::shared_ptr<Order>> StrategyEngine::generate_signals(const std::
         order->timestamp = std::chrono::high_resolution_clock::now();
         
         strategy_orders.push_back(order);
-        
-        // Update position tracking and print signal info
+        last_signal_type_ = signal.type;
+        last_signal_reason_ = signal.reason;
+        last_signal_confidence_ = signal.confidence;
+        last_signal_pnl_pct_ = (signal.type == SignalType::SELL && in_position)
+            ? ((signal.price - entry_price) / entry_price) * 100.0 : 0.0;
+
         if (signal.type == SignalType::BUY && !in_position) {
             in_position = true;
             entry_price = signal.price;
-            std::cout << "🟢 BUY Signal: " << signal.reason << " (Confidence: " 
-                      << std::fixed << std::setprecision(2) << signal.confidence * 100 << "%)" << std::endl;
         } else if (signal.type == SignalType::SELL && in_position) {
             in_position = false;
-            double pnl = ((signal.price - entry_price) / entry_price) * 100;
-            std::cout << "🔴 SELL Signal: " << signal.reason << " (Confidence: " 
-                      << std::fixed << std::setprecision(2) << signal.confidence * 100 
-                      << "%, P&L: " << pnl << "%)" << std::endl;
             entry_price = 0.0;
         }
     }
-    
+
     return strategy_orders;
 }
 

@@ -18,7 +18,8 @@ void PerformanceMonitor::record_event() {
 }
 
 double PerformanceMonitor::get_events_per_second() const {
-    auto duration = std::chrono::duration_cast<std::chrono::seconds>(end_time_ - start_time_).count();
+    auto end = running_.load() ? std::chrono::steady_clock::now() : end_time_;
+    auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start_time_).count();
     if (duration <= 0) return 0.0;
     return static_cast<double>(event_count_.load()) / duration;
 } 

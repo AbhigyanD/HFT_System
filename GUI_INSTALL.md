@@ -2,7 +2,7 @@
 
 This guide will help you install and run the GUI version of the NanoEX High-Frequency Trading System.
 
-## 🖥️ GUI Features
+## GUI Features
 
 The GUI application provides:
 - **Real-time System Control**: Start/stop the HFT system with a single click
@@ -12,7 +12,7 @@ The GUI application provides:
 - **Log Management**: Save and view system logs
 - **Professional Interface**: Clean, modern Qt-based GUI
 
-## 📋 Prerequisites
+## Prerequisites
 
 ### Required Software
 1. **C++ Compiler**: GCC 7+ or Clang 5+ with C++17 support
@@ -60,7 +60,7 @@ sudo dnf install qt6-qtbase-devel qt6-qtbase-devel-tools
 sudo dnf install cmake gcc-c++
 ```
 
-## 🔧 Building the GUI
+## Building the GUI
 
 ### Method 1: Using the Build Script (Recommended)
 ```bash
@@ -116,7 +116,7 @@ g++ -std=c++17 -O2 -pthread \
     -lQt5Core -lQt5Widgets -lQt5Gui
 ```
 
-## 🚀 Running the GUI
+## Running the GUI
 
 ### Starting the Application
 ```bash
@@ -183,7 +183,7 @@ g++ -std=c++17 -O2 -pthread \
    - **File → Save Log**: Save output to file
    - **Help → About**: Application information
 
-## 🎯 Usage Instructions
+## Usage Instructions
 
 ### Basic Operation
 1. **Start the GUI**: Run `./nanoex_gui`
@@ -202,7 +202,7 @@ g++ -std=c++17 -O2 -pthread \
 - **Ctrl+S**: Save Log
 - **Ctrl+Q**: Quit Application
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -260,7 +260,7 @@ g++ -std=c++17 -g -O0 -pthread -Wall -Wextra nanoex_gui.cpp -o nanoex_gui_debug 
 ./nanoex_gui_debug
 ```
 
-## 📊 Performance Monitoring
+## Performance Monitoring
 
 ### Real-time Metrics
 The GUI displays these key metrics in real-time:
@@ -276,7 +276,7 @@ For each active strategy:
 - **Orders Rejected**: Orders rejected by risk management
 - **Current PnL**: Profit/loss for the strategy
 
-## 🎨 Customization
+## Customization
 
 ### Appearance
 The GUI uses the system's default Qt theme. You can customize:
@@ -290,7 +290,7 @@ Settings are automatically saved and restored:
 - Splitter positions
 - Application preferences
 
-## 📱 System Requirements
+## System Requirements
 
 ### Minimum Requirements
 - **OS**: macOS 10.14+, Ubuntu 18.04+, or equivalent

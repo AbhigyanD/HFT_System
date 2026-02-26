@@ -344,7 +344,7 @@ private:
         layout->addWidget(chartWidget_);
         
         // Instructions
-        QLabel* instructions = new QLabel("💡 Hover over the chart to see price and time details");
+        QLabel* instructions = new QLabel("Hover over the chart for price and time.");
         instructions->setFont(QFont("Arial", 10));
         instructions->setAlignment(Qt::AlignCenter);
         instructions->setStyleSheet("QLabel { color: #666; padding: 5px; }");
@@ -749,7 +749,7 @@ private:
     
     void parseStrategySignals(const QString& text) {
         // Parse BUY signals
-        if (text.contains("🟢 BUY Signal:")) {
+        if (text.contains("BUY Signal:")) {
             signalMonitor_->addSignal(text);
             
             // Extract price from signal
@@ -762,7 +762,7 @@ private:
         }
         
         // Parse SELL signals
-        if (text.contains("🔴 SELL Signal:")) {
+        if (text.contains("SELL Signal:")) {
             signalMonitor_->addSignal(text);
             
             // Extract price from signal
@@ -816,7 +816,7 @@ private:
         }
         
         // Parse price data from orders
-        if (text.contains("📊 Order:") && text.contains("@")) {
+        if (text.contains("Order:") && text.contains("@")) {
             QRegularExpression priceRegex("@ ([0-9.]+)");
             QRegularExpressionMatch priceMatch = priceRegex.match(text);
             if (priceMatch.hasMatch()) {

@@ -4,7 +4,7 @@
 
 **Yes!** The HFT system now includes a **complete momentum strategy** that demonstrates the entire end-to-end workflow. This is perfect for new users to understand how the system works.
 
-## 🎯 What's Included
+## What's Included
 
 ### 1. **Complete Strategy Implementation**
 - **File**: `src/strategy.cpp` - Full momentum strategy logic
@@ -25,16 +25,16 @@ The strategy generates buy/sell signals based on:
 - **Signal Confidence**: Weighted indicator scoring
 
 ### 4. **Live Example Output**
-When you run the system, you see real-time signals like:
+Example output:
 ```
-🟢 BUY Signal: Momentum: 0.67, RSI: 57.14, MACD: Bullish, Price vs MA: Above (99.80 vs 99.65) (Confidence: 34.54%)
-📊 Order: BUY @ 100.00 x 50
+BUY Signal: Momentum: 0.67, RSI: 57.14, MACD: Bullish, Price vs MA: Above (99.80 vs 99.65) (Confidence: 34.54%)
+Order: BUY @ 100.00 x 50
 
-🔴 SELL Signal: Momentum: -0.70, RSI: 50.00, MACD: Bearish, Price vs MA: Below (99.40 vs 99.55) (Confidence: 30.28%, P&L: -1.00%)
-📊 Order: SELL @ 99.00 x 50
+SELL Signal: Momentum: -0.70, RSI: 50.00, MACD: Bearish, Price vs MA: Below (99.40 vs 99.55) (Confidence: 30.28%, P&L: -1.00%)
+Order: SELL @ 99.00 x 50
 ```
 
-## 🚀 How to Run and Learn
+## How to Run and Learn
 
 ### Quick Start
 ```bash
@@ -112,7 +112,7 @@ This example shows:
 - **Aggressive Strategy**: More signals, higher risk tolerance
 - **Performance Comparison**: How different settings affect results
 
-## 📊 End-to-End Workflow Demonstration
+## End-to-End Workflow
 
 ### 1. **Market Data Feed** (`src/market_data.cpp`)
 - Generates simulated price data
@@ -137,7 +137,7 @@ This example shows:
 - Monitors system throughput
 - Records P&L and statistics
 
-## 🎓 Educational Value
+## Educational Value
 
 ### What New Users Learn
 1. **How HFT systems work** - Complete data flow from market data to execution
@@ -153,7 +153,7 @@ This example shows:
 - **Performance Metrics**: Real-time monitoring of system performance
 - **Configuration Management**: How to adjust strategy parameters
 
-## 🔧 Customization Examples
+## Customization Examples
 
 ### Conservative Strategy
 ```cpp
@@ -171,7 +171,7 @@ config.position_size = 75.0;        // Larger positions
 config.stop_loss_pct = 2.5;         // Wider risk tolerance
 ```
 
-## 📈 Performance Metrics
+## Performance Metrics
 
 The system demonstrates:
 - **Order Processing**: < 100 nanoseconds average
@@ -180,7 +180,7 @@ The system demonstrates:
 - **Multi-threading**: Work-stealing thread pool for optimal performance
 - **Memory Efficiency**: Lock-free data structures for minimal contention
 
-## 🎯 Conclusion
+## Conclusion
 
 The momentum strategy provides a **complete, working example** that new users can:
 1. **Run immediately** to see the system in action

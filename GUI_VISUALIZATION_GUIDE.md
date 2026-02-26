@@ -1,10 +1,10 @@
 # GUI Visualization Guide - See Your Momentum Strategy Visually!
 
-## 🎯 How to View Your Momentum Strategy Visually
+## How to View Your Momentum Strategy Visually
 
 Instead of just seeing terminal output, you can now **see your momentum strategy in real-time** using the enhanced GUI interface!
 
-## 🚀 Starting the Visual Interface
+## Starting the Visual Interface
 
 ### Method 1: From Build Directory
 ```bash
@@ -18,43 +18,43 @@ cd build
 open "NanoEX HFT System.app"
 ```
 
-## 📊 What You'll See in the GUI
+## What You'll See in the GUI
 
 The GUI has **5 main tabs** that show different aspects of your momentum strategy:
 
-### 1. **Strategy Chart Tab** 📈
+### 1. Strategy Chart Tab
 - **Current Price Display**: Large, prominent price indicator
 - **Technical Indicators**: Real-time RSI, Momentum, and MACD values with color coding
-  - 🟢 Green = Bullish (RSI < 30, Momentum > 0.3)
-  - 🔴 Red = Bearish (RSI > 70, Momentum < -0.3)
-  - ⚫ Black = Neutral
+  - Green = Bullish (RSI < 30, Momentum > 0.3)
+  - Red = Bearish (RSI > 70, Momentum < -0.3)
+  - Black = Neutral
 - **Price History**: Last 50 price points with timestamps
 - **Signal History**: Last 20 buy/sell signals with timestamps
 
-### 2. **Strategy Signals Tab** 📡
+### 2. Strategy Signals Tab
 - **Real-time Signal Feed**: All strategy signals as they happen
 - **Signal Details**: Complete signal information including reasoning
 - **Timestamps**: When each signal was generated
 - **Auto-scrolling**: Always shows the latest signals
 
-### 3. **Strategy Config Tab** ⚙️
+### 3. Strategy Config Tab
 - **Current Configuration**: All strategy parameters
 - **Parameter Values**: Momentum threshold, RSI levels, MA periods, etc.
 - **Risk Settings**: Stop loss and take profit percentages
 - **Position Sizing**: Order quantities and limits
 
-### 4. **Performance Tab** 📊
+### 4. Performance Tab
 - **System Metrics**: Orders processed, trades matched, events per second
 - **Latency**: Average processing time in nanoseconds
 - **Throughput**: Real-time performance statistics
 - **Strategy Table**: Performance breakdown by strategy
 
-### 5. **System Output Tab** 📝
+### 5. System Output Tab
 - **Raw System Output**: Complete terminal output
 - **Debug Information**: All system messages and errors
 - **Log History**: Full system activity log
 
-## 🎮 How to Use the GUI
+## How to Use the GUI
 
 ### Step 1: Start the System
 1. Click the **"Start HFT System"** button
@@ -77,18 +77,18 @@ The GUI has **5 main tabs** that show different aspects of your momentum strateg
 2. Review the final statistics
 3. Use **"Clear Output"** to reset for another run
 
-## 🎨 Visual Features
+## Visual Features
 
 ### Color-Coded Indicators
-- **RSI**: 
-  - 🟢 Green (RSI < 30) = Oversold (good time to buy)
-  - 🔴 Red (RSI > 70) = Overbought (good time to sell)
-  - ⚫ Black (30-70) = Neutral
+- **RSI**:
+  - Green (RSI < 30) = Oversold
+  - Red (RSI > 70) = Overbought
+  - Black (30-70) = Neutral
 
 - **Momentum**:
-  - 🟢 Green (Momentum > 0.3) = Strong upward momentum
-  - 🔴 Red (Momentum < -0.3) = Strong downward momentum
-  - ⚫ Black (-0.3 to 0.3) = Weak momentum
+  - Green (Momentum > 0.3) = Strong upward momentum
+  - Red (Momentum < -0.3) = Strong downward momentum
+  - Black (-0.3 to 0.3) = Weak momentum
 
 ### Real-Time Updates
 - **Price updates** every time a new order comes in
@@ -97,12 +97,12 @@ The GUI has **5 main tabs** that show different aspects of your momentum strateg
 - **Performance metrics** update continuously
 
 ### Signal Visualization
-- **🟢 BUY signals** appear in green with full reasoning
-- **🔴 SELL signals** appear in red with P&L information
+- **BUY signals** appear in green with full reasoning
+- **SELL signals** appear in red with P&L information
 - **Timestamps** show exactly when each decision was made
 - **Confidence levels** indicate how strong each signal is
 
-## 📈 What You Can Learn Visually
+## What You Can Learn Visually
 
 ### 1. **Strategy Decision Making**
 - See exactly when and why the strategy generates signals
@@ -142,7 +142,7 @@ config.momentum_threshold = 0.4;    // Higher threshold = fewer signals
 config.stop_loss_pct = 1.0;         // Tighter risk management
 ```
 
-## 🎯 Key Benefits of Visual Interface
+## Key Benefits of Visual Interface
 
 ### 1. **Immediate Understanding**
 - See the strategy working in real-time
@@ -164,7 +164,7 @@ config.stop_loss_pct = 1.0;         // Tighter risk management
 - Detailed performance breakdowns
 - Easy identification of issues or improvements
 
-## 🚀 Next Steps
+## Next Steps
 
 1. **Run the GUI** and observe the strategy in action
 2. **Experiment with parameters** to see how they affect performance
@@ -172,4 +172,4 @@ config.stop_loss_pct = 1.0;         // Tighter risk management
 4. **Use the performance data** to optimize the strategy
 5. **Build your own strategies** using this as a template
 
-**The visual interface makes it easy to understand how your momentum strategy works and how to improve it!** 🎉 
+The visual interface shows how the momentum strategy works and how to improve it. 

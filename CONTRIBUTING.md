@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing to the NanoEX HFT System! This document provides guidelines and information for contributors.
 
-## 🚀 Quick Start for Contributors
+## Quick Start for Contributors
 
 ### Prerequisites
 - C++17 compatible compiler (GCC 7+, Clang 5+, MSVC 2017+)
@@ -34,27 +34,27 @@ Thank you for your interest in contributing to the NanoEX HFT System! This docum
    open "NanoEX HFT System.app"
    ```
 
-## 📋 Contribution Guidelines
+## Contribution Guidelines
 
 ### What We're Looking For
 
 We welcome contributions in the following areas:
 
-#### 🎯 High Priority
+#### High Priority
 - **New Trading Strategies**: Implement additional strategy types (mean reversion, arbitrage, etc.)
 - **Performance Optimizations**: Improve latency, throughput, or memory usage
 - **Risk Management**: Enhanced risk controls and position sizing
 - **Market Data Integration**: Real market data feeds and adapters
 - **Backtesting Framework**: Historical strategy testing capabilities
 
-#### 🔧 Medium Priority
+#### Medium Priority
 - **GUI Enhancements**: Additional charts, indicators, or user interface improvements
 - **Configuration Management**: Better parameter management and persistence
 - **Logging and Monitoring**: Enhanced debugging and system monitoring
 - **Documentation**: Code comments, API documentation, tutorials
 - **Testing**: Unit tests, integration tests, performance benchmarks
 
-#### 📚 Lower Priority
+#### Lower Priority
 - **Code Refactoring**: Improving code organization and maintainability
 - **Build System**: CMake improvements, cross-platform support
 - **Examples**: Additional strategy examples and tutorials
@@ -119,7 +119,7 @@ public:
 - **Lock-free Design**: Prefer lock-free data structures over mutexes
 - **Memory Ordering**: Use appropriate memory ordering for atomic operations
 
-## 🧪 Testing Guidelines
+## Testing Guidelines
 
 ### Unit Testing
 - **Test Coverage**: Aim for >80% code coverage
@@ -162,7 +162,7 @@ make
 ctest --verbose
 ```
 
-## 🔄 Contribution Workflow
+## Contribution Workflow
 
 ### 1. Issue Discussion
 - **Open an Issue**: Describe your proposed contribution
@@ -221,7 +221,7 @@ fix(orderbook): resolve race condition in add_order
 - Fixes #456
 ```
 
-## 🏗️ Architecture Guidelines
+## Architecture Guidelines
 
 ### Component Design
 - **Single Responsibility**: Each class should have one clear purpose
@@ -238,7 +238,7 @@ fix(orderbook): resolve race condition in add_order
 - **Build Config**: Use CMake options for build-time configuration
 - **Validation**: Validate configuration parameters
 
-## 📊 Performance Guidelines
+## Performance Guidelines
 
 ### Profiling
 - **CPU Profiling**: Use tools like `perf`, `gprof`, or `valgrind`
@@ -250,7 +250,7 @@ fix(orderbook): resolve race condition in add_order
 - **Cache Locality**: Improve data access patterns
 - **SIMD**: Use vectorized operations where possible
 
-## 🔒 Security Considerations
+## Security Considerations
 
 ### Input Validation
 - **Order Validation**: Validate all order parameters
@@ -262,7 +262,7 @@ fix(orderbook): resolve race condition in add_order
 - **Memory Safety**: Use smart pointers and RAII
 - **Thread Safety**: Ensure thread-safe access to shared data
 
-## 📚 Documentation
+## Documentation
 
 ### Code Documentation
 - **API Documentation**: Document all public interfaces
@@ -274,7 +274,7 @@ fix(orderbook): resolve race condition in add_order
 - **Tutorials**: Create tutorials for new functionality
 - **Examples**: Provide working examples
 
-## 🤝 Community Guidelines
+## Community Guidelines
 
 ### Communication
 - **Respectful**: Be respectful and constructive in discussions
@@ -286,7 +286,7 @@ fix(orderbook): resolve race condition in add_order
 - **Timely Reviews**: Respond to pull requests promptly
 - **Learning Opportunity**: Use reviews as learning opportunities
 
-## 🎯 Getting Help
+## Getting Help
 
 ### Resources
 - **Issues**: Use GitHub issues for bugs and feature requests
@@ -297,7 +297,7 @@ fix(orderbook): resolve race condition in add_order
 - **Maintainers**: Tag maintainers in issues and pull requests
 - **Community**: Engage with the community in discussions
 
-## 📝 License
+## License
 
 By contributing to this project, you agree that your contributions will be licensed under the same license as the project.
 

@@ -11,139 +11,128 @@
 #include <iomanip>
 #include <chrono>
 
-void print_strategy_info(const StrategyEngine& strategy) {
-    std::cout << "\n=== Momentum Strategy Configuration ===" << std::endl;
+namespace {
+
+void print_strategy_config(const StrategyEngine& strategy) {
     auto config = strategy.get_config();
-    std::cout << "Momentum Threshold: " << config.momentum_threshold << std::endl;
-    std::cout << "RSI Oversold: " << config.rsi_oversold << std::endl;
-    std::cout << "RSI Overbought: " << config.rsi_overbought << std::endl;
-    std::cout << "Short Period: " << config.short_period << std::endl;
-    std::cout << "Long Period: " << config.long_period << std::endl;
-    std::cout << "Position Size: " << config.position_size << std::endl;
-    std::cout << "Stop Loss: " << config.stop_loss_pct << "%" << std::endl;
-    std::cout << "Take Profit: " << config.take_profit_pct << "%" << std::endl;
-    std::cout << "Price History Size: " << strategy.get_price_history_size() << std::endl;
-    std::cout << "In Position: " << (strategy.is_in_position() ? "Yes" : "No") << std::endl;
-    if (strategy.is_in_position()) {
-        std::cout << "Entry Price: " << strategy.get_entry_price() << std::endl;
-    }
-    std::cout << "=====================================\n" << std::endl;
+    std::cout << "Momentum Strategy Configuration\n"
+              << "  momentum_threshold=" << config.momentum_threshold
+              << " rsi_oversold=" << config.rsi_oversold
+              << " rsi_overbought=" << config.rsi_overbought
+              << " short_period=" << config.short_period
+              << " long_period=" << config.long_period
+              << " position_size=" << config.position_size
+              << " stop_loss_pct=" << config.stop_loss_pct
+              << " take_profit_pct=" << config.take_profit_pct << "\n";
 }
 
+void print_strategy_status(const StrategyEngine& strategy) {
+    std::cout << "  price_history_size=" << strategy.get_price_history_size()
+              << " in_position=" << (strategy.is_in_position() ? 1 : 0);
+    if (strategy.is_in_position()) {
+        std::cout << " entry_price=" << std::fixed << std::setprecision(2) << strategy.get_entry_price();
+    }
+    std::cout << "\n";
+}
+
+}  // namespace
+
 int main() {
-    std::cout << "🚀 Starting HFT System with Momentum Strategy" << std::endl;
-    std::cout << "=============================================" << std::endl;
-    
-    // Initialize components
+    std::cout << "NanoEX HFT System starting.\n";
+
     MatchingEngine engine;
     MarketData market_data;
     RiskManager risk;
     PerformanceMonitor perf;
     ThreadPool pool(std::thread::hardware_concurrency());
     std::atomic<bool> running{true};
-    
-    // Configure momentum strategy
-    StrategyConfig config;
-    config.momentum_threshold = 0.25;  // Lower threshold for more signals
-    config.rsi_oversold = 25.0;        // More conservative RSI levels
-    config.rsi_overbought = 75.0;
-    config.short_period = 5;            // Shorter periods for faster response
-    config.long_period = 20;
-    config.position_size = 50.0;       // Smaller position size for demo
-    config.stop_loss_pct = 1.5;        // Tighter risk management
-    config.take_profit_pct = 3.0;
-    
-    StrategyEngine strategy(config);
-    
-    // Print initial strategy configuration
-    print_strategy_info(strategy);
-    
-    // Start performance monitoring
+
+    StrategyConfig strategy_config;
+    strategy_config.momentum_threshold = 0.25;
+    strategy_config.rsi_oversold = 25.0;
+    strategy_config.rsi_overbought = 75.0;
+    strategy_config.short_period = 5;
+    strategy_config.long_period = 20;
+    strategy_config.position_size = 50.0;
+    strategy_config.stop_loss_pct = 1.5;
+    strategy_config.take_profit_pct = 3.0;
+
+    StrategyEngine strategy(strategy_config);
+    print_strategy_config(strategy);
+
     perf.start();
-    
-    // Set up market data processing with strategy
+
     market_data.start([&](const std::vector<std::shared_ptr<Order>>& market_orders) {
         pool.enqueue([&]() {
-            // Generate strategy signals
             auto signals = strategy.generate_signals(market_orders);
-            
-            // Apply risk management
+
+            if (strategy.get_last_signal_type() != SignalType::HOLD) {
+                if (strategy.get_last_signal_type() == SignalType::BUY) {
+                    std::cout << "BUY Signal: " << strategy.get_last_signal_reason()
+                              << " (Confidence: " << std::fixed << std::setprecision(2)
+                              << strategy.get_last_signal_confidence() * 100 << "%)\n";
+                } else {
+                    std::cout << "SELL Signal: " << strategy.get_last_signal_reason()
+                              << " (Confidence: " << std::fixed << std::setprecision(2)
+                              << strategy.get_last_signal_confidence() * 100
+                              << "%, P&L: " << strategy.get_last_signal_pnl_pct() << "%)\n";
+                }
+            }
+
             auto filtered = risk.filter_orders(signals);
-            
-            // Execute orders
-            for (auto& order : filtered) {
+
+            for (const auto& order : filtered) {
                 engine.add_order(order);
                 perf.record_event();
-                
-                // Print order details
-                std::cout << "📊 Order: " << (order->side == OrderSide::BUY ? "BUY" : "SELL")
+                std::cout << "Order: " << (order->side == OrderSide::BUY ? "BUY" : "SELL")
                           << " @ " << std::fixed << std::setprecision(2) << (order->price / 100.0)
-                          << " x " << order->quantity << std::endl;
+                          << " x " << order->quantity << "\n";
             }
         });
     });
-    
-    // Main loop with periodic status updates
+
     auto start_time = std::chrono::steady_clock::now();
     int update_counter = 0;
-    
-    std::cout << "HFT System running. Press Enter to stop..." << std::endl;
-    std::cout << "Status updates every 5 seconds..." << std::endl;
-    
+
+    std::cout << "Running. Press Enter to stop. Status every 5s.\n";
+
     while (running) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        
-        // Periodic status updates
-        update_counter++;
-        if (update_counter >= 50) { // ~5 seconds
+        ++update_counter;
+        if (update_counter >= 50) {
             update_counter = 0;
-            
             auto now = std::chrono::steady_clock::now();
             auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - start_time);
-            
-            std::cout << "\n📈 System Status (" << elapsed.count() << "s elapsed):" << std::endl;
-            std::cout << "Processed Orders: " << engine.get_processed_orders() << std::endl;
-            std::cout << "Matched Trades: " << engine.get_matched_trades() << std::endl;
-            std::cout << "Events/sec: " << std::fixed << std::setprecision(1) << perf.get_events_per_second() << std::endl;
-            std::cout << "Avg Processing Time: " << engine.get_average_processing_time_ns() << " ns" << std::endl;
-            
             auto [best_bid, best_ask] = engine.get_best_bid_ask();
-            std::cout << "Best Bid: " << std::fixed << std::setprecision(2) << best_bid 
-                      << " | Best Ask: " << best_ask << std::endl;
-            
-            print_strategy_info(strategy);
+            std::cout << "Status " << elapsed.count() << "s | orders=" << engine.get_processed_orders()
+                      << " trades=" << engine.get_matched_trades()
+                      << " events/s=" << std::fixed << std::setprecision(1) << perf.get_events_per_second()
+                      << " avg_ns=" << engine.get_average_processing_time_ns()
+                      << " bid=" << (best_bid / 100.0) << " ask=" << (best_ask / 100.0) << "\n";
         }
-        
-        // Check for user input (non-blocking)
         if (std::cin.rdbuf()->in_avail()) {
             std::string input;
             std::getline(std::cin, input);
-            if (input.empty()) {
-                running = false;
-            }
+            if (input.empty()) running = false;
         }
     }
-    
-    // Shutdown
-    std::cout << "\n🛑 Shutting down HFT System..." << std::endl;
+
+    std::cout << "Shutting down.\n";
     market_data.stop();
     pool.shutdown();
     perf.stop();
-    
-    // Final statistics
-    std::cout << "\n📊 Final Statistics:" << std::endl;
-    std::cout << "===================" << std::endl;
-    std::cout << "Total Processed Orders: " << engine.get_processed_orders() << std::endl;
-    std::cout << "Total Matched Trades: " << engine.get_matched_trades() << std::endl;
-    std::cout << "Average Events/sec: " << std::fixed << std::setprecision(1) << perf.get_events_per_second() << std::endl;
-    std::cout << "Average Order Processing Time: " << engine.get_average_processing_time_ns() << " ns" << std::endl;
-    
+
+    std::cout << "Final: orders=" << engine.get_processed_orders()
+              << " trades=" << engine.get_matched_trades()
+              << " events/s=" << std::fixed << std::setprecision(1) << perf.get_events_per_second()
+              << " avg_ns=" << engine.get_average_processing_time_ns() << "\n";
     auto [final_bid, final_ask] = engine.get_best_bid_ask();
-    std::cout << "Final Best Bid: " << std::fixed << std::setprecision(2) << final_bid << std::endl;
-    std::cout << "Final Best Ask: " << final_ask << std::endl;
-    
-    print_strategy_info(strategy);
-    
-    std::cout << "\n✅ HFT System shutdown complete." << std::endl;
+    std::cout << "Best bid=" << (final_bid / 100.0) << " best_ask=" << (final_ask / 100.0) << "\n";
+    print_strategy_config(strategy);
+    print_strategy_status(strategy);
+    if (risk.get_orders_rejected() > 0) {
+        std::cout << "Risk rejected " << risk.get_orders_rejected() << " orders.\n";
+    }
+    std::cout << "Shutdown complete.\n";
     return 0;
-} 
+}

@@ -25,7 +25,7 @@ void run_strategy_with_config(const StrategyConfig& config, const std::string& s
 
 void print_strategy_stats(const StrategyEngine& strategy, const MatchingEngine& engine, 
                          const PerformanceMonitor& perf, int elapsed_seconds) {
-    std::cout << "\n📊 Strategy Statistics (" << elapsed_seconds << "s elapsed):" << std::endl;
+    std::cout << "\nStrategy Statistics (" << elapsed_seconds << "s elapsed):" << std::endl;
     std::cout << "=========================================" << std::endl;
     
     auto config = strategy.get_config();
@@ -55,7 +55,7 @@ void print_strategy_stats(const StrategyEngine& strategy, const MatchingEngine& 
 }
 
 void run_conservative_strategy() {
-    std::cout << "\n🎯 Running Conservative Momentum Strategy" << std::endl;
+    std::cout << "\nRunning Conservative Momentum Strategy" << std::endl;
     std::cout << "=========================================" << std::endl;
     
     // Conservative configuration - fewer signals, tighter risk management
@@ -73,7 +73,7 @@ void run_conservative_strategy() {
 }
 
 void run_aggressive_strategy() {
-    std::cout << "\n⚡ Running Aggressive Momentum Strategy" << std::endl;
+    std::cout << "\nRunning Aggressive Momentum Strategy" << std::endl;
     std::cout << "=======================================" << std::endl;
     
     // Aggressive configuration - more signals, higher risk tolerance
@@ -158,13 +158,13 @@ void run_strategy_with_config(const StrategyConfig& config, const std::string& s
     auto final_elapsed = std::chrono::duration_cast<std::chrono::seconds>(
         std::chrono::steady_clock::now() - start_time);
     
-    std::cout << "\n🏁 " << strategy_name << " Strategy Complete!" << std::endl;
+    std::cout << "\n" << strategy_name << " Strategy Complete." << std::endl;
     std::cout << "=========================================" << std::endl;
     print_strategy_stats(strategy, engine, perf, final_elapsed.count());
 }
 
 int main() {
-    std::cout << "🚀 Momentum Strategy Examples" << std::endl;
+    std::cout << "Momentum Strategy Examples" << std::endl;
     std::cout << "=============================" << std::endl;
     std::cout << "This example demonstrates different momentum strategy configurations." << std::endl;
     std::cout << "Each strategy runs for 30 seconds to show performance differences." << std::endl;
@@ -178,7 +178,7 @@ int main() {
     // Run aggressive strategy
     run_aggressive_strategy();
     
-    std::cout << "\n✅ All examples complete!" << std::endl;
+    std::cout << "\nAll examples complete." << std::endl;
     std::cout << "Compare the results to see how different configurations affect:" << std::endl;
     std::cout << "- Number of signals generated" << std::endl;
     std::cout << "- Risk management effectiveness" << std::endl;
