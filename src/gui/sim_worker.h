@@ -3,17 +3,15 @@
 #include <QString>
 #include <QTimer>
 #include <memory>
-#include <random>
-#include "strategy_factory.h"
+#include "paper_sim.h"
 
 Q_DECLARE_METATYPE(StrategyParams)
 
-// Runs a paper-trading simulation on its own thread: random-walk market, selected strategy,
-// simple long-only paper account. All results leave via signals.
+// Runs a PaperSim on its own thread and forwards results as Qt signals.
 class SimWorker : public QObject {
     Q_OBJECT
 public:
-    static constexpr double kInitialCash = 100000.0;
+    static constexpr double kInitialCash = PaperSim::kInitialCash;
     explicit SimWorker(QObject* parent = nullptr) : QObject(parent) {}
 
 public slots:
@@ -27,14 +25,8 @@ signals:
 
 private:
     void onTick();
+    void publish(const PaperSim::Step& s);
 
     std::unique_ptr<QTimer> timer_;
-    StrategyHandle strategy_;
-    std::mt19937 rng_{std::random_device{}()};
-    double volatility_ = 0.001;
-    double price_ = 100.0;
-    int index_ = 0;
-    double cash_ = kInitialCash, position_ = 0, entry_ = 0, realized_ = 0;
-    int trades_ = 0, wins_ = 0;
-    uint64_t nextId_ = 1;
+    PaperSim sim_;
 };

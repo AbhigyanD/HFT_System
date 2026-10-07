@@ -7,3 +7,5 @@ Makefile
 *_autogen/
 *.app/
 .DS_Store
+build-wasm/
+web/engine.js

@@ -4,6 +4,18 @@ A C++17 trading-engine sandbox: a limit-order-book matching engine, two technica
 
 > **Educational project.** All market data is synthetic (random walks). Results show how strategies behave mechanically, not how they would perform on real markets, and nothing here is trading advice.
 
+## Live demo
+
+The engine also compiles to WebAssembly: [`web/`](web/) is a static page that runs the same C++ strategies and backtester in the browser, with no server. It deploys to GitHub Pages from `.github/workflows/pages.yml` (repo Settings → Pages → Source: **GitHub Actions**).
+
+To run it locally you need the [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html):
+
+```bash
+emcmake cmake -S . -B build-wasm && cmake --build build-wasm
+cp build-wasm/engine.js web/engine.js
+python3 -m http.server -d web 8000     # then open http://localhost:8000
+```
+
 ## Features
 
 - **Desktop app** (Qt 6): live simulation with a price chart and trade markers, a backtester with an equity curve, and editable strategy and risk settings. No coding needed.
@@ -84,7 +96,10 @@ src/
   risk.*, performance.*             risk limits, throughput counter
   market_data.*, threading.*        simulated order feed, thread pool
   main.cpp, backtest_main.cpp       command-line entry points
+  paper_sim.*                       live paper-trading simulation shared by the app and the web demo
   gui/                              Qt desktop app (window, chart widget, simulation worker)
+  wasm/                             C API exported to JavaScript for the web demo
+web/                                browser UI (HTML/CSS/JS) for the WebAssembly build
 examples/                           standalone strategy example
 ```
 

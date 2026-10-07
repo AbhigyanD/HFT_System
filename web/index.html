@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NanoEX Strategy Lab</title>
+<meta name="description" content="A C++ trading engine compiled to WebAssembly: simulate a market and backtest momentum and mean-reversion strategies in your browser.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>NanoEX <span>Strategy Lab</span></h1>
+    <p class="sub">The C++ engine, compiled to WebAssembly and running entirely in your browser.</p>
+  </div>
+  <a class="gh" id="repo" href="https://github.com/AbhigyanD/HFT_System" target="_blank" rel="noopener">Source on GitHub ↗</a>
+</header>
+
+<main class="layout">
+  <aside class="panel side">
+    <h2>Strategy</h2>
+    <select id="kind" aria-label="Strategy">
+      <option value="0">Momentum</option>
+      <option value="1">Mean Reversion</option>
+    </select>
+
+    <div id="p-mom" class="fields">
+      <label>Short MA <input id="shortP" type="number" min="2" max="200" value="5"><em>bars</em></label>
+      <label>Long MA <input id="longP" type="number" min="3" max="500" value="20"><em>bars</em></label>
+      <label>Momentum ≥ <input id="momThr" type="number" min="0" max="1" step="0.05" value="0.25"></label>
+    </div>
+    <div id="p-mr" class="fields" hidden>
+      <label>SMA lookback <input id="lookback" type="number" min="2" max="500" value="20"><em>bars</em></label>
+      <label>Buy below SMA <input id="entryPct" type="number" min="0.01" max="20" step="0.1" value="0.5"><em>%</em></label>
+      <label>Sell above SMA <input id="exitPct" type="number" min="0.01" max="20" step="0.1" value="0.5"><em>%</em></label>
+    </div>
+
+    <h2>Risk</h2>
+    <div class="fields">
+      <label>Position size <input id="posSize" type="number" min="1" max="100000" value="50"><em>units</em></label>
+      <label>Stop loss <input id="stopLoss" type="number" min="0.1" max="50" step="0.5" value="2"><em>%</em></label>
+      <label>Take profit <input id="takeProfit" type="number" min="0.1" max="100" step="0.5" value="4"><em>%</em></label>
+    </div>
+    <p class="note">Changes apply on the next Start / Run. Prices are synthetic random walks: results show how a strategy behaves, not how it would fare on real markets. Not financial advice.</p>
+  </aside>
+
+  <section class="panel main">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-live" aria-selected="true" aria-controls="view-live">Live simulation</button>
+      <button role="tab" id="tab-bt" aria-selected="false" aria-controls="view-bt">Backtest</button>
+    </div>
+
+    <div id="view-live" role="tabpanel">
+      <div class="bar">
+        <button id="run" class="primary">▶ Start</button>
+        <label>Volatility <input id="liveVol" type="number" min="0.01" max="5" step="0.05" value="0.15"><em>%/tick</em></label>
+        <label>Speed
+          <select id="speed"><option value="400">Slow</option><option value="120" selected>Normal</option><option value="30">Fast</option></select>
+        </label>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><span>Price</span><b id="k-price">—</b></div>
+        <div class="kpi"><span>Equity</span><b id="k-equity">—</b></div>
+        <div class="kpi"><span>Realized P&amp;L</span><b id="k-pnl">—</b></div>
+        <div class="kpi"><span>Position</span><b id="k-pos">—</b></div>
+        <div class="kpi"><span>Closed trades</span><b id="k-trades">—</b></div>
+        <div class="kpi"><span>Win rate</span><b id="k-win">—</b></div>
+      </div>
+      <div class="chart"><div class="title">Price <small>▲ buy &nbsp;▼ sell</small></div><canvas id="c-live"></canvas></div>
+      <div class="log" id="log-wrap">
+        <table><thead><tr><th>#</th><th>Side</th><th>Price</th><th>Qty</th><th>P&amp;L</th><th>Reason</th></tr></thead><tbody id="log"></tbody></table>
+        <p class="empty" id="log-empty">Trades will appear here.</p>
+      </div>
+    </div>
+
+    <div id="view-bt" role="tabpanel" hidden>
+      <div class="bar">
+        <button id="runBt" class="primary">▶ Run backtest</button>
+        <label>Length <input id="btBars" type="number" min="50" max="20000" value="2000"><em>bars</em></label>
+        <label>Volatility <input id="btVol" type="number" min="0.1" max="20" step="0.5" value="2"><em>%/bar</em></label>
+        <label>Drift <input id="btDrift" type="number" min="-1" max="1" step="0.01" value="0.01"><em>%/bar</em></label>
+        <label>Seed <input id="btSeed" type="number" min="0" max="999999" value="42"></label>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><span>Strategy return</span><b id="b-ret">—</b></div>
+        <div class="kpi"><span>Buy &amp; hold</span><b id="b-bh">—</b></div>
+        <div class="kpi"><span>Trades</span><b id="b-trades">—</b></div>
+        <div class="kpi"><span>Win rate</span><b id="b-win">—</b></div>
+        <div class="kpi"><span>Max drawdown</span><b id="b-dd">—</b></div>
+        <div class="kpi"><span>Sharpe (ann.)</span><b id="b-sharpe">—</b></div>
+      </div>
+      <div class="chart"><div class="title">Equity curve <small>dashed = starting capital</small></div><canvas id="c-eq"></canvas></div>
+      <div class="chart short"><div class="title">Price &amp; trades <small>▲ buy &nbsp;▼ sell</small></div><canvas id="c-px"></canvas></div>
+    </div>
+  </section>
+</main>
+
+<p class="error" id="fatal" hidden>The engine failed to load. This demo needs a browser with WebAssembly support.</p>
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

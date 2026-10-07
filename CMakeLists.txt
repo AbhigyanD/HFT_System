@@ -7,6 +7,34 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
+# WebAssembly demo: only the single-threaded engine pieces (no threads, no Qt).
+#   emcmake cmake -S . -B build-wasm && cmake --build build-wasm
+if(EMSCRIPTEN)
+    add_executable(engine
+        src/wasm/engine_api.cpp
+        src/backtester.cpp
+        src/indicators.cpp
+        src/mean_reversion_strategy.cpp
+        src/order_book.cpp
+        src/paper_sim.cpp
+        src/strategy.cpp
+        src/strategy_factory.cpp
+    )
+    target_include_directories(engine PRIVATE src)
+    target_compile_options(engine PRIVATE -O2)
+    target_link_options(engine PRIVATE
+        -O2
+        -sMODULARIZE=1
+        -sEXPORT_NAME=NanoEX
+        -sSINGLE_FILE=1
+        -sALLOW_MEMORY_GROWTH=1
+        -sEXPORTED_RUNTIME_METHODS=cwrap,UTF8ToString
+        -sENVIRONMENT=web,node
+    )
+    set_target_properties(engine PROPERTIES SUFFIX ".js")
+    return()
+endif()
+
 find_package(Threads REQUIRED)
 
 # Engine (no Qt dependency)
@@ -17,6 +45,7 @@ add_library(nanoex_core STATIC
     src/matching_engine.cpp
     src/mean_reversion_strategy.cpp
     src/order_book.cpp
+    src/paper_sim.cpp
     src/performance.cpp
     src/risk.cpp
     src/strategy.cpp
