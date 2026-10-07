@@ -21,10 +21,21 @@ file(GLOB SRC_FILES
 
 # Remove chart_widget from core system (it's GUI only)
 list(REMOVE_ITEM SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/chart_widget.cpp")
+# Remove backtest-only sources from live nanoex
+list(REMOVE_ITEM SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/backtest_main.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/backtester.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/mean_reversion_strategy.cpp")
 
 add_executable(nanoex ${SRC_FILES})
-
 target_include_directories(nanoex PRIVATE src)
+
+add_executable(backtest
+  src/backtest_main.cpp
+  src/backtester.cpp
+  src/indicators.cpp
+  src/mean_reversion_strategy.cpp
+  src/order_book.cpp
+  src/strategy.cpp
+)
+target_include_directories(backtest PRIVATE src)
 
 # HFT System executable (original)
 add_executable(nanoex_gui nanoex_gui.cpp src/chart_widget.cpp)

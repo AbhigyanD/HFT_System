@@ -475,6 +475,7 @@
 	"MOC_RELAXED_MODE" : false,
 	"MOC_SKIP" : 
 	[
+		"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/backtest_autogen/mocs_compilation.cpp",
 		"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/nanoex_autogen/mocs_compilation.cpp"
 	],
 	"MULTI_CONFIG" : false,
@@ -502,6 +503,7 @@
 	"UIC_SEARCH_PATHS" : [],
 	"UIC_SKIP" : 
 	[
+		"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/backtest_autogen/mocs_compilation.cpp",
 		"/Users/bu/Desktop/Data Science/Quantitatives/HFT_System/nanoex_autogen/mocs_compilation.cpp"
 	],
 	"UIC_UI_FILES" : [],
