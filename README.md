@@ -1,272 +1,113 @@
-# NanoEX High-Frequency Trading System
+# NanoEX
 
-A high-performance, multi-threaded HFT system built in C++17 with advanced features including lock-free data structures, work-stealing thread pools, and comprehensive risk management.
+A C++17 trading-engine sandbox: a limit-order-book matching engine, two technical trading strategies, a backtester, and a desktop app for running strategies live against a simulated market.
 
----
+> **Educational project.** All market data is synthetic (random walks). Results show how strategies behave mechanically, not how they would perform on real markets, and nothing here is trading advice.
 
-## Visual GUI with Real-Time Charts
+## Features
 
-The GUI provides visual monitoring of the momentum strategy:
+- **Desktop app** (Qt 6): live simulation with a price chart and trade markers, a backtester with an equity curve, and editable strategy and risk settings. No coding needed.
+- **Two strategies**: Momentum (SMA / RSI / MACD) and Mean Reversion (price vs SMA), both with stop loss and take profit.
+- **Backtester**: runs a strategy over a price series and reports return, trades, win rate, max drawdown and an annualised Sharpe ratio.
+- **Matching engine**: price-time priority limit and market orders, partial fills, cancels, mutex-protected.
+- **Risk manager**: per-order quantity and notional caps, a per-batch order limit and a daily volume cap.
+- **Command-line tools**: a headless live simulation and a headless backtest.
 
-- **Strategy Chart Tab**: Real-time price line chart, buy/sell signal markers, and color-coded RSI, Momentum, MACD indicators
-- **Mouse Hover Tooltips**: See price and time for any point on the chart
-- **Live Signal Markers**: Green (BUY) and Red (SELL) dots on the price chart
-- **Performance, Config, and Output Tabs**: All system metrics and logs
+## Quick start
 
-### Launching the GUI
+**Requirements:** a C++17 compiler, CMake 3.16+, and Qt 6 for the desktop app (`brew install qt` on macOS). Without Qt, the command-line tools still build.
 
-From your project root, run:
 ```bash
-./run_gui.sh
-```
-Or, from the build directory:
-```bash
-./NanoEX\ HFT\ System.app/Contents/MacOS/NanoEX\ HFT\ System
+cmake -S . -B build -DCMAKE_PREFIX_PATH="$(brew --prefix qt)"   # prefix hint only if Qt isn't found automatically
+cmake --build build -j
 ```
 
-### GUI Tabs
-- **Strategy Chart Tab**: Live price chart, buy/sell signals, and technical indicators
-- **Performance Tab**: Orders processed, trades matched, latency, throughput
-- **Strategy Config Tab**: All current strategy parameters
-- **System Output Tab**: Full log and debug output
+| Target | Run | What it does |
+| --- | --- | --- |
+| Desktop app | `open build/NanoEX.app` (macOS) or `./build/NanoEX` | Live simulation and backtesting UI |
+| `backtest` | `./build/backtest` | Backtests both strategies on 2000 synthetic bars and prints a summary |
+| `nanoex` | `./build/nanoex` | Headless live simulation; press Enter to stop |
 
-**Tip:** Hover your mouse over the chart to see price/time tooltips!
+## Using the desktop app
 
----
+1. **Pick a strategy** in the sidebar and adjust its parameters, position size, stop loss and take profit.
+2. **Live Simulation tab**: press **Start**. A simulated market ticks at the interval you choose. The chart marks buys (▲) and sells (▼), the cards show equity, realized P&L, position and win rate, and every trade appears in the log with the reason for the signal. **Export trades to CSV** saves the log.
+3. **Backtest tab**: set the length, volatility, drift and seed of the synthetic price series, then press **Run backtest**. Compare the strategy's return with buy & hold, and read drawdown and Sharpe off the cards. Using the same seed reproduces the same price path.
 
-## Quick Start
+Sidebar changes apply the next time you press Start or Run backtest.
 
-### Prerequisites
-- C++17 compatible compiler (GCC 7+, Clang 5+, MSVC 2017+)
-- CMake 3.10+
-- Qt 5.12+ or Qt 6+ (for GUI)
+The live tab runs a simple long-only paper account with $100,000 of starting cash. The backtester also supports short positions.
 
-### Building
-```bash
-mkdir build && cd build
-cmake ..
-make -j4
-```
+## Strategies
 
-### Running
-```bash
-# Core system
-./nanoex
+### Momentum
 
-# GUI (macOS)
-open "NanoEX HFT System.app"
-```
+Buys when all of these hold:
+- the momentum score is above the threshold (the score combines price vs the short SMA, short SMA vs long SMA, and recent price change)
+- RSI is below the overbought level
+- the MACD line is above its signal line
+- price is above the short SMA
 
-## Momentum Strategy
+Sells when **any** of these hold: momentum turns negative, RSI is overbought, MACD turns bearish, price falls below the short SMA, or the stop loss or take profit is hit.
 
-The system includes a **complete momentum strategy** that demonstrates the end-to-end workflow. This is perfect for new users to understand how the system works.
+| Parameter | Default (app) |
+| --- | --- |
+| Short / long SMA | 5 / 20 bars |
+| Momentum threshold | 0.25 |
+| Stop loss / take profit | 2% / 4% |
 
-### Strategy Overview
+RSI uses a simple average of the last 14 changes. MACD uses 12 / 26 / 9 EMAs.
 
-The momentum strategy combines multiple technical indicators to identify trending markets and generate buy/sell signals:
+### Mean Reversion
 
-- **Momentum Score**: Combines price vs moving averages and trend strength
-- **RSI (Relative Strength Index)**: Identifies overbought/oversold conditions
-- **MACD**: Confirms trend direction and momentum
-- **Moving Averages**: Short-term (5 periods) vs long-term (20 periods) crossover signals
+Buys when price falls below its SMA by more than the entry threshold. Sells when price rises above the SMA by more than the exit threshold, or on stop loss or take profit.
 
-### Configuration
+| Parameter | Default (app) |
+| --- | --- |
+| SMA lookback | 20 bars |
+| Buy below SMA | 0.5% |
+| Sell above SMA | 0.5% |
+| Stop loss / take profit | 2% / 4% |
 
-```cpp
-StrategyConfig config;
-config.momentum_threshold = 0.25;  // Minimum momentum to trigger signals
-config.rsi_oversold = 25.0;        // RSI level for oversold condition
-config.rsi_overbought = 75.0;      // RSI level for overbought condition
-config.short_period = 5;            // Short-term MA period
-config.long_period = 20;            // Long-term MA period
-config.position_size = 50.0;       // Order size
-config.stop_loss_pct = 1.5;        // Stop loss percentage
-config.take_profit_pct = 3.0;      // Take profit percentage
-```
+On the default 2000-bar synthetic path (seed 42) the CLI `backtest` currently reports about +10.8% for mean reversion and about −7.6% for momentum. This is a single random path, so don't read anything into the ranking.
 
-### Signal Generation Logic
-
-**BUY Conditions** (all must be true):
-- Momentum score > threshold (0.25)
-- RSI < overbought level (75)
-- MACD line > signal line (bullish)
-- Price > short-term moving average
-
-**SELL Conditions** (any can trigger):
-- Momentum score < 0 (weakening)
-- RSI > overbought level (75)
-- MACD line < signal line (bearish)
-- Price < short-term moving average
-- Stop loss or take profit hit
-
-### Example Output
-
-Example output:
+## Project layout
 
 ```
-BUY Signal: Momentum: 0.67, RSI: 57.14, MACD: Bullish, Price vs MA: Above (99.80 vs 99.65) (Confidence: 34.54%)
-Order: BUY @ 100.00 x 50
-
-SELL Signal: Momentum: -0.70, RSI: 50.00, MACD: Bearish, Price vs MA: Below (99.40 vs 99.55) (Confidence: 30.28%, P&L: -1.00%)
-Order: SELL @ 99.00 x 50
+src/
+  order_book.*, matching_engine.*   limit order book and matching
+  indicators.*                      SMA, RSI, MACD, momentum score
+  strategy.*                        momentum strategy
+  mean_reversion_strategy.*         mean-reversion strategy
+  strategy_factory.*                builds either strategy from one parameter struct
+  backtester.*, price_gen.h         backtest loop and synthetic price generator
+  risk.*, performance.*             risk limits, throughput counter
+  market_data.*, threading.*        simulated order feed, thread pool
+  main.cpp, backtest_main.cpp       command-line entry points
+  gui/                              Qt desktop app (window, chart widget, simulation worker)
+examples/                           standalone strategy example
 ```
 
-### End-to-End Workflow
+The engine builds as a static library, `nanoex_core`, with no Qt dependency. The desktop app and both command-line tools link against it.
 
-1. **Market Data Feed** → Generates simulated price data
-2. **Strategy Engine** → Analyzes data with technical indicators
-3. **Signal Generation** → Creates buy/sell signals based on momentum logic
-4. **Risk Management** → Filters orders for compliance
-5. **Matching Engine** → Executes orders and matches trades
-6. **Performance Monitoring** → Tracks execution speed and P&L
+## Extending it
 
-### Learning the System
+**Add a strategy.** Implement an engine with a `generate_signals(market_orders)` method that returns orders, as `StrategyEngine` and `MeanReversionEngine` do. Then add it to `make_strategy()` in [src/strategy_factory.cpp](src/strategy_factory.cpp). The backtester and the app both consume the factory's `StrategyHandle`.
 
-New users should:
+**Add an indicator.** Add a static method to `Indicators` in [src/indicators.h](src/indicators.h) and [src/indicators.cpp](src/indicators.cpp).
 
-1. **Run the system** and observe the real-time signals
-2. **Study the configuration** in `src/main.cpp` (lines 25-35)
-3. **Examine the strategy logic** in `src/strategy.cpp` (lines 95-130)
-4. **Understand the indicators** in `src/indicators.cpp`
-5. **Modify parameters** to see how they affect signal generation
+**Change the live CLI setup.** Strategy parameters are set in [src/main.cpp](src/main.cpp), and risk limits come from `RiskConfig` in [src/risk.h](src/risk.h) (all limits are off by default).
 
-### Customizing the Strategy
+See [MOMENTUM_STRATEGY_GUIDE.md](MOMENTUM_STRATEGY_GUIDE.md) for a longer walkthrough of the momentum strategy and [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
-To create your own strategy:
+## Limitations
 
-1. **Modify `generate_momentum_signal()`** in `src/strategy.cpp`
-2. **Add new indicators** in `src/indicators.h/cpp`
-3. **Adjust configuration** in `src/main.cpp`
-4. **Test different parameters** to optimize performance
-
-## Architecture
-
-### Core Components
-
-- **Order Book**: Maintains bid/ask levels with lock-free operations
-- **Matching Engine**: Executes orders with sub-microsecond latency
-- **Market Data**: Simulates real-time price feeds
-- **Strategy Engine**: Generates trading signals using technical analysis
-- **Risk Manager**: Filters orders for compliance and risk limits
-- **Performance Monitor**: Tracks system performance metrics
-- **Thread Pool**: Work-stealing scheduler for optimal CPU utilization
-
-### Advanced Features
-
-- **Lock-free Data Structures**: Eliminates contention in hot paths
-- **Work-stealing Thread Pool**: Dynamic load balancing across cores
-- **Race Condition Detection**: Built-in debugging tools
-- **Memory Pool**: Custom allocator for order objects
-- **Real-time Monitoring**: Live performance metrics and system status
-
-## Performance
-
-- **Order Processing**: < 100 nanoseconds average
-- **Throughput**: 1M+ orders/second on modern hardware
-- **Memory Usage**: < 1MB for typical order book
-- **Thread Scaling**: Linear performance up to CPU core count
-
-## Configuration
-
-### Build Options
-```bash
-# Debug build with race detection
-cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_RACE_DETECTION=ON ..
-
-# Release build with optimizations
-cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_OPTIMIZATIONS=ON ..
-
-# GUI build
-cmake -DBUILD_GUI=ON ..
-```
-
-### Runtime Configuration
-- Thread pool size: `std::thread::hardware_concurrency()`
-- Order book depth: Configurable per instrument
-- Risk limits: Adjustable per strategy
-- Performance monitoring: Real-time metrics
-
-## Troubleshooting
-
-### Common Issues
-
-**Build Errors:**
-- Ensure C++17 compiler is installed
-- Check Qt installation for GUI builds
-- Verify CMake version (3.10+)
-
-**Runtime Issues:**
-- Monitor thread pool utilization
-- Check memory usage patterns
-- Verify order book integrity
-
-**Performance Issues:**
-- Profile with `perf` or `gprof`
-- Monitor cache miss rates
-- Check NUMA node affinity
-
-### Debugging Tools
-
-- **Race Detection**: Built-in thread safety validation
-- **Performance Profiling**: Real-time metrics display
-- **Order Book Visualization**: GUI shows live order book state
-- **Signal Analysis**: Detailed strategy decision logging
-
-## API Reference
-
-### Core Classes
-
-```cpp
-// Order Book Management
-class OrderBook {
-    void add_order(std::shared_ptr<Order> order);
-    std::pair<Price, Price> get_best_bid_ask() const;
-    size_t get_processed_orders() const;
-};
-
-// Strategy Engine
-class StrategyEngine {
-    std::vector<std::shared_ptr<Order>> generate_signals(const std::vector<std::shared_ptr<Order>>& market_orders);
-    void set_config(const StrategyConfig& config);
-};
-
-// Risk Management (configurable limits: max order size, notional, orders per batch, daily volume)
-class RiskManager {
-    void set_config(const RiskConfig& config);
-    std::vector<std::shared_ptr<Order>> filter_orders(const std::vector<std::shared_ptr<Order>>& orders);
-    uint64_t get_orders_rejected() const;
-};
-```
-
-### Technical Indicators
-
-```cpp
-class Indicators {
-    static double simple_moving_average(const std::deque<double>& values, size_t period);
-    static double relative_strength_index(const std::deque<double>& prices, size_t period);
-    static std::pair<double, double> macd(const std::deque<double>& prices, size_t fast, size_t slow, size_t signal);
-    static double momentum_score(const std::deque<double>& prices, size_t short_period, size_t long_period);
-};
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Ensure all tests pass
-5. Submit a pull request
+- Market data is synthetic. There is no real-data feed or CSV loader yet.
+- The backtester fills every order at the bar's price: no slippage, spread, fees or latency.
+- The live tab simulates fills with a paper account. It does not route strategy orders through the matching engine. The `nanoex` CLI does.
+- The thread pool is a plain FIFO pool, and the matching engine serialises orders behind one mutex. This is not a low-latency design.
+- There are no automated tests yet.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Inspired by modern HFT systems and academic research
-- Built with performance and reliability in mind
-- Designed for educational and research purposes
-
----
-
-**Note**: This system is for educational and research purposes. Real trading systems require additional safety measures, compliance features, and extensive testing.
+MIT. See [LICENSE](LICENSE).

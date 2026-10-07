@@ -10,6 +10,7 @@
 #include <atomic>
 #include <iomanip>
 #include <chrono>
+#include <mutex>
 
 namespace {
 
@@ -46,6 +47,7 @@ int main() {
     PerformanceMonitor perf;
     ThreadPool pool(std::thread::hardware_concurrency());
     std::atomic<bool> running{true};
+    std::mutex strategy_mutex;  // strategy, risk and stdout are not thread-safe
 
     StrategyConfig strategy_config;
     strategy_config.momentum_threshold = 0.25;
@@ -63,7 +65,8 @@ int main() {
     perf.start();
 
     market_data.start([&](const std::vector<std::shared_ptr<Order>>& market_orders) {
-        pool.enqueue([&]() {
+        pool.enqueue([&, market_orders]() {
+            std::lock_guard<std::mutex> lock(strategy_mutex);
             auto signals = strategy.generate_signals(market_orders);
 
             if (strategy.get_last_signal_type() != SignalType::HOLD) {

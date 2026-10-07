@@ -1,0 +1,9 @@
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+.qt/
+*_autogen/
+*.app/
+.DS_Store

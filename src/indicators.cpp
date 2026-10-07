@@ -9,55 +9,47 @@ double Indicators::simple_moving_average(const std::deque<double>& values, size_
     return sum / period;
 }
 
-// Relative Strength Index
+// Relative Strength Index (simple average of the last `period` changes)
 double Indicators::relative_strength_index(const std::deque<double>& prices, size_t period) {
-    if (prices.size() < period + 1) return 50.0; // Neutral RSI
-    
-    std::deque<double> gains, losses;
-    for (size_t i = 1; i < prices.size(); ++i) {
-        double change = prices[i] - prices[i-1];
-        if (change > 0) {
-            gains.push_back(change);
-            losses.push_back(0.0);
-        } else {
-            gains.push_back(0.0);
-            losses.push_back(-change);
-        }
+    if (period == 0 || prices.size() < period + 1) return 50.0; // Neutral RSI
+
+    double gain_sum = 0.0, loss_sum = 0.0;
+    for (size_t i = prices.size() - period; i < prices.size(); ++i) {
+        double change = prices[i] - prices[i - 1];
+        if (change > 0) gain_sum += change;
+        else loss_sum -= change;
     }
-    
-    if (gains.size() < period) return 50.0;
-    
-    double avg_gain = std::accumulate(gains.end() - period, gains.end(), 0.0) / period;
-    double avg_loss = std::accumulate(losses.end() - period, losses.end(), 0.0) / period;
-    
-    if (avg_loss == 0.0) return 100.0;
-    
-    double rs = avg_gain / avg_loss;
+    if (loss_sum == 0.0) return 100.0;
+
+    double rs = (gain_sum / period) / (loss_sum / period);
     return 100.0 - (100.0 / (1.0 + rs));
 }
 
-// MACD (Moving Average Convergence Divergence)
-std::pair<double, double> Indicators::macd(const std::deque<double>& prices, size_t fast_period, size_t slow_period, size_t signal_period) {
-    if (prices.size() < slow_period) return {0.0, 0.0};
-    
-    double fast_ema = simple_moving_average(prices, fast_period);
-    double slow_ema = simple_moving_average(prices, slow_period);
-    
-    double macd_line = fast_ema - slow_ema;
-    
-    // For simplicity, using SMA as signal line (in practice, EMA would be better)
-    std::deque<double> macd_values;
-    for (size_t i = slow_period; i < prices.size(); ++i) {
-        std::deque<double> temp_prices(prices.begin(), prices.begin() + i + 1);
-        double fast = simple_moving_average(temp_prices, fast_period);
-        double slow = simple_moving_average(temp_prices, slow_period);
-        macd_values.push_back(fast - slow);
+namespace {
+// EMA over the whole series, seeded with the first value.
+std::vector<double> ema_series(const std::vector<double>& values, size_t period) {
+    std::vector<double> out;
+    out.reserve(values.size());
+    double k = 2.0 / (static_cast<double>(period) + 1.0);
+    for (size_t i = 0; i < values.size(); ++i) {
+        out.push_back(i == 0 ? values[0] : values[i] * k + out.back() * (1.0 - k));
     }
-    
-    double signal_line = (macd_values.size() >= signal_period) ? 
-        simple_moving_average(macd_values, signal_period) : 0.0;
-    
-    return {macd_line, signal_line};
+    return out;
+}
+}  // namespace
+
+// MACD: (EMA(fast) - EMA(slow), EMA(signal) of that line). O(n).
+std::pair<double, double> Indicators::macd(const std::deque<double>& prices, size_t fast_period, size_t slow_period, size_t signal_period) {
+    if (prices.size() < slow_period || fast_period == 0 || slow_period == 0 || signal_period == 0) return {0.0, 0.0};
+
+    std::vector<double> series(prices.begin(), prices.end());
+    std::vector<double> fast = ema_series(series, fast_period);
+    std::vector<double> slow = ema_series(series, slow_period);
+    std::vector<double> line(series.size());
+    for (size_t i = 0; i < series.size(); ++i) line[i] = fast[i] - slow[i];
+
+    std::vector<double> signal = ema_series(line, signal_period);
+    return {line.back(), signal.back()};
 }
 
 // Price Change Percentage

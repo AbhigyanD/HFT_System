@@ -1,6 +1,10 @@
 #include "matching_engine.h"
 #include <algorithm>
 
+namespace {
+constexpr size_t kMaxTradeEvents = 100000;
+}
+
 MatchingEngine::MatchingEngine() : bid_side_(true), ask_side_(false) {}
 
 void MatchingEngine::add_order(std::shared_ptr<Order> order) {
@@ -98,10 +102,13 @@ void MatchingEngine::match_order_against_side(std::shared_ptr<Order> incoming_or
                        incoming_order->order_id : resting_order->order_id;
         OrderId sell_id = (incoming_order->side == OrderSide::SELL) ? 
                         incoming_order->order_id : resting_order->order_id;
+        if (trade_events_.size() >= kMaxTradeEvents) {
+            trade_events_.erase(trade_events_.begin(), trade_events_.begin() + kMaxTradeEvents / 2);
+        }
         trade_events_.emplace_back(buy_id, sell_id, trade_price, trade_quantity);
         matched_trades_++;
         incoming_order->quantity -= trade_quantity;
-        resting_order->quantity -= trade_quantity;
+        opposite_side.reduce_best_order(trade_quantity);
         if (resting_order->quantity == 0) {
             opposite_side.remove_best_order();
             order_lookup_.erase(resting_order->order_id);

@@ -52,10 +52,9 @@ BacktestResult Backtester::run(const std::vector<double>& prices,
             if (order->side == OrderSide::BUY) {
                 if (position < 0) {
                     double close_qty = std::min(-position, qty);
-                    double pnl = (fill_price - entry_price) * (-close_qty);
-                    cash += pnl;
+                    cash -= fill_price * close_qty;
                     result.trades.push_back({ entry_bar, i, entry_price, fill_price, false,
-                        (fill_price - entry_price) / entry_price * 100.0, close_qty });
+                        (entry_price - fill_price) / entry_price * 100.0, close_qty });
                     result.num_trades++;
                     if (result.trades.back().pnl_pct > 0) result.winning_trades++;
                     position += close_qty;
@@ -75,8 +74,7 @@ BacktestResult Backtester::run(const std::vector<double>& prices,
             } else {
                 if (position > 0) {
                     double close_qty = std::min(position, qty);
-                    double pnl = (fill_price - entry_price) * close_qty;
-                    cash += pnl;
+                    cash += fill_price * close_qty;
                     result.trades.push_back({ entry_bar, i, entry_price, fill_price, true,
                         (fill_price - entry_price) / entry_price * 100.0, close_qty });
                     result.num_trades++;

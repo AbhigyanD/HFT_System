@@ -1,24 +1,12 @@
 #include "strategy.h"
 #include "mean_reversion_strategy.h"
 #include "backtester.h"
+#include "price_gen.h"
 #include <iostream>
 #include <iomanip>
 #include <vector>
 #include <random>
 #include <cmath>
-
-std::vector<double> generate_prices(size_t n, double start = 100.0, double drift = 0.0001, double volatility = 0.02) {
-    std::vector<double> prices;
-    prices.reserve(n);
-    std::mt19937 rng(42);
-    std::normal_distribution<double> normal(0, 1);
-    double s = start;
-    for (size_t i = 0; i < n; ++i) {
-        s = s * std::exp(drift + volatility * normal(rng));
-        prices.push_back(s);
-    }
-    return prices;
-}
 
 void print_result(const BacktestResult& r) {
     std::cout << "\n--- " << r.strategy_name << " ---\n"

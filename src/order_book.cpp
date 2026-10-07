@@ -27,6 +27,12 @@ void OrderBookLevel::remove_front_order() {
     }
 }
 
+void OrderBookLevel::reduce_front_order(Quantity qty) {
+    if (orders_.empty()) return;
+    orders_.front()->quantity -= qty;
+    total_quantity_ -= qty;
+}
+
 bool OrderBookLevel::remove_order(OrderId order_id) {
     std::queue<std::shared_ptr<Order>> temp_queue;
     bool found = false;
@@ -66,6 +72,15 @@ std::shared_ptr<Order> OrderBookSide::get_best_order() {
     } else {
         auto it = levels_.begin();
         return it->second->get_front_order();
+    }
+}
+
+void OrderBookSide::reduce_best_order(Quantity qty) {
+    if (levels_.empty()) return;
+    if (is_bid_side_) {
+        levels_.rbegin()->second->reduce_front_order(qty);
+    } else {
+        levels_.begin()->second->reduce_front_order(qty);
     }
 }
 

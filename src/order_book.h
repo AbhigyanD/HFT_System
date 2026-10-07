@@ -42,6 +42,7 @@ public:
     void add_order(std::shared_ptr<Order> order);
     std::shared_ptr<Order> get_front_order();
     void remove_front_order();
+    void reduce_front_order(Quantity qty);
     bool remove_order(OrderId order_id);
     Price get_price() const;
     Quantity get_total_quantity() const;
@@ -58,6 +59,7 @@ public:
     void add_order(std::shared_ptr<Order> order);
     std::shared_ptr<Order> get_best_order();
     void remove_best_order();
+    void reduce_best_order(Quantity qty);
     bool remove_order(OrderId order_id, Price price);
     Price get_best_price() const;
     bool is_empty() const;

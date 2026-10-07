@@ -1,74 +1,62 @@
-cmake_minimum_required(VERSION 3.10)
-project(HFT_System)
+cmake_minimum_required(VERSION 3.16)
+project(HFT_System LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# Find Qt6 (or Qt5 if Qt6 is not available)
-find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
-if (NOT Qt6_FOUND)
-    find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
 endif()
 
-# Set up Qt MOC
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
+find_package(Threads REQUIRED)
 
-file(GLOB SRC_FILES
-    "src/*.cpp"
+# Engine (no Qt dependency)
+add_library(nanoex_core STATIC
+    src/backtester.cpp
+    src/indicators.cpp
+    src/market_data.cpp
+    src/matching_engine.cpp
+    src/mean_reversion_strategy.cpp
+    src/order_book.cpp
+    src/performance.cpp
+    src/risk.cpp
+    src/strategy.cpp
+    src/strategy_factory.cpp
+    src/threading.cpp
 )
+target_include_directories(nanoex_core PUBLIC src)
+target_link_libraries(nanoex_core PUBLIC Threads::Threads)
 
-# Remove chart_widget from core system (it's GUI only)
-list(REMOVE_ITEM SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/chart_widget.cpp")
-# Remove backtest-only sources from live nanoex
-list(REMOVE_ITEM SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/backtest_main.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/backtester.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/mean_reversion_strategy.cpp")
+add_executable(nanoex src/main.cpp)
+target_link_libraries(nanoex PRIVATE nanoex_core)
 
-add_executable(nanoex ${SRC_FILES})
-target_include_directories(nanoex PRIVATE src)
+add_executable(backtest src/backtest_main.cpp)
+target_link_libraries(backtest PRIVATE nanoex_core)
 
-add_executable(backtest
-  src/backtest_main.cpp
-  src/backtester.cpp
-  src/indicators.cpp
-  src/mean_reversion_strategy.cpp
-  src/order_book.cpp
-  src/strategy.cpp
-)
-target_include_directories(backtest PRIVATE src)
-
-# HFT System executable (original)
-add_executable(nanoex_gui nanoex_gui.cpp src/chart_widget.cpp)
-target_include_directories(nanoex_gui PRIVATE src)
-target_link_libraries(nanoex_gui PRIVATE 
-    Qt::Core 
-    Qt::Widgets
-)
-
-# Set properties for GUI
-set_target_properties(nanoex_gui PROPERTIES
-    OUTPUT_NAME "NanoEX HFT System"
-    MACOSX_BUNDLE TRUE
-    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist"
-)
-
-# Create Info.plist for macOS bundle
+# Desktop app (optional: skipped when Qt6 is not installed)
 if(APPLE)
-    configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist"
-        @ONLY
+    # Recent macOS SDKs dropped the AGL framework that Qt's FindWrapOpenGL still asks for.
+    execute_process(COMMAND xcrun --show-sdk-path OUTPUT_VARIABLE MACOS_SDK OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+    if(MACOS_SDK AND NOT EXISTS "${MACOS_SDK}/System/Library/Frameworks/AGL.framework")
+        set(WrapOpenGL_AGL "${MACOS_SDK}/System/Library/Frameworks/OpenGL.framework" CACHE FILEPATH "" FORCE)
+    endif()
+endif()
+find_package(Qt6 COMPONENTS Widgets QUIET)
+if(Qt6_FOUND)
+    set(CMAKE_AUTOMOC ON)
+    add_executable(nanoex_gui MACOSX_BUNDLE
+        src/gui/main_gui.cpp
+        src/gui/main_window.cpp
+        src/gui/plot_widget.cpp
+        src/gui/sim_worker.cpp
     )
+    target_link_libraries(nanoex_gui PRIVATE nanoex_core Qt6::Widgets)
+    set_target_properties(nanoex_gui PROPERTIES
+        OUTPUT_NAME "NanoEX"
+        MACOSX_BUNDLE_BUNDLE_NAME "NanoEX"
+    )
+    install(TARGETS nanoex_gui BUNDLE DESTINATION . RUNTIME DESTINATION bin)
+else()
+    message(STATUS "Qt6 not found: building command-line targets only")
 endif()
 
-# Installation
-install(TARGETS nanoex nanoex_gui
-    RUNTIME DESTINATION bin
-    BUNDLE DESTINATION .
-)
-
-# Print configuration info
-message(STATUS "Building NanoEX HFT System")
-message(STATUS "C++ Standard: ${CMAKE_CXX_STANDARD}")
-message(STATUS "Qt Version: ${Qt_VERSION}")
-message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}") 
+install(TARGETS nanoex backtest RUNTIME DESTINATION bin)

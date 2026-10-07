@@ -78,8 +78,8 @@ Signal StrategyEngine::generate_momentum_signal(double current_price, double cur
     Signal signal;
     signal.price = current_price;
     signal.quantity = config.position_size;
-    signal.confidence = calculate_signal_confidence(current_price);
-    signal.reason = generate_signal_reason(current_price);
+    signal.type = SignalType::HOLD;
+    signal.confidence = 1.0;
     
     // Calculate key indicators
     double momentum_score = Indicators::momentum_score(price_history, config.short_period, config.long_period);
@@ -116,6 +116,8 @@ Signal StrategyEngine::generate_momentum_signal(double current_price, double cur
         
         if (strong_momentum && rsi_not_overbought && macd_bullish && price_above_ma) {
             signal.type = SignalType::BUY;
+            signal.confidence = calculate_signal_confidence(current_price);
+            signal.reason = generate_signal_reason(current_price);
         } else {
             signal.type = SignalType::HOLD;
         }
@@ -128,6 +130,8 @@ Signal StrategyEngine::generate_momentum_signal(double current_price, double cur
         
         if (momentum_weakening || rsi_overbought || macd_bearish || price_below_ma) {
             signal.type = SignalType::SELL;
+            signal.confidence = calculate_signal_confidence(current_price);
+            signal.reason = generate_signal_reason(current_price);
         } else {
             signal.type = SignalType::HOLD;
         }

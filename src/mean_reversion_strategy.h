@@ -27,7 +27,7 @@ public:
     std::vector<std::shared_ptr<Order>> generate_signals(
         const std::vector<std::shared_ptr<Order>>& market_orders);
 
-    bool is_in_position() const { return in_position_; }w
+    bool is_in_position() const { return in_position_; }
     double get_entry_price() const { return entry_price_; }
     size_t get_price_history_size() const { return price_history_.size(); }
     void reset_position() { in_position_ = false; entry_price_ = 0.0; }
