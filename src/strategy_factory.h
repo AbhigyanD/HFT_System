@@ -3,9 +3,23 @@
 #include <string>
 #include "backtester.h"
 
-enum class StrategyKind { Momentum, MeanReversion };
+// Order matters: the integer value is what the WASM API and web UI pass in.
+enum class StrategyKind { Momentum, MeanReversion, Bollinger, Rsi, Breakout, Macd, Roc };
 
-// Flat parameter set covering both strategies; percent values are in percent (2.0 = 2%).
+inline const char* strategy_name(StrategyKind k) {
+    switch (k) {
+        case StrategyKind::Momentum: return "Momentum";
+        case StrategyKind::MeanReversion: return "Mean Reversion";
+        case StrategyKind::Bollinger: return "Bollinger Bands";
+        case StrategyKind::Rsi: return "RSI Reversal";
+        case StrategyKind::Breakout: return "Breakout";
+        case StrategyKind::Macd: return "MACD Crossover";
+        case StrategyKind::Roc: return "Rate of Change";
+    }
+    return "Unknown";
+}
+
+// Flat parameter set covering all strategies; percent values are in percent (2.0 = 2%).
 struct StrategyParams {
     StrategyKind kind = StrategyKind::Momentum;
     double position_size = 50.0;
@@ -19,6 +33,12 @@ struct StrategyParams {
     size_t lookback_period = 20;
     double entry_threshold_pct = 0.5;
     double exit_threshold_pct = 0.5;
+    // Bollinger / RSI / Breakout / ROC use lookback_period as their window.
+    double band_std = 2.0;          // Bollinger: band width in standard deviations
+    double rsi_oversold = 30.0;     // RSI: buy below this
+    double rsi_exit = 55.0;         // RSI: sell above this
+    size_t macd_fast = 12, macd_slow = 26, macd_signal = 9;
+    double roc_threshold_pct = 1.0; // ROC: buy when N-bar change exceeds this percent
 };
 
 // Type-erased strategy so callers don't care which engine is behind it.

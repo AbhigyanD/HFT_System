@@ -48,12 +48,12 @@ std::vector<std::shared_ptr<Order>> StrategyEngine::generate_signals(const std::
     if (signal.type != SignalType::HOLD) {
         auto order = std::make_shared<Order>();
         order->order_id = static_cast<OrderId>(std::chrono::duration_cast<std::chrono::nanoseconds>(
-            std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+            std::chrono::steady_clock::now().time_since_epoch()).count());
         order->side = (signal.type == SignalType::BUY) ? OrderSide::BUY : OrderSide::SELL;
         order->price = static_cast<Price>(signal.price * 100); // Convert to integer price
         order->quantity = static_cast<Quantity>(signal.quantity);
         order->type = OrderType::MARKET; // Strategy orders are market orders
-        order->timestamp = std::chrono::high_resolution_clock::now();
+        order->timestamp = std::chrono::steady_clock::now();
         
         strategy_orders.push_back(order);
         last_signal_type_ = signal.type;

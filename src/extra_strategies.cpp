@@ -51,12 +51,12 @@ std::vector<std::shared_ptr<Order>> RuleStrategy::generate_signals(
     last_reason_ = reason;
     auto o = std::make_shared<Order>();
     o->order_id = static_cast<OrderId>(std::chrono::duration_cast<std::chrono::nanoseconds>(
-        std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+        std::chrono::steady_clock::now().time_since_epoch()).count());
     o->side = buy ? OrderSide::BUY : OrderSide::SELL;
     o->price = static_cast<Price>(price * 100.0);
     o->quantity = static_cast<Quantity>(risk_.position_size);
     o->type = OrderType::MARKET;
-    o->timestamp = std::chrono::high_resolution_clock::now();
+    o->timestamp = std::chrono::steady_clock::now();
     out.push_back(o);
 
     in_position_ = buy;

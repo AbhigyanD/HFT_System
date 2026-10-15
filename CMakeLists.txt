@@ -13,6 +13,7 @@ if(EMSCRIPTEN)
     add_executable(engine
         src/wasm/engine_api.cpp
         src/backtester.cpp
+        src/extra_strategies.cpp
         src/indicators.cpp
         src/mean_reversion_strategy.cpp
         src/order_book.cpp
@@ -40,6 +41,7 @@ find_package(Threads REQUIRED)
 # Engine (no Qt dependency)
 add_library(nanoex_core STATIC
     src/backtester.cpp
+    src/extra_strategies.cpp
     src/indicators.cpp
     src/market_data.cpp
     src/matching_engine.cpp
