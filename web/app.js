@@ -88,10 +88,11 @@
     function applyParams() {
       setParams(parseInt($('kind').value, 10), num('posSize'), num('stopLoss'), num('takeProfit'),
         Math.round(num('shortP')), Math.round(num('longP')), num('momThr'),
-        Math.round(num('lookback')), num('entryPct'), num('exitPct'));
+        Math.round(num($('kind').value >= 2 ? 'window' : 'lookback')), num('entryPct'), num('exitPct'));
     }
     $('kind').addEventListener('change', () => {
-      const mom = $('kind').value === '0'; $('p-mom').hidden = !mom; $('p-mr').hidden = mom;
+      const k = parseInt($('kind').value, 10);
+      $('p-mom').hidden = k !== 0; $('p-mr').hidden = k !== 1; $('p-gen').hidden = k < 2;
     });
 
     // tabs

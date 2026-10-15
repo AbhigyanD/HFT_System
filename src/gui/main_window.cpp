@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "main_window.h"
 #include "backtester.h"
 #include "price_gen.h"
@@ -103,7 +104,7 @@ QWidget* MainWindow::buildSidebar() {
     auto* sg = new QGroupBox("Strategy");
     auto* sl = new QVBoxLayout(sg);
     strategyBox_ = new QComboBox;
-    strategyBox_->addItems({"Momentum", "Mean Reversion"});
+    strategyBox_->addItems({"Momentum", "Mean Reversion", "Bollinger Bands", "RSI Reversal", "Breakout", "MACD Crossover", "Rate of Change"});
     sl->addWidget(strategyBox_);
 
     paramStack_ = new QStackedWidget;
@@ -127,8 +128,15 @@ QWidget* MainWindow::buildSidebar() {
     rf->addRow("Sell above SMA", exitPct_);
     paramStack_->addWidget(mom);
     paramStack_->addWidget(mr);
+    auto* gen = new QWidget;
+    auto* gf = new QFormLayout(gen);
+    gf->setContentsMargins(0, 0, 0, 0);
+    window_ = ispin(2, 500, 20, " bars");
+    gf->addRow("Window", window_);
+    paramStack_->addWidget(gen);
     sl->addWidget(paramStack_);
-    connect(strategyBox_, &QComboBox::currentIndexChanged, paramStack_, &QStackedWidget::setCurrentIndex);
+    connect(strategyBox_, &QComboBox::currentIndexChanged, paramStack_,
+            [this](int i) { paramStack_->setCurrentIndex(std::min(i, 2)); });
     v->addWidget(sg);
 
     auto* rg = new QGroupBox("Risk");
@@ -278,14 +286,14 @@ QWidget* MainWindow::buildBacktestTab() {
 
 StrategyParams MainWindow::currentParams() const {
     StrategyParams p;
-    p.kind = strategyBox_->currentIndex() == 0 ? StrategyKind::Momentum : StrategyKind::MeanReversion;
+    p.kind = static_cast<StrategyKind>(strategyBox_->currentIndex());
     p.position_size = posSize_->value();
     p.stop_loss_pct = stopLoss_->value();
     p.take_profit_pct = takeProfit_->value();
     p.short_period = shortPeriod_->value();
     p.long_period = longPeriod_->value();
     p.momentum_threshold = momThreshold_->value();
-    p.lookback_period = lookback_->value();
+    p.lookback_period = (p.kind == StrategyKind::MeanReversion ? lookback_ : window_)->value();
     p.entry_threshold_pct = entryPct_->value();
     p.exit_threshold_pct = exitPct_->value();
     return p;

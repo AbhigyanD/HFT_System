@@ -48,12 +48,12 @@ const char* validate() {
 
 extern "C" {
 
-// kind: 0 = momentum, 1 = mean reversion. Percent values are in percent.
+// kind: StrategyKind value (0 momentum, 1 mean reversion, 2 bollinger, 3 rsi, 4 breakout, 5 macd, 6 roc). Percent values are in percent.
 EMSCRIPTEN_KEEPALIVE void nx_set_params(int kind, double position_size, double stop_loss_pct, double take_profit_pct,
                                         int short_period, int long_period, double momentum_threshold,
                                         int lookback, double entry_pct, double exit_pct) {
     StrategyParams p;
-    p.kind = kind == 0 ? StrategyKind::Momentum : StrategyKind::MeanReversion;
+    p.kind = static_cast<StrategyKind>(std::min(std::max(kind, 0), static_cast<int>(StrategyKind::Roc)));
     p.position_size = position_size;
     p.stop_loss_pct = stop_loss_pct;
     p.take_profit_pct = take_profit_pct;

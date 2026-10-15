@@ -42,7 +42,7 @@ private:
     // Sidebar
     QComboBox* strategyBox_;
     QStackedWidget* paramStack_;
-    QSpinBox *shortPeriod_, *longPeriod_, *lookback_;
+    QSpinBox *shortPeriod_, *longPeriod_, *lookback_, *window_;
     QDoubleSpinBox *momThreshold_, *entryPct_, *exitPct_, *stopLoss_, *takeProfit_, *posSize_;
 
     // Live
