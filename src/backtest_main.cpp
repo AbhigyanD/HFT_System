@@ -1,6 +1,7 @@
 #include "strategy.h"
 #include "mean_reversion_strategy.h"
 #include "backtester.h"
+#include "strategy_factory.h"
 #include "price_gen.h"
 #include <iostream>
 #include <iomanip>
@@ -73,6 +74,15 @@ int main() {
         std::cout << "Mean Reversion had higher return on this path.\n";
     } else {
         std::cout << "Same return.\n";
+    }
+
+    std::cout << "\n--- Additional strategies (same price path) ---\n";
+    for (StrategyKind k : {StrategyKind::Bollinger, StrategyKind::Rsi, StrategyKind::Breakout,
+                           StrategyKind::Macd, StrategyKind::Roc}) {
+        StrategyParams params;
+        params.kind = k;
+        StrategyHandle h = make_strategy(params);
+        print_result(backtester.run(prices, h.name, h.generate, h.reset));
     }
     std::cout << "Done.\n";
     return 0;

@@ -69,12 +69,12 @@ std::vector<std::shared_ptr<Order>> MeanReversionEngine::generate_signals(
 
     auto order = std::make_shared<Order>();
     order->order_id = static_cast<OrderId>(std::chrono::duration_cast<std::chrono::nanoseconds>(
-        std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+        std::chrono::steady_clock::now().time_since_epoch()).count());
     order->side = (last_signal_type_ == SignalType::BUY) ? OrderSide::BUY : OrderSide::SELL;
     order->price = static_cast<Price>(price * 100.0);
     order->quantity = static_cast<Quantity>(config_.position_size);
     order->type = OrderType::MARKET;
-    order->timestamp = std::chrono::high_resolution_clock::now();
+    order->timestamp = std::chrono::steady_clock::now();
     out.push_back(order);
 
     if (last_signal_type_ == SignalType::BUY) {

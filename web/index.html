@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NanoEX Strategy Lab</title>
-<meta name="description" content="A C++ trading engine compiled to WebAssembly: simulate a market and backtest momentum and mean-reversion strategies in your browser.">
+<meta name="description" content="A C++ trading engine compiled to WebAssembly: simulate a market and backtest momentum, mean-reversion, Bollinger, RSI, breakout, MACD and rate-of-change strategies in your browser.">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -22,6 +22,11 @@
     <select id="kind" aria-label="Strategy">
       <option value="0">Momentum</option>
       <option value="1">Mean Reversion</option>
+      <option value="2">Bollinger Bands</option>
+      <option value="3">RSI Reversal</option>
+      <option value="4">Breakout</option>
+      <option value="5">MACD Crossover</option>
+      <option value="6">Rate of Change</option>
     </select>
 
     <div id="p-mom" class="fields">
@@ -33,6 +38,10 @@
       <label>SMA lookback <input id="lookback" type="number" min="2" max="500" value="20"><em>bars</em></label>
       <label>Buy below SMA <input id="entryPct" type="number" min="0.01" max="20" step="0.1" value="0.5"><em>%</em></label>
       <label>Sell above SMA <input id="exitPct" type="number" min="0.01" max="20" step="0.1" value="0.5"><em>%</em></label>
+    </div>
+
+    <div id="p-gen" class="fields" hidden>
+      <label>Window <input id="window" type="number" min="2" max="500" value="20"><em>bars</em></label>
     </div>
 
     <h2>Risk</h2>
