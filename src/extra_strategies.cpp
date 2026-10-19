@@ -156,3 +156,25 @@ bool RocStrategy::wants_exit(const std::deque<double>& p, std::string& reason) {
     reason = fmt("ROC turned negative (%+.2f%%)", roc);
     return true;
 }
+
+// ---- Stochastic oscillator ----
+bool StochasticStrategy::percent_k(const std::deque<double>& p, double& k) const {
+    if (period_ < 2 || p.size() < period_) return false;
+    auto lo = std::min_element(p.end() - period_, p.end());
+    auto hi = std::max_element(p.end() - period_, p.end());
+    if (*hi <= *lo) return false;  // no range, %K undefined
+    k = (p.back() - *lo) / (*hi - *lo) * 100.0;
+    return true;
+}
+bool StochasticStrategy::wants_entry(const std::deque<double>& p, std::string& reason) {
+    double k;
+    if (!percent_k(p, k) || k >= oversold_) return false;
+    reason = fmt("Stochastic oversold (%%K %.1f)", k);
+    return true;
+}
+bool StochasticStrategy::wants_exit(const std::deque<double>& p, std::string& reason) {
+    double k;
+    if (!percent_k(p, k) || k < exit_) return false;
+    reason = fmt("Stochastic recovered (%%K %.1f)", k);
+    return true;
+}

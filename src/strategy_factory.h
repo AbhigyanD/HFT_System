@@ -4,7 +4,8 @@
 #include "backtester.h"
 
 // Order matters: the integer value is what the WASM API and web UI pass in.
-enum class StrategyKind { Momentum, MeanReversion, Bollinger, Rsi, Breakout, Macd, Roc };
+enum class StrategyKind { Momentum, MeanReversion, Bollinger, Rsi, Breakout, Macd, Roc, Stochastic };
+constexpr StrategyKind kLastStrategyKind = StrategyKind::Stochastic;
 
 inline const char* strategy_name(StrategyKind k) {
     switch (k) {
@@ -15,6 +16,7 @@ inline const char* strategy_name(StrategyKind k) {
         case StrategyKind::Breakout: return "Breakout";
         case StrategyKind::Macd: return "MACD Crossover";
         case StrategyKind::Roc: return "Rate of Change";
+        case StrategyKind::Stochastic: return "Stochastic";
     }
     return "Unknown";
 }
@@ -39,6 +41,8 @@ struct StrategyParams {
     double rsi_exit = 55.0;         // RSI: sell above this
     size_t macd_fast = 12, macd_slow = 26, macd_signal = 9;
     double roc_threshold_pct = 1.0; // ROC: buy when N-bar change exceeds this percent
+    double stoch_oversold = 20.0;   // Stochastic: buy when %K falls below this
+    double stoch_exit = 70.0;       // Stochastic: sell when %K rises above this
 };
 
 // Type-erased strategy so callers don't care which engine is behind it.

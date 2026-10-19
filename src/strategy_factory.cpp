@@ -39,6 +39,7 @@ StrategyHandle make_strategy(const StrategyParams& p) {
             case StrategyKind::Rsi: engine = std::make_shared<RsiStrategy>(r, p.lookback_period, p.rsi_oversold, p.rsi_exit); break;
             case StrategyKind::Breakout: engine = std::make_shared<BreakoutStrategy>(r, p.lookback_period); break;
             case StrategyKind::Macd: engine = std::make_shared<MacdStrategy>(r, p.macd_fast, p.macd_slow, p.macd_signal); break;
+            case StrategyKind::Stochastic: engine = std::make_shared<StochasticStrategy>(r, p.lookback_period, p.stoch_oversold, p.stoch_exit); break;
             default: engine = std::make_shared<RocStrategy>(r, p.lookback_period, p.roc_threshold_pct); break;
         }
         h.name = strategy_name(p.kind);

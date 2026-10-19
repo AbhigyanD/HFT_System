@@ -78,7 +78,8 @@ int main() {
 
     std::cout << "\n--- Additional strategies (same price path) ---\n";
     for (StrategyKind k : {StrategyKind::Bollinger, StrategyKind::Rsi, StrategyKind::Breakout,
-                           StrategyKind::Macd, StrategyKind::Roc}) {
+                           StrategyKind::Macd, StrategyKind::Roc,
+                           StrategyKind::Stochastic}) {
         StrategyParams params;
         params.kind = k;
         StrategyHandle h = make_strategy(params);

@@ -76,6 +76,15 @@ static void test_roc() {
     CHECK(count(sides, -1) == 1);
 }
 
+static void test_stochastic() {
+    // Range 100-120, then a drop to the bottom of the range (%K = 0), then a rally back up.
+    auto prices = concat(concat(ramp(100, 120, 12), {100}), ramp(100, 119, 10));
+    auto sides = run(params(StrategyKind::Stochastic, 10), prices);
+    CHECK(sides[12] == 1);
+    CHECK(count(sides, -1) >= 1);
+    CHECK(count(run(params(StrategyKind::Stochastic, 10), flat(100, 30)), 1) == 0);  // no range, no signal
+}
+
 static void test_stop_loss_and_take_profit() {
     // Entry on a breakout, then a crash well below the stop.
     StrategyParams p = params(StrategyKind::Breakout, 5);
@@ -102,7 +111,7 @@ static void test_reset_clears_position() {
 
 static void test_backtests_run_and_are_deterministic() {
     auto prices = generate_prices(1500, 100.0, 0.0001, 0.01, 7);
-    for (int k = 0; k <= static_cast<int>(StrategyKind::Roc); ++k) {
+    for (int k = 0; k <= static_cast<int>(kLastStrategyKind); ++k) {
         StrategyParams p = params(static_cast<StrategyKind>(k), 20);
         p.stop_loss_pct = 2.0;
         p.take_profit_pct = 4.0;
@@ -126,6 +135,7 @@ int main() {
     test_breakout();
     test_macd();
     test_roc();
+    test_stochastic();
     test_stop_loss_and_take_profit();
     test_reset_clears_position();
     test_backtests_run_and_are_deterministic();

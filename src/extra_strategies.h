@@ -87,6 +87,20 @@ private:
     size_t fast_, slow_, signal_;
 };
 
+// Stochastic oscillator: %K = position of the close within the N-bar high/low range (0-100).
+class StochasticStrategy : public RuleStrategy {
+public:
+    StochasticStrategy(const RuleRiskConfig& r, size_t period, double oversold, double exit_level)
+        : RuleStrategy(r), period_(period), oversold_(oversold), exit_(exit_level) {}
+protected:
+    bool wants_entry(const std::deque<double>& p, std::string& reason) override;
+    bool wants_exit(const std::deque<double>& p, std::string& reason) override;
+private:
+    bool percent_k(const std::deque<double>& p, double& k) const;
+    size_t period_;
+    double oversold_, exit_;
+};
+
 // Rate-of-change trend following: buy when N-bar ROC exceeds the threshold, sell when it turns negative.
 class RocStrategy : public RuleStrategy {
 public:
