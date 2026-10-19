@@ -207,3 +207,27 @@ bool EmaCrossStrategy::wants_exit(const std::deque<double>& p, std::string& reas
     reason = fmt2("EMA%.0f crossed below EMA%.0f", static_cast<double>(fast_), static_cast<double>(slow_));
     return true;
 }
+
+// ---- Z-score ----
+bool ZScoreStrategy::zscore(const std::deque<double>& p, double& z) const {
+    if (period_ < 2 || p.size() < period_) return false;
+    double mean = Indicators::simple_moving_average(p, period_);
+    double var = 0.0;
+    for (size_t i = p.size() - period_; i < p.size(); ++i) var += (p[i] - mean) * (p[i] - mean);
+    double sd = std::sqrt(var / period_);
+    if (sd <= 1e-12) return false;
+    z = (p.back() - mean) / sd;
+    return true;
+}
+bool ZScoreStrategy::wants_entry(const std::deque<double>& p, std::string& reason) {
+    double z;
+    if (!zscore(p, z) || z > -entry_) return false;
+    reason = fmt("Z-score stretched low (z %.2f)", z);
+    return true;
+}
+bool ZScoreStrategy::wants_exit(const std::deque<double>& p, std::string& reason) {
+    double z;
+    if (!zscore(p, z) || z < exit_) return false;
+    reason = fmt("Z-score reverted (z %.2f)", z);
+    return true;
+}

@@ -115,6 +115,20 @@ static void test_ema_cross_reset() {
     CHECK(count(first, 1) == 1);
 }
 
+static void test_zscore() {
+    // Noisy-but-stable series, a sharp drop (large negative z), then a snap back above the mean.
+    std::vector<double> base;
+    for (int i = 0; i < 20; ++i) base.push_back(100 + (i % 2 ? 0.5 : -0.5));
+    auto prices = concat(concat(base, {94}), {97, 100, 101});
+    StrategyParams p = params(StrategyKind::ZScore, 20);
+    auto sides = run(p, prices);
+    CHECK(sides[20] == 1);
+    CHECK(count(sides, -1) == 1);
+    CHECK(count(run(p, flat(100, 40)), 1) == 0);  // zero variance: no signal
+    p.z_entry = 50.0;  // unreachable threshold
+    CHECK(count(run(p, prices), 1) == 0);
+}
+
 static void test_stop_loss_and_take_profit() {
     // Entry on a breakout, then a crash well below the stop.
     StrategyParams p = params(StrategyKind::Breakout, 5);
@@ -168,6 +182,7 @@ int main() {
     test_stochastic();
     test_ema_cross();
     test_ema_cross_reset();
+    test_zscore();
     test_stop_loss_and_take_profit();
     test_reset_clears_position();
     test_backtests_run_and_are_deterministic();

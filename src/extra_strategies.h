@@ -120,6 +120,20 @@ private:
     size_t seen_ = 0;
 };
 
+// Z-score of price against its rolling mean: buy when stretched far below, sell once back at/above the exit z.
+class ZScoreStrategy : public RuleStrategy {
+public:
+    ZScoreStrategy(const RuleRiskConfig& r, size_t period, double entry_z, double exit_z)
+        : RuleStrategy(r), period_(period), entry_(entry_z), exit_(exit_z) {}
+protected:
+    bool wants_entry(const std::deque<double>& p, std::string& reason) override;
+    bool wants_exit(const std::deque<double>& p, std::string& reason) override;
+private:
+    bool zscore(const std::deque<double>& p, double& z) const;
+    size_t period_;
+    double entry_, exit_;
+};
+
 // Rate-of-change trend following: buy when N-bar ROC exceeds the threshold, sell when it turns negative.
 class RocStrategy : public RuleStrategy {
 public:
