@@ -19,7 +19,7 @@ python3 -m http.server -d web 8000     # then open http://localhost:8000
 ## Features
 
 - **Desktop app** (Qt 6): live simulation with a price chart and trade markers, a backtester with an equity curve, and editable strategy and risk settings. No coding needed.
-- **Eleven strategies**: Momentum, Mean Reversion, Bollinger Bands, RSI Reversal, Breakout, MACD Crossover, Rate of Change, Stochastic, EMA Crossover and Z-Score, all with stop loss and take profit.
+- **Ten strategies**: Momentum, Mean Reversion, Bollinger Bands, RSI Reversal, Breakout, MACD Crossover, Rate of Change, Stochastic, EMA Crossover and Z-Score, all with stop loss and take profit.
 - **Backtester**: runs a strategy over a price series and reports return, trades, win rate, max drawdown and an annualised Sharpe ratio.
 - **Matching engine**: price-time priority limit and market orders, partial fills, cancels, mutex-protected.
 - **Risk manager**: per-order quantity and notional caps, a per-batch order limit and a daily volume cap.
