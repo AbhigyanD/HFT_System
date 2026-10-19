@@ -90,4 +90,10 @@ else()
     message(STATUS "Qt6 not found: building command-line targets only")
 endif()
 
+# Tests: cmake --build build && ctest --test-dir build --output-on-failure
+enable_testing()
+add_executable(test_strategies tests/test_strategies.cpp)
+target_link_libraries(test_strategies PRIVATE nanoex_core)
+add_test(NAME strategies COMMAND test_strategies)
+
 install(TARGETS nanoex backtest RUNTIME DESTINATION bin)

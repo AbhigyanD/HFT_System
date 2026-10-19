@@ -32,7 +32,7 @@ StrategyHandle make_strategy(const StrategyParams& p) {
         h.reset = [engine]() { engine->reset_position(); };
         h.last_reason = [engine]() { return engine->get_last_signal_reason(); };
     } else {
-        RiskConfig r{p.position_size, p.stop_loss_pct, p.take_profit_pct};
+        RuleRiskConfig r{p.position_size, p.stop_loss_pct, p.take_profit_pct};
         std::shared_ptr<RuleStrategy> engine;
         switch (p.kind) {
             case StrategyKind::Bollinger: engine = std::make_shared<BollingerStrategy>(r, p.lookback_period, p.band_std); break;
