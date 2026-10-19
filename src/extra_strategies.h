@@ -28,6 +28,8 @@ protected:
     virtual bool wants_entry(const std::deque<double>& prices, std::string& reason) = 0;
     virtual bool wants_exit(const std::deque<double>& prices, std::string& reason) = 0;
     virtual void on_reset() {}
+    // Called once per bar, before any entry/exit decision (including risk exits).
+    virtual void on_bar(const std::deque<double>& /*prices*/) {}
 
 private:
     RuleRiskConfig risk_;
@@ -99,6 +101,23 @@ private:
     bool percent_k(const std::deque<double>& p, double& k) const;
     size_t period_;
     double oversold_, exit_;
+};
+
+// Fast EMA crossing the slow EMA: buy on the upward cross, sell on the downward cross.
+class EmaCrossStrategy : public RuleStrategy {
+public:
+    EmaCrossStrategy(const RuleRiskConfig& r, size_t fast, size_t slow) : RuleStrategy(r), fast_(fast), slow_(slow) {}
+protected:
+    bool wants_entry(const std::deque<double>& p, std::string& reason) override;
+    bool wants_exit(const std::deque<double>& p, std::string& reason) override;
+    void on_reset() override { init_ = false; }
+private:
+    // Incremental EMAs, advanced once per bar.
+    void on_bar(const std::deque<double>& p) override;
+    size_t fast_, slow_;
+    bool init_ = false;
+    double ema_fast_ = 0, ema_slow_ = 0, prev_diff_ = 0, diff_ = 0;
+    size_t seen_ = 0;
 };
 
 // Rate-of-change trend following: buy when N-bar ROC exceeds the threshold, sell when it turns negative.

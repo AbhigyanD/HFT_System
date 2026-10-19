@@ -104,7 +104,7 @@ QWidget* MainWindow::buildSidebar() {
     auto* sg = new QGroupBox("Strategy");
     auto* sl = new QVBoxLayout(sg);
     strategyBox_ = new QComboBox;
-    strategyBox_->addItems({"Momentum", "Mean Reversion", "Bollinger Bands", "RSI Reversal", "Breakout", "MACD Crossover", "Rate of Change", "Stochastic"});
+    strategyBox_->addItems({"Momentum", "Mean Reversion", "Bollinger Bands", "RSI Reversal", "Breakout", "MACD Crossover", "Rate of Change", "Stochastic", "EMA Crossover"});
     sl->addWidget(strategyBox_);
 
     paramStack_ = new QStackedWidget;

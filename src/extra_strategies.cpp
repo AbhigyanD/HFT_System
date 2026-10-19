@@ -34,6 +34,7 @@ std::vector<std::shared_ptr<Order>> RuleStrategy::generate_signals(
     }
     if (prices_.empty()) return out;
 
+    on_bar(prices_);
     double price = prices_.back();
     bool buy = false;
     std::string reason;
@@ -176,5 +177,33 @@ bool StochasticStrategy::wants_exit(const std::deque<double>& p, std::string& re
     double k;
     if (!percent_k(p, k) || k < exit_) return false;
     reason = fmt("Stochastic recovered (%%K %.1f)", k);
+    return true;
+}
+
+// ---- EMA crossover ----
+void EmaCrossStrategy::on_bar(const std::deque<double>& p) {
+    double price = p.back();
+    if (!init_) {
+        ema_fast_ = ema_slow_ = price;
+        prev_diff_ = diff_ = 0.0;
+        seen_ = 1;
+        init_ = true;
+        return;
+    }
+    double kf = 2.0 / (static_cast<double>(fast_) + 1.0), ks = 2.0 / (static_cast<double>(slow_) + 1.0);
+    ema_fast_ = price * kf + ema_fast_ * (1.0 - kf);
+    ema_slow_ = price * ks + ema_slow_ * (1.0 - ks);
+    prev_diff_ = diff_;
+    diff_ = ema_fast_ - ema_slow_;
+    ++seen_;
+}
+bool EmaCrossStrategy::wants_entry(const std::deque<double>& p, std::string& reason) {
+    if (seen_ <= slow_ || !(prev_diff_ <= 0.0 && diff_ > 0.0)) return false;
+    reason = fmt2("EMA%.0f crossed above EMA%.0f", static_cast<double>(fast_), static_cast<double>(slow_));
+    return true;
+}
+bool EmaCrossStrategy::wants_exit(const std::deque<double>& p, std::string& reason) {
+    if (!(prev_diff_ >= 0.0 && diff_ < 0.0)) return false;
+    reason = fmt2("EMA%.0f crossed below EMA%.0f", static_cast<double>(fast_), static_cast<double>(slow_));
     return true;
 }

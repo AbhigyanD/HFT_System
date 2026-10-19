@@ -48,7 +48,7 @@ const char* validate() {
 
 extern "C" {
 
-// kind: StrategyKind value (0 momentum, 1 mean reversion, 2 bollinger, 3 rsi, 4 breakout, 5 macd, 6 roc, 7 stochastic, ...). Percent values are in percent.
+// kind: StrategyKind value (0 momentum, 1 mean reversion, 2 bollinger, 3 rsi, 4 breakout, 5 macd, 6 roc, 7 stochastic, 8 ema crossover). Percent values are in percent.
 EMSCRIPTEN_KEEPALIVE void nx_set_params(int kind, double position_size, double stop_loss_pct, double take_profit_pct,
                                         int short_period, int long_period, double momentum_threshold,
                                         int lookback, double entry_pct, double exit_pct) {

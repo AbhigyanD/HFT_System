@@ -85,6 +85,36 @@ static void test_stochastic() {
     CHECK(count(run(params(StrategyKind::Stochastic, 10), flat(100, 30)), 1) == 0);  // no range, no signal
 }
 
+static void test_ema_cross() {
+    StrategyParams p = params(StrategyKind::EmaCross);
+    p.ema_fast = 3;
+    p.ema_slow = 8;
+    // Downtrend, then a sustained rally (up cross), then a sell-off (down cross).
+    auto prices = concat(concat(ramp(110, 100, 15), ramp(100, 125, 15)), ramp(125, 95, 20));
+    auto sides = run(p, prices);
+    CHECK(count(sides, 1) == 1);
+    CHECK(count(sides, -1) == 1);
+    int buy = 0, sell = 0;
+    for (size_t i = 0; i < sides.size(); ++i) { if (sides[i] == 1) buy = i; if (sides[i] == -1) sell = i; }
+    CHECK(buy >= 15 && buy < 30);  // buys during the rally
+    CHECK(sell > buy);
+    CHECK(count(run(p, ramp(100, 130, 40)), -1) == 0);  // monotone rise never sells
+}
+
+static void test_ema_cross_reset() {
+    StrategyParams p = params(StrategyKind::EmaCross);
+    p.ema_fast = 3;
+    p.ema_slow = 8;
+    auto prices = concat(ramp(110, 100, 15), ramp(100, 125, 15));
+    StrategyHandle h = make_strategy(p);
+    auto first = run_series(h.generate, prices);
+    h.reset();
+    // Note: price history persists across reset, so only check that reset does not crash or sell while flat.
+    auto again = run_series(h.generate, {125});
+    CHECK(again[0] != -1);
+    CHECK(count(first, 1) == 1);
+}
+
 static void test_stop_loss_and_take_profit() {
     // Entry on a breakout, then a crash well below the stop.
     StrategyParams p = params(StrategyKind::Breakout, 5);
@@ -136,6 +166,8 @@ int main() {
     test_macd();
     test_roc();
     test_stochastic();
+    test_ema_cross();
+    test_ema_cross_reset();
     test_stop_loss_and_take_profit();
     test_reset_clears_position();
     test_backtests_run_and_are_deterministic();
