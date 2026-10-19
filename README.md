@@ -1,6 +1,6 @@
 # NanoEX
 
-A C++17 trading-engine sandbox: a limit-order-book matching engine, two technical trading strategies, a backtester, and a desktop app for running strategies live against a simulated market.
+A C++17 trading-engine sandbox: a limit-order-book matching engine, a set of technical trading strategies, a backtester, and a desktop app for running strategies live against a simulated market.
 
 > **Educational project.** All market data is synthetic (random walks). Results show how strategies behave mechanically, not how they would perform on real markets, and nothing here is trading advice.
 
@@ -19,7 +19,7 @@ python3 -m http.server -d web 8000     # then open http://localhost:8000
 ## Features
 
 - **Desktop app** (Qt 6): live simulation with a price chart and trade markers, a backtester with an equity curve, and editable strategy and risk settings. No coding needed.
-- **Two strategies**: Momentum (SMA / RSI / MACD) and Mean Reversion (price vs SMA), both with stop loss and take profit.
+- **Eleven strategies**: Momentum, Mean Reversion, Bollinger Bands, RSI Reversal, Breakout, MACD Crossover, Rate of Change, Stochastic, EMA Crossover and Z-Score, all with stop loss and take profit.
 - **Backtester**: runs a strategy over a price series and reports return, trades, win rate, max drawdown and an annualised Sharpe ratio.
 - **Matching engine**: price-time priority limit and market orders, partial fills, cancels, mutex-protected.
 - **Risk manager**: per-order quantity and notional caps, a per-batch order limit and a daily volume cap.
@@ -37,7 +37,7 @@ cmake --build build -j
 | Target | Run | What it does |
 | --- | --- | --- |
 | Desktop app | `open build/NanoEX.app` (macOS) or `./build/NanoEX` | Live simulation and backtesting UI |
-| `backtest` | `./build/backtest` | Backtests both strategies on 2000 synthetic bars and prints a summary |
+| `backtest` | `./build/backtest` | Backtests every strategy on 2000 synthetic bars and prints a summary |
 | `nanoex` | `./build/nanoex` | Headless live simulation; press Enter to stop |
 
 ## Using the desktop app
@@ -51,6 +51,27 @@ Sidebar changes apply the next time you press Start or Run backtest.
 The live tab runs a simple long-only paper account with $100,000 of starting cash. The backtester also supports short positions.
 
 ## Strategies
+
+All strategies are long-only, share the same stop loss and take profit exits, and use a window (`Window` in the apps) where noted. Defaults are in `StrategyParams` in [src/strategy_factory.h](src/strategy_factory.h).
+
+| Strategy | Buys when | Sells when |
+| --- | --- | --- |
+| Bollinger Bands | price closes below the lower band (2 std devs) | price returns to the middle band |
+| RSI Reversal | RSI < 30 | RSI >= 55 |
+| Breakout | price exceeds the previous N-bar high | price breaks the N/2-bar low |
+| MACD Crossover | MACD crosses above its signal line | MACD crosses below it |
+| Rate of Change | N-bar change >= 1% | N-bar change turns negative |
+| Stochastic | %K < 20 | %K >= 70 |
+| EMA Crossover | EMA 9 crosses above EMA 21 | EMA 9 crosses below EMA 21 |
+| Z-Score | z < -2 versus the rolling mean | z >= 0 |
+
+## Tests
+
+```bash
+cmake -S . -B build && cmake --build build
+ctest --test-dir build --output-on-failure
+```
+
 
 ### Momentum
 
@@ -91,7 +112,9 @@ src/
   indicators.*                      SMA, RSI, MACD, momentum score
   strategy.*                        momentum strategy
   mean_reversion_strategy.*         mean-reversion strategy
-  strategy_factory.*                builds either strategy from one parameter struct
+  strategy_factory.*                builds any strategy from one parameter struct
+  extra_strategies.*                rule-based strategies (Bollinger, RSI, breakout, MACD, ROC, stochastic, EMA cross, Z-score)
+tests/                              strategy test suite (CTest)
   backtester.*, price_gen.h         backtest loop and synthetic price generator
   risk.*, performance.*             risk limits, throughput counter
   market_data.*, threading.*        simulated order feed, thread pool
