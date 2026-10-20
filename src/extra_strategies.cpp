@@ -236,3 +236,25 @@ bool ZScoreStrategy::wants_exit(const std::deque<double>& p, std::string& reason
     reason = fmt("Z-score reverted (z %.2f)", z);
     return true;
 }
+
+// ---- Ensemble ----
+void EnsembleStrategy::on_bar(const std::deque<double>& p) {
+    for (auto& m : members_) m->observe_bar(p);
+}
+void EnsembleStrategy::on_reset() {
+    for (auto& m : members_) m->reset_position();
+}
+bool EnsembleStrategy::tally(const std::deque<double>& p, bool entry, std::string& reason) {
+    size_t votes = 0;
+    for (auto& m : members_) {
+        std::string r;
+        if (entry ? m->vote_entry(p, r) : m->vote_exit(p, r)) ++votes;
+    }
+    if (votes < min_votes_) return false;
+    char buf[64];
+    std::snprintf(buf, sizeof buf, "Ensemble %s (%zu/%zu votes)", entry ? "entry" : "exit", votes, members_.size());
+    reason = buf;
+    return true;
+}
+bool EnsembleStrategy::wants_entry(const std::deque<double>& p, std::string& reason) { return tally(p, true, reason); }
+bool EnsembleStrategy::wants_exit(const std::deque<double>& p, std::string& reason) { return tally(p, false, reason); }

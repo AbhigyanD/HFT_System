@@ -20,6 +20,11 @@ public:
 
     std::vector<std::shared_ptr<Order>> generate_signals(const std::vector<std::shared_ptr<Order>>& market_orders);
 
+    // Let another strategy poll this one's rules without trading (used by EnsembleStrategy).
+    void observe_bar(const std::deque<double>& prices) { on_bar(prices); }
+    bool vote_entry(const std::deque<double>& prices, std::string& reason) { return wants_entry(prices, reason); }
+    bool vote_exit(const std::deque<double>& prices, std::string& reason) { return wants_exit(prices, reason); }
+
     bool is_in_position() const { return in_position_; }
     void reset_position();
     const std::string& get_last_signal_reason() const { return last_reason_; }
@@ -134,6 +139,22 @@ private:
     bool zscore(const std::deque<double>& p, double& z) const;
     size_t period_;
     double entry_, exit_;
+};
+
+// Majority vote over several rule strategies: enters / exits when at least `min_votes` of them agree.
+class EnsembleStrategy : public RuleStrategy {
+public:
+    EnsembleStrategy(const RuleRiskConfig& r, std::vector<std::shared_ptr<RuleStrategy>> members, size_t min_votes)
+        : RuleStrategy(r), members_(std::move(members)), min_votes_(min_votes) {}
+protected:
+    bool wants_entry(const std::deque<double>& p, std::string& reason) override;
+    bool wants_exit(const std::deque<double>& p, std::string& reason) override;
+    void on_bar(const std::deque<double>& p) override;
+    void on_reset() override;
+private:
+    bool tally(const std::deque<double>& p, bool entry, std::string& reason);
+    std::vector<std::shared_ptr<RuleStrategy>> members_;
+    size_t min_votes_;
 };
 
 // Rate-of-change trend following: buy when N-bar ROC exceeds the threshold, sell when it turns negative.

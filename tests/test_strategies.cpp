@@ -129,6 +129,27 @@ static void test_zscore() {
     CHECK(count(run(p, prices), 1) == 0);
 }
 
+static void test_ensemble() {
+    // A deep, sharp drop makes Bollinger, Z-score and Stochastic all vote to buy.
+    std::vector<double> base;
+    for (int i = 0; i < 20; ++i) base.push_back(100 + (i % 2 ? 0.5 : -0.5));
+    auto prices = concat(concat(base, {92}), {96, 99, 101, 102});
+    StrategyParams p = params(StrategyKind::Ensemble, 20);
+    auto sides = run(p, prices);
+    CHECK(sides[20] == 1);
+    CHECK(count(sides, -1) == 1);
+    // Requiring more votes than members can never trade.
+    p.ensemble_min_votes = 5;
+    CHECK(count(run(p, prices), 1) == 0);
+    // A single vote is the loosest setting: it trades at least as often as the default.
+    StrategyParams loose = params(StrategyKind::Ensemble, 10);
+    loose.ensemble_min_votes = 1;
+    StrategyParams strict = loose;
+    strict.ensemble_min_votes = 3;
+    auto walk = generate_prices(600, 100.0, 0.0, 0.01, 3);
+    CHECK(count(run(loose, walk), 1) >= count(run(strict, walk), 1));
+}
+
 static void test_stop_loss_and_take_profit() {
     // Entry on a breakout, then a crash well below the stop.
     StrategyParams p = params(StrategyKind::Breakout, 5);
@@ -202,6 +223,7 @@ int main() {
     test_ema_cross();
     test_ema_cross_reset();
     test_zscore();
+    test_ensemble();
     test_stop_loss_and_take_profit();
     test_trailing_stop();
     test_reset_clears_position();

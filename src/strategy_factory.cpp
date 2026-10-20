@@ -42,6 +42,17 @@ StrategyHandle make_strategy(const StrategyParams& p) {
             case StrategyKind::Stochastic: engine = std::make_shared<StochasticStrategy>(r, p.lookback_period, p.stoch_oversold, p.stoch_exit); break;
             case StrategyKind::EmaCross: engine = std::make_shared<EmaCrossStrategy>(r, p.ema_fast, p.ema_slow); break;
             case StrategyKind::ZScore: engine = std::make_shared<ZScoreStrategy>(r, p.lookback_period, p.z_entry, p.z_exit); break;
+            case StrategyKind::Ensemble: {
+                // Members trade nothing themselves; only their rules are polled.
+                RuleRiskConfig member_risk = r;
+                std::vector<std::shared_ptr<RuleStrategy>> members = {
+                    std::make_shared<BollingerStrategy>(member_risk, p.lookback_period, p.band_std),
+                    std::make_shared<RsiStrategy>(member_risk, p.lookback_period, p.rsi_oversold, p.rsi_exit),
+                    std::make_shared<StochasticStrategy>(member_risk, p.lookback_period, p.stoch_oversold, p.stoch_exit),
+                    std::make_shared<ZScoreStrategy>(member_risk, p.lookback_period, p.z_entry, p.z_exit)};
+                engine = std::make_shared<EnsembleStrategy>(r, std::move(members), p.ensemble_min_votes);
+                break;
+            }
             default: engine = std::make_shared<RocStrategy>(r, p.lookback_period, p.roc_threshold_pct); break;
         }
         h.name = strategy_name(p.kind);
