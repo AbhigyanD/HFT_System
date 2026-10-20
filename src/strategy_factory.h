@@ -29,6 +29,7 @@ struct StrategyParams {
     double position_size = 50.0;
     double stop_loss_pct = 2.0;
     double take_profit_pct = 4.0;
+    double trailing_stop_pct = 0.0;  // rule-based strategies only; 0 = off
     // Momentum
     size_t short_period = 5;
     size_t long_period = 20;

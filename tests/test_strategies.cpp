@@ -144,6 +144,23 @@ static void test_stop_loss_and_take_profit() {
     CHECK(sides[9] == -1 || sides[8] == -1);
 }
 
+static void test_trailing_stop() {
+    // Rally to 108 then fall: a 3% trailing stop must fire at ~104.7 even though the fixed stop (50%) never would.
+    // Breakout(20) has no nearby exit (its 10-bar low is 100), so only the trailing stop can sell.
+    StrategyParams p = params(StrategyKind::Breakout, 20);
+    p.trailing_stop_pct = 3.0;
+    auto prices = concat(concat(flat(100, 21), {101, 104, 108}), {107, 105, 104, 103});
+    auto sides = run(p, prices);
+    CHECK(sides[21] == 1);
+    int sell = -1;
+    for (size_t i = 0; i < sides.size(); ++i) if (sides[i] == -1) { sell = static_cast<int>(i); break; }
+    CHECK(sell == 26);  // 104 <= 108 * 0.97 = 104.76
+    // Disabled by default: same path, no trailing exit before the end.
+    p.trailing_stop_pct = 0.0;
+    sides = run(p, prices);
+    CHECK(count(sides, -1) == 0);
+}
+
 static void test_reset_clears_position() {
     StrategyHandle h = make_strategy(params(StrategyKind::Breakout, 5));
     run_series(h.generate, concat(flat(100, 6), {101}));
@@ -186,6 +203,7 @@ int main() {
     test_ema_cross_reset();
     test_zscore();
     test_stop_loss_and_take_profit();
+    test_trailing_stop();
     test_reset_clears_position();
     test_backtests_run_and_are_deterministic();
     std::printf(g_failures ? "%d check(s) failed\n" : "all strategy tests passed\n", g_failures);

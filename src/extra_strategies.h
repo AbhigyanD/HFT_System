@@ -10,6 +10,7 @@ struct RuleRiskConfig {
     double position_size = 50.0;
     double stop_loss_pct = 2.0;    // percent
     double take_profit_pct = 4.0;  // percent
+    double trailing_stop_pct = 0.0;  // percent below the highest price since entry; 0 = off
 };
 
 class RuleStrategy {
@@ -36,6 +37,7 @@ private:
     std::deque<double> prices_;
     bool in_position_ = false;
     double entry_price_ = 0.0;
+    double peak_price_ = 0.0;
     std::string last_reason_;
 };
 

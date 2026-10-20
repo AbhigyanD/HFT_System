@@ -21,6 +21,7 @@ std::string fmt2(const char* f, double a, double b) {
 void RuleStrategy::reset_position() {
     in_position_ = false;
     entry_price_ = 0.0;
+    peak_price_ = 0.0;
     on_reset();
 }
 
@@ -40,9 +41,12 @@ std::vector<std::shared_ptr<Order>> RuleStrategy::generate_signals(
     std::string reason;
 
     if (in_position_) {
+        peak_price_ = std::max(peak_price_, price);
         double pnl = (price - entry_price_) / entry_price_ * 100.0;
         if (pnl <= -risk_.stop_loss_pct) reason = fmt("Stop loss (%.2f%%)", pnl);
         else if (pnl >= risk_.take_profit_pct) reason = fmt("Take profit (%.2f%%)", pnl);
+        else if (risk_.trailing_stop_pct > 0.0 && price <= peak_price_ * (1.0 - risk_.trailing_stop_pct / 100.0))
+            reason = fmt("Trailing stop (%.2f%% off peak)", (peak_price_ - price) / peak_price_ * 100.0);
         else if (!wants_exit(prices_, reason)) return out;
     } else {
         if (!wants_entry(prices_, reason)) return out;
@@ -62,6 +66,7 @@ std::vector<std::shared_ptr<Order>> RuleStrategy::generate_signals(
 
     in_position_ = buy;
     entry_price_ = buy ? price : 0.0;
+    peak_price_ = buy ? price : 0.0;
     return out;
 }
 
