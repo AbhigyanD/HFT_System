@@ -37,6 +37,7 @@ cmake --build build -j
 | Target | Run | What it does |
 | --- | --- | --- |
 | Desktop app | `open build/NanoEX.app` (macOS) or `./build/NanoEX` | Live simulation and backtesting UI |
+| `sweep` | `./build/sweep 1500 20` | Ranks strategies and windows by average Sharpe over many synthetic paths |
 | `backtest` | `./build/backtest` | Backtests every strategy on 2000 synthetic bars and prints a summary |
 | `nanoex` | `./build/nanoex` | Headless live simulation; press Enter to stop |
 
@@ -65,6 +66,22 @@ All strategies are long-only, share the same stop loss and take profit exits, an
 | EMA Crossover | EMA 9 crosses above EMA 21 | EMA 9 crosses below EMA 21 |
 | Z-Score | z < -1.5 versus the rolling mean | z >= 0.5 |
 | Ensemble Vote | at least 2 of Bollinger, RSI, Stochastic, Z-Score agree to buy | at least 2 agree to sell |
+
+### Trailing stop
+
+The rule-based strategies also support an optional trailing stop (`trailing_stop_pct` in `StrategyParams`, off by default). It sells when price falls that many percent below the highest price since entry.
+
+## Backtest metrics
+
+Besides return, trades, win rate, max drawdown and Sharpe, results include a Sortino ratio (downside volatility only), profit factor (gross profit / gross loss) and average trade return. The `backtest` binary prints all of them.
+
+## Parameter sweep
+
+```bash
+./build/sweep 1500 20   # bars, number of random paths
+```
+
+Runs each strategy at windows of 10, 20 and 40 bars over many synthetic paths and ranks them by average Sharpe. Because the paths are random walks, treat the output as a check that the strategies behave sensibly, not as a way to find an edge.
 
 ## Tests
 

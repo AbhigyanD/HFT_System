@@ -29,6 +29,16 @@ static void test_names() {
     CHECK(make_strategy(p).name == "MACD Crossover");
 }
 
+static void test_every_kind_builds() {
+    for (int k = 0; k <= static_cast<int>(kLastStrategyKind); ++k) {
+        StrategyParams p = params(static_cast<StrategyKind>(k), 10);
+        StrategyHandle h = make_strategy(p);
+        CHECK(!h.name.empty());
+        CHECK(h.name == strategy_name(p.kind));
+        CHECK(static_cast<bool>(h.generate) && static_cast<bool>(h.reset) && static_cast<bool>(h.last_reason));
+    }
+}
+
 static void test_no_signal_during_warmup() {
     for (StrategyKind k : {StrategyKind::Bollinger, StrategyKind::Rsi, StrategyKind::Breakout, StrategyKind::Roc}) {
         auto sides = run(params(k, 10), ramp(100, 90, 5));
@@ -213,6 +223,7 @@ static void test_backtests_run_and_are_deterministic() {
 
 int main() {
     test_names();
+    test_every_kind_builds();
     test_no_signal_during_warmup();
     test_bollinger();
     test_rsi();
