@@ -24,6 +24,9 @@ struct BacktestResult {
     double win_rate_pct;
     double max_drawdown_pct;
     double sharpe_approx;  // annualized approx if bars are daily
+    double profit_factor = 0;   // gross profit / gross loss; 0 if there are no trades, inf if no losses
+    double avg_trade_pct = 0;   // mean per-trade return
+    double sortino_approx = 0;  // like Sharpe but penalises only downside volatility
     std::vector<TradeRecord> trades;
     std::vector<double> equity_curve;
 };
@@ -43,4 +46,5 @@ public:
 private:
     static double compute_max_drawdown(const std::vector<double>& equity);
     static double compute_sharpe(const std::vector<double>& returns);
+    static double compute_sortino(const std::vector<double>& returns);
 };

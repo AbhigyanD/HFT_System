@@ -95,5 +95,8 @@ enable_testing()
 add_executable(test_strategies tests/test_strategies.cpp)
 target_link_libraries(test_strategies PRIVATE nanoex_core)
 add_test(NAME strategies COMMAND test_strategies)
+add_executable(test_backtester tests/test_backtester.cpp)
+target_link_libraries(test_backtester PRIVATE nanoex_core)
+add_test(NAME backtester COMMAND test_backtester)
 
 install(TARGETS nanoex backtest RUNTIME DESTINATION bin)

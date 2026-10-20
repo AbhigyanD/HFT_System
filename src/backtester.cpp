@@ -1,6 +1,7 @@
 #include "backtester.h"
 #include <cmath>
 #include <algorithm>
+#include <limits>
 #include <numeric>
 
 BacktestResult Backtester::run(const std::vector<double>& prices,
@@ -123,6 +124,19 @@ BacktestResult Backtester::run(const std::vector<double>& prices,
         }
     }
     result.sharpe_approx = compute_sharpe(returns);
+    result.sortino_approx = compute_sortino(returns);
+
+    double gross_win = 0, gross_loss = 0, sum_pct = 0;
+    for (const auto& t : result.trades) {
+        double pnl = (t.exit_price - t.entry_price) * t.quantity * (t.is_buy ? 1.0 : -1.0);
+        (pnl >= 0 ? gross_win : gross_loss) += std::abs(pnl);
+        sum_pct += t.pnl_pct;
+    }
+    if (!result.trades.empty()) {
+        result.avg_trade_pct = sum_pct / result.trades.size();
+        result.profit_factor = gross_loss > 0 ? gross_win / gross_loss
+                                              : (gross_win > 0 ? std::numeric_limits<double>::infinity() : 0.0);
+    }
     return result;
 }
 
@@ -149,4 +163,14 @@ double Backtester::compute_sharpe(const std::vector<double>& returns) {
     double stddev = std::sqrt(sq_sum / (returns.size() - 1));
     if (stddev <= 0) return 0;
     return mean / stddev * std::sqrt(252);  // annualized assuming daily bars
+}
+
+double Backtester::compute_sortino(const std::vector<double>& returns) {
+    if (returns.size() < 2) return 0;
+    double mean = std::accumulate(returns.begin(), returns.end(), 0.0) / returns.size();
+    double downside = 0;
+    for (double r : returns) if (r < 0) downside += r * r;
+    double dd = std::sqrt(downside / returns.size());
+    if (dd <= 0) return 0;
+    return mean / dd * std::sqrt(252);
 }

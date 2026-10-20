@@ -168,6 +168,8 @@ static void test_backtests_run_and_are_deterministic() {
         CHECK(r1.num_trades == r2.num_trades);
         CHECK(r1.win_rate_pct >= 0.0 && r1.win_rate_pct <= 100.0);
         CHECK(r1.max_drawdown_pct >= 0.0);
+        CHECK(r1.profit_factor >= 0.0);
+        CHECK((r1.num_trades == 0) == (r1.avg_trade_pct == 0.0 && r1.profit_factor == 0.0));
     }
 }
 

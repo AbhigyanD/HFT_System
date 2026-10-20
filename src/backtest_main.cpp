@@ -14,7 +14,10 @@ void print_result(const BacktestResult& r) {
               << "  Total return: " << std::fixed << std::setprecision(2) << r.total_return_pct << "%\n"
               << "  Trades: " << r.num_trades << " (win rate " << r.win_rate_pct << "%)\n"
               << "  Max drawdown: " << r.max_drawdown_pct << "%\n"
-              << "  Sharpe (ann.): " << std::setprecision(2) << r.sharpe_approx << "\n";
+              << "  Sharpe (ann.): " << std::setprecision(2) << r.sharpe_approx << "\n"
+              << "  Sortino (ann.): " << r.sortino_approx << "\n"
+              << "  Profit factor: " << r.profit_factor << "\n"
+              << "  Avg trade: " << r.avg_trade_pct << "%\n";
 }
 
 int main() {
