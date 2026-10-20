@@ -63,7 +63,7 @@ All strategies are long-only, share the same stop loss and take profit exits, an
 | Rate of Change | N-bar change >= 1% | N-bar change turns negative |
 | Stochastic | %K < 20 | %K >= 70 |
 | EMA Crossover | EMA 9 crosses above EMA 21 | EMA 9 crosses below EMA 21 |
-| Z-Score | z < -2 versus the rolling mean | z >= 0 |
+| Z-Score | z < -1.5 versus the rolling mean | z >= 0.5 |
 
 ## Tests
 

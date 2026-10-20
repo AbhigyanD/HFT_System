@@ -45,7 +45,7 @@ struct StrategyParams {
     size_t macd_fast = 12, macd_slow = 26, macd_signal = 9;
     double roc_threshold_pct = 1.0; // ROC: buy when N-bar change exceeds this percent
     size_t ema_fast = 9, ema_slow = 21;  // EMA crossover periods
-    double z_entry = 2.0, z_exit = 0.0;  // Z-score: buy below -z_entry, sell above z_exit
+    double z_entry = 1.5, z_exit = 0.5;  // Z-score: buy below -z_entry, sell above z_exit (differs from Bollinger 2σ-in, mean-out)
     double stoch_oversold = 20.0;   // Stochastic: buy when %K falls below this
     double stoch_exit = 70.0;       // Stochastic: sell when %K rises above this
 };

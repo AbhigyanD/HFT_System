@@ -52,6 +52,7 @@ add_library(nanoex_core STATIC
     src/risk.cpp
     src/strategy.cpp
     src/strategy_factory.cpp
+    src/sweep.cpp
     src/threading.cpp
 )
 target_include_directories(nanoex_core PUBLIC src)
@@ -62,6 +63,9 @@ target_link_libraries(nanoex PRIVATE nanoex_core)
 
 add_executable(backtest src/backtest_main.cpp)
 target_link_libraries(backtest PRIVATE nanoex_core)
+
+add_executable(sweep src/sweep_main.cpp)
+target_link_libraries(sweep PRIVATE nanoex_core)
 
 # Desktop app (optional: skipped when Qt6 is not installed)
 if(APPLE)
@@ -98,5 +102,8 @@ add_test(NAME strategies COMMAND test_strategies)
 add_executable(test_backtester tests/test_backtester.cpp)
 target_link_libraries(test_backtester PRIVATE nanoex_core)
 add_test(NAME backtester COMMAND test_backtester)
+add_executable(test_sweep tests/test_sweep.cpp)
+target_link_libraries(test_sweep PRIVATE nanoex_core)
+add_test(NAME sweep COMMAND test_sweep)
 
-install(TARGETS nanoex backtest RUNTIME DESTINATION bin)
+install(TARGETS nanoex backtest sweep RUNTIME DESTINATION bin)
