@@ -141,8 +141,9 @@ src/
   strategy.*                        momentum strategy
   mean_reversion_strategy.*         mean-reversion strategy
   strategy_factory.*                builds any strategy from one parameter struct
-  extra_strategies.*                rule-based strategies (Bollinger, RSI, breakout, MACD, ROC, stochastic, EMA cross, Z-score)
-tests/                              strategy test suite (CTest)
+  extra_strategies.*                rule-based strategies (Bollinger, RSI, breakout, MACD, ROC, stochastic, EMA cross, Z-score, CCI, volatility breakout, ensemble)
+  sweep.*, sweep_main.cpp           parameter sweep over many synthetic paths
+  report.*                          CSV export of trades and equity
   backtester.*, price_gen.h         backtest loop and synthetic price generator
   risk.*, performance.*             risk limits, throughput counter
   market_data.*, threading.*        simulated order feed, thread pool
@@ -152,6 +153,7 @@ tests/                              strategy test suite (CTest)
   wasm/                             C API exported to JavaScript for the web demo
 web/                                browser UI (HTML/CSS/JS) for the WebAssembly build
 examples/                           standalone strategy example
+tests/                              strategy, backtester, sweep and report tests (CTest)
 ```
 
 The engine builds as a static library, `nanoex_core`, with no Qt dependency. The desktop app and both command-line tools link against it.
