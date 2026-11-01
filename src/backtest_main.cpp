@@ -1,7 +1,10 @@
+#include <string>
 #include "strategy.h"
 #include "mean_reversion_strategy.h"
 #include "backtester.h"
 #include "strategy_factory.h"
+#include "report.h"
+#include <cstring>
 #include "price_gen.h"
 #include <iostream>
 #include <iomanip>
@@ -20,7 +23,18 @@ void print_result(const BacktestResult& r) {
               << "  Avg trade: " << r.avg_trade_pct << "%\n";
 }
 
-int main() {
+// Usage: backtest [--csv PREFIX]   (writes PREFIX_<strategy>_trades.csv / _equity.csv for every strategy)
+int main(int argc, char** argv) {
+    std::string csv_prefix;
+    for (int i = 1; i + 1 < argc; ++i)
+        if (std::strcmp(argv[i], "--csv") == 0) csv_prefix = argv[i + 1];
+    auto maybe_save = [&](const BacktestResult& r) {
+        if (csv_prefix.empty()) return;
+        std::string name = r.strategy_name;
+        for (char& c : name) if (c == ' ' || c == '-') c = '_';
+        if (!save_report(csv_prefix + "_" + name, r)) std::cerr << "could not write CSV for " << r.strategy_name << "\n";
+    };
+
     const size_t n_bars = 2000;
     std::cout << "Generating " << n_bars << " bars of synthetic price data...\n";
     std::vector<double> prices = generate_prices(n_bars);
@@ -58,6 +72,7 @@ int main() {
         [&momentum]() { momentum.reset_position(); }
     );
     print_result(res_momentum);
+    maybe_save(res_momentum);
 
     std::cout << "Backtesting Mean Reversion strategy...\n";
     auto res_mr = backtester.run(
@@ -69,6 +84,7 @@ int main() {
         [&mean_reversion]() { mean_reversion.reset_position(); }
     );
     print_result(res_mr);
+    maybe_save(res_mr);
 
     std::cout << "\n--- Summary ---\n";
     if (res_momentum.total_return_pct > res_mr.total_return_pct) {
@@ -88,7 +104,9 @@ int main() {
         StrategyParams params;
         params.kind = k;
         StrategyHandle h = make_strategy(params);
-        print_result(backtester.run(prices, h.name, h.generate, h.reset));
+        auto res = backtester.run(prices, h.name, h.generate, h.reset);
+        print_result(res);
+        maybe_save(res);
     }
     std::cout << "Done.\n";
     return 0;

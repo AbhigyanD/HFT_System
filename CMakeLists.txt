@@ -49,6 +49,7 @@ add_library(nanoex_core STATIC
     src/order_book.cpp
     src/paper_sim.cpp
     src/performance.cpp
+    src/report.cpp
     src/risk.cpp
     src/strategy.cpp
     src/strategy_factory.cpp
@@ -105,5 +106,8 @@ add_test(NAME backtester COMMAND test_backtester)
 add_executable(test_sweep tests/test_sweep.cpp)
 target_link_libraries(test_sweep PRIVATE nanoex_core)
 add_test(NAME sweep COMMAND test_sweep)
+add_executable(test_report tests/test_report.cpp)
+target_link_libraries(test_report PRIVATE nanoex_core)
+add_test(NAME report COMMAND test_report)
 
 install(TARGETS nanoex backtest sweep RUNTIME DESTINATION bin)
