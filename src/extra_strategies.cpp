@@ -258,3 +258,27 @@ bool EnsembleStrategy::tally(const std::deque<double>& p, bool entry, std::strin
 }
 bool EnsembleStrategy::wants_entry(const std::deque<double>& p, std::string& reason) { return tally(p, true, reason); }
 bool EnsembleStrategy::wants_exit(const std::deque<double>& p, std::string& reason) { return tally(p, false, reason); }
+
+// ---- CCI ----
+bool CciStrategy::cci(const std::deque<double>& p, double& v) const {
+    if (period_ < 2 || p.size() < period_) return false;
+    double mean = Indicators::simple_moving_average(p, period_);
+    double mad = 0.0;
+    for (size_t i = p.size() - period_; i < p.size(); ++i) mad += std::abs(p[i] - mean);
+    mad /= period_;
+    if (mad <= 1e-12) return false;
+    v = (p.back() - mean) / (0.015 * mad);
+    return true;
+}
+bool CciStrategy::wants_entry(const std::deque<double>& p, std::string& reason) {
+    double v;
+    if (!cci(p, v) || v > entry_) return false;
+    reason = fmt("CCI oversold (%.0f)", v);
+    return true;
+}
+bool CciStrategy::wants_exit(const std::deque<double>& p, std::string& reason) {
+    double v;
+    if (!cci(p, v) || v < exit_) return false;
+    reason = fmt("CCI recovered (%.0f)", v);
+    return true;
+}

@@ -160,6 +160,19 @@ static void test_ensemble() {
     CHECK(count(run(loose, walk), 1) >= count(run(strict, walk), 1));
 }
 
+static void test_cci() {
+    std::vector<double> base;
+    for (int i = 0; i < 20; ++i) base.push_back(100 + (i % 2 ? 0.5 : -0.5));
+    auto prices = concat(concat(base, {93}), {97, 100, 101});
+    StrategyParams p = params(StrategyKind::Cci, 20);
+    auto sides = run(p, prices);
+    CHECK(sides[20] == 1);   // CCI far below -100
+    CHECK(count(sides, -1) == 1);
+    CHECK(count(run(p, flat(100, 40)), 1) == 0);  // zero deviation: undefined, no signal
+    p.cci_entry = -1e9;
+    CHECK(count(run(p, prices), 1) == 0);
+}
+
 static void test_stop_loss_and_take_profit() {
     // Entry on a breakout, then a crash well below the stop.
     StrategyParams p = params(StrategyKind::Breakout, 5);
@@ -235,6 +248,7 @@ int main() {
     test_ema_cross_reset();
     test_zscore();
     test_ensemble();
+    test_cci();
     test_stop_loss_and_take_profit();
     test_trailing_stop();
     test_reset_clears_position();

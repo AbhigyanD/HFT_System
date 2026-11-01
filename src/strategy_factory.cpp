@@ -53,6 +53,7 @@ StrategyHandle make_strategy(const StrategyParams& p) {
                 engine = std::make_shared<EnsembleStrategy>(r, std::move(members), p.ensemble_min_votes);
                 break;
             }
+            case StrategyKind::Cci: engine = std::make_shared<CciStrategy>(r, p.lookback_period, p.cci_entry, p.cci_exit); break;
             default: engine = std::make_shared<RocStrategy>(r, p.lookback_period, p.roc_threshold_pct); break;
         }
         h.name = strategy_name(p.kind);

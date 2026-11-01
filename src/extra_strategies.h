@@ -157,6 +157,20 @@ private:
     size_t min_votes_;
 };
 
+// Commodity Channel Index on close prices: (price - SMA) / (0.015 * mean absolute deviation).
+class CciStrategy : public RuleStrategy {
+public:
+    CciStrategy(const RuleRiskConfig& r, size_t period, double entry, double exit_level)
+        : RuleStrategy(r), period_(period), entry_(entry), exit_(exit_level) {}
+protected:
+    bool wants_entry(const std::deque<double>& p, std::string& reason) override;
+    bool wants_exit(const std::deque<double>& p, std::string& reason) override;
+private:
+    bool cci(const std::deque<double>& p, double& v) const;
+    size_t period_;
+    double entry_, exit_;
+};
+
 // Rate-of-change trend following: buy when N-bar ROC exceeds the threshold, sell when it turns negative.
 class RocStrategy : public RuleStrategy {
 public:
