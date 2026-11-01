@@ -77,13 +77,21 @@ The rule-based strategies also support an optional trailing stop (`trailing_stop
 
 Besides return, trades, win rate, max drawdown and Sharpe, results include a Sortino ratio (downside volatility only), profit factor (gross profit / gross loss) and average trade return. The `backtest` binary prints all of them.
 
+## Exporting results
+
+```bash
+./build/backtest --csv out/run
+```
+
+Writes `out/run_<strategy>_trades.csv` and `out/run_<strategy>_equity.csv` for every strategy (the directory must exist). The same writers are in [src/report.h](src/report.h).
+
 ## Parameter sweep
 
 ```bash
 ./build/sweep 1500 20   # bars, number of random paths
 ```
 
-Runs each strategy at windows of 10, 20 and 40 bars over many synthetic paths and ranks them by average Sharpe. Because the paths are random walks, treat the output as a check that the strategies behave sensibly, not as a way to find an edge.
+Runs each strategy at windows of 10, 20 and 40 bars over many synthetic paths and ranks them by average Sharpe, with the average buy & hold return on the same paths for comparison. Because the paths are random walks, treat the output as a check that the strategies behave sensibly, not as a way to find an edge.
 
 ## Tests
 
