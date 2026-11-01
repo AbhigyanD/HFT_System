@@ -10,6 +10,7 @@ struct SweepRow {
     double avg_sharpe = 0;
     double avg_drawdown_pct = 0;
     double avg_trades = 0;
+    double avg_buy_hold_pct = 0;   // average buy & hold return over the same paths
     double positive_paths_pct = 0;  // share of paths with a positive return
 };
 

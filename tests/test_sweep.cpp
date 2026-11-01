@@ -38,11 +38,24 @@ static void test_zero_vol_means_no_trading() {
     }
 }
 
+static void test_buy_hold_benchmark() {
+    // Same paths for every strategy, so the benchmark is identical across rows.
+    auto rows = run_sweep({StrategyKind::Rsi, StrategyKind::Cci}, {10, 20}, 400, 3, 0.0005, 0.01);
+    CHECK(rows.size() == 4);
+    for (const auto& r : rows) CHECK(r.avg_buy_hold_pct == rows[0].avg_buy_hold_pct);
+    // Positive drift over a few paths should give a finite, non-zero benchmark.
+    CHECK(std::isfinite(rows[0].avg_buy_hold_pct) && rows[0].avg_buy_hold_pct != 0.0);
+    // Zero volatility and zero drift: price never moves.
+    auto flat_rows = run_sweep({StrategyKind::Rsi}, {10}, 200, 2, 0.0, 0.0);
+    CHECK(flat_rows[0].avg_buy_hold_pct == 0.0);
+}
+
 int main() {
     test_shape();
     test_deterministic();
     test_edge_cases();
     test_zero_vol_means_no_trading();
+    test_buy_hold_benchmark();
     std::printf(g_failures ? "%d check(s) failed\n" : "all sweep tests passed\n", g_failures);
     return g_failures ? 1 : 0;
 }

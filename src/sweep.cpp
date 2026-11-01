@@ -22,6 +22,7 @@ std::vector<SweepRow> run_sweep(const std::vector<StrategyKind>& kinds, const st
             row.window = window;
             int positive = 0;
             for (const auto& path : paths) {
+                row.avg_buy_hold_pct += (path.back() / path.front() - 1.0) * 100.0;
                 StrategyHandle h = make_strategy(p);
                 Backtester bt;
                 BacktestResult r = bt.run(path, h.name, h.generate, h.reset);
@@ -33,6 +34,7 @@ std::vector<SweepRow> run_sweep(const std::vector<StrategyKind>& kinds, const st
             }
             double n = static_cast<double>(paths.size());
             row.avg_return_pct /= n;
+            row.avg_buy_hold_pct /= n;
             row.avg_sharpe /= n;
             row.avg_drawdown_pct /= n;
             row.avg_trades /= n;
