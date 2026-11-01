@@ -173,6 +173,18 @@ static void test_cci() {
     CHECK(count(run(p, prices), 1) == 0);
 }
 
+static void test_vol_breakout() {
+    std::vector<double> base;
+    for (int i = 0; i < 20; ++i) base.push_back(100 + (i % 2 ? 0.5 : -0.5));
+    auto prices = concat(concat(base, {106}), {107, 104, 99, 95});
+    StrategyParams p = params(StrategyKind::VolBreakout, 20);
+    auto sides = run(p, prices);
+    CHECK(sides[20] == 1);  // spike above mean + 2 sd
+    CHECK(count(sides, -1) == 1);
+    CHECK(count(run(p, flat(100, 40)), 1) == 0);  // no volatility, no breakout
+    CHECK(count(run(p, ramp(100, 90, 40)), 1) == 0);  // falling market never buys
+}
+
 static void test_stop_loss_and_take_profit() {
     // Entry on a breakout, then a crash well below the stop.
     StrategyParams p = params(StrategyKind::Breakout, 5);
@@ -249,6 +261,7 @@ int main() {
     test_zscore();
     test_ensemble();
     test_cci();
+    test_vol_breakout();
     test_stop_loss_and_take_profit();
     test_trailing_stop();
     test_reset_clears_position();

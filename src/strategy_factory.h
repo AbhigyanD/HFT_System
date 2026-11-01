@@ -4,8 +4,8 @@
 #include "backtester.h"
 
 // Order matters: the integer value is what the WASM API and web UI pass in.
-enum class StrategyKind { Momentum, MeanReversion, Bollinger, Rsi, Breakout, Macd, Roc, Stochastic, EmaCross, ZScore, Ensemble, Cci };
-constexpr StrategyKind kLastStrategyKind = StrategyKind::Cci;
+enum class StrategyKind { Momentum, MeanReversion, Bollinger, Rsi, Breakout, Macd, Roc, Stochastic, EmaCross, ZScore, Ensemble, Cci, VolBreakout };
+constexpr StrategyKind kLastStrategyKind = StrategyKind::VolBreakout;
 
 inline const char* strategy_name(StrategyKind k) {
     switch (k) {
@@ -21,6 +21,7 @@ inline const char* strategy_name(StrategyKind k) {
         case StrategyKind::ZScore: return "Z-Score";
         case StrategyKind::Ensemble: return "Ensemble Vote";
         case StrategyKind::Cci: return "CCI";
+        case StrategyKind::VolBreakout: return "Volatility Breakout";
     }
     return "Unknown";
 }
@@ -48,6 +49,7 @@ struct StrategyParams {
     double roc_threshold_pct = 1.0; // ROC: buy when N-bar change exceeds this percent
     size_t ema_fast = 9, ema_slow = 21;  // EMA crossover periods
     double cci_entry = -100.0, cci_exit = 0.0;  // CCI: buy below cci_entry, sell above cci_exit
+    double vol_breakout_std = 2.0;  // Volatility breakout: buy above mean + this many std devs
     size_t ensemble_min_votes = 2;  // Ensemble: Bollinger, RSI, Stochastic and Z-score members
     double z_entry = 1.5, z_exit = 0.5;  // Z-score: buy below -z_entry, sell above z_exit (differs from Bollinger 2σ-in, mean-out)
     double stoch_oversold = 20.0;   // Stochastic: buy when %K falls below this

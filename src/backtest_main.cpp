@@ -83,7 +83,8 @@ int main() {
     for (StrategyKind k : {StrategyKind::Bollinger, StrategyKind::Rsi, StrategyKind::Breakout,
                            StrategyKind::Macd, StrategyKind::Roc,
                            StrategyKind::Stochastic, StrategyKind::EmaCross, StrategyKind::ZScore,
-                           StrategyKind::Ensemble, StrategyKind::Cci}) {
+                           StrategyKind::Ensemble, StrategyKind::Cci,
+                           StrategyKind::VolBreakout}) {
         StrategyParams params;
         params.kind = k;
         StrategyHandle h = make_strategy(params);

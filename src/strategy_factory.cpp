@@ -54,6 +54,7 @@ StrategyHandle make_strategy(const StrategyParams& p) {
                 break;
             }
             case StrategyKind::Cci: engine = std::make_shared<CciStrategy>(r, p.lookback_period, p.cci_entry, p.cci_exit); break;
+            case StrategyKind::VolBreakout: engine = std::make_shared<VolBreakoutStrategy>(r, p.lookback_period, p.vol_breakout_std); break;
             default: engine = std::make_shared<RocStrategy>(r, p.lookback_period, p.roc_threshold_pct); break;
         }
         h.name = strategy_name(p.kind);

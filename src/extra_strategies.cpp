@@ -282,3 +282,27 @@ bool CciStrategy::wants_exit(const std::deque<double>& p, std::string& reason) {
     reason = fmt("CCI recovered (%.0f)", v);
     return true;
 }
+
+// ---- Volatility breakout ----
+bool VolBreakoutStrategy::stats(const std::deque<double>& p, double& mean, double& sd) const {
+    if (period_ < 2 || p.size() < period_) return false;
+    mean = Indicators::simple_moving_average(p, period_);
+    double var = 0.0;
+    for (size_t i = p.size() - period_; i < p.size(); ++i) var += (p[i] - mean) * (p[i] - mean);
+    sd = std::sqrt(var / period_);
+    return true;
+}
+bool VolBreakoutStrategy::wants_entry(const std::deque<double>& p, std::string& reason) {
+    double mean, sd;
+    if (!stats(p, mean, sd) || sd <= 1e-12) return false;
+    double upper = mean + k_ * sd;
+    if (p.back() <= upper) return false;
+    reason = fmt2("Volatility breakout (%.2f > %.2f)", p.back(), upper);
+    return true;
+}
+bool VolBreakoutStrategy::wants_exit(const std::deque<double>& p, std::string& reason) {
+    double mean, sd;
+    if (!stats(p, mean, sd) || p.back() >= mean) return false;
+    reason = fmt2("Fell back under mean (%.2f < %.2f)", p.back(), mean);
+    return true;
+}

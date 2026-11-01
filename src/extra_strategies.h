@@ -171,6 +171,19 @@ private:
     double entry_, exit_;
 };
 
+// Trend entry on volatility expansion: buy when price closes above mean + k*sd, sell when it falls back under the mean.
+class VolBreakoutStrategy : public RuleStrategy {
+public:
+    VolBreakoutStrategy(const RuleRiskConfig& r, size_t period, double num_std) : RuleStrategy(r), period_(period), k_(num_std) {}
+protected:
+    bool wants_entry(const std::deque<double>& p, std::string& reason) override;
+    bool wants_exit(const std::deque<double>& p, std::string& reason) override;
+private:
+    bool stats(const std::deque<double>& p, double& mean, double& sd) const;
+    size_t period_;
+    double k_;
+};
+
 // Rate-of-change trend following: buy when N-bar ROC exceeds the threshold, sell when it turns negative.
 class RocStrategy : public RuleStrategy {
 public:
