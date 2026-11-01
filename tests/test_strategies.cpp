@@ -1,6 +1,7 @@
 #include "test_helpers.h"
 #include "backtester.h"
 #include "price_gen.h"
+#include "indicators.h"
 #include "strategy_factory.h"
 
 static StrategyParams params(StrategyKind k, size_t lookback = 10) {
@@ -77,6 +78,25 @@ static void test_macd() {
     auto sides = run(params(StrategyKind::Macd), prices);
     CHECK(count(sides, 1) >= 1);
     CHECK(count(sides, -1) >= 1);
+}
+
+static void test_macd_matches_reference() {
+    // The incremental MACD must buy exactly on bars where the reference MACD histogram turns positive.
+    auto prices = generate_prices(400, 100.0, 0.0, 0.01, 11);
+    StrategyParams p = params(StrategyKind::Macd);
+    auto sides = run(p, prices);
+    std::deque<double> hist;
+    double prev_h = 0;
+    int checked = 0;
+    for (size_t i = 0; i < prices.size(); ++i) {
+        hist.push_back(static_cast<double>(static_cast<long long>(prices[i] * 100.0)) / 100.0);
+        auto [m, s] = Indicators::macd(hist, 12, 26, 9);
+        double h = m - s;
+        bool up_cross = hist.size() > 26 + 9 + 1 && prev_h <= 0.0 && h > 0.0;
+        if (sides[i] == 1) { CHECK(up_cross); ++checked; }
+        prev_h = h;
+    }
+    CHECK(checked > 0);
 }
 
 static void test_roc() {
@@ -254,6 +274,7 @@ int main() {
     test_rsi();
     test_breakout();
     test_macd();
+    test_macd_matches_reference();
     test_roc();
     test_stochastic();
     test_ema_cross();

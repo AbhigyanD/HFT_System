@@ -127,25 +127,32 @@ bool BreakoutStrategy::wants_exit(const std::deque<double>& p, std::string& reas
 }
 
 // ---- MACD ----
-bool MacdStrategy::cross(const std::deque<double>& p, double& hist, double& prev_hist) const {
-    if (p.size() < slow_ + signal_ + 1) return false;
-    auto [m, s] = Indicators::macd(p, fast_, slow_, signal_);
-    std::deque<double> prev(p.begin(), p.end() - 1);
-    auto [pm, ps] = Indicators::macd(prev, fast_, slow_, signal_);
-    hist = m - s;
-    prev_hist = pm - ps;
+void MacdStrategy::on_bar(const std::deque<double>& p) {
+    double price = p.back();
+    if (seen_ == 0) {
+        ema_fast_ = ema_slow_ = price;
+        signal_ema_ = 0.0;
+        hist_ = prev_hist_ = 0.0;
+        seen_ = 1;
+        return;
+    }
+    auto k = [](size_t n) { return 2.0 / (static_cast<double>(n) + 1.0); };
+    ema_fast_ = price * k(fast_) + ema_fast_ * (1.0 - k(fast_));
+    ema_slow_ = price * k(slow_) + ema_slow_ * (1.0 - k(slow_));
+    double line = ema_fast_ - ema_slow_;
+    signal_ema_ = line * k(signal_) + signal_ema_ * (1.0 - k(signal_));
+    prev_hist_ = hist_;
+    hist_ = line - signal_ema_;
+    ++seen_;
+}
+bool MacdStrategy::wants_entry(const std::deque<double>&, std::string& reason) {
+    if (seen_ <= slow_ + signal_ || !(prev_hist_ <= 0.0 && hist_ > 0.0)) return false;
+    reason = fmt("MACD bullish crossover (hist %+.4f)", hist_);
     return true;
 }
-bool MacdStrategy::wants_entry(const std::deque<double>& p, std::string& reason) {
-    double h, ph;
-    if (!cross(p, h, ph) || !(ph <= 0.0 && h > 0.0)) return false;
-    reason = fmt("MACD bullish crossover (hist %+.4f)", h);
-    return true;
-}
-bool MacdStrategy::wants_exit(const std::deque<double>& p, std::string& reason) {
-    double h, ph;
-    if (!cross(p, h, ph) || !(ph >= 0.0 && h < 0.0)) return false;
-    reason = fmt("MACD bearish crossover (hist %+.4f)", h);
+bool MacdStrategy::wants_exit(const std::deque<double>&, std::string& reason) {
+    if (!(prev_hist_ >= 0.0 && hist_ < 0.0)) return false;
+    reason = fmt("MACD bearish crossover (hist %+.4f)", hist_);
     return true;
 }
 
@@ -202,12 +209,12 @@ void EmaCrossStrategy::on_bar(const std::deque<double>& p) {
     diff_ = ema_fast_ - ema_slow_;
     ++seen_;
 }
-bool EmaCrossStrategy::wants_entry(const std::deque<double>& p, std::string& reason) {
+bool EmaCrossStrategy::wants_entry(const std::deque<double>&, std::string& reason) {
     if (seen_ <= slow_ || !(prev_diff_ <= 0.0 && diff_ > 0.0)) return false;
     reason = fmt2("EMA%.0f crossed above EMA%.0f", static_cast<double>(fast_), static_cast<double>(slow_));
     return true;
 }
-bool EmaCrossStrategy::wants_exit(const std::deque<double>& p, std::string& reason) {
+bool EmaCrossStrategy::wants_exit(const std::deque<double>&, std::string& reason) {
     if (!(prev_diff_ >= 0.0 && diff_ < 0.0)) return false;
     reason = fmt2("EMA%.0f crossed below EMA%.0f", static_cast<double>(fast_), static_cast<double>(slow_));
     return true;

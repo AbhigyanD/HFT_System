@@ -91,9 +91,13 @@ public:
 protected:
     bool wants_entry(const std::deque<double>& p, std::string& reason) override;
     bool wants_exit(const std::deque<double>& p, std::string& reason) override;
+    void on_bar(const std::deque<double>& p) override;
+    void on_reset() override { seen_ = 0; }
 private:
-    bool cross(const std::deque<double>& p, double& hist, double& prev_hist) const;
+    // Incremental EMAs (O(1) per bar): MACD line = fast - slow, signal = EMA of the line.
     size_t fast_, slow_, signal_;
+    size_t seen_ = 0;
+    double ema_fast_ = 0, ema_slow_ = 0, signal_ema_ = 0, hist_ = 0, prev_hist_ = 0;
 };
 
 // Stochastic oscillator: %K = position of the close within the N-bar high/low range (0-100).
